@@ -12,7 +12,6 @@ import {
   useCreateSubCategoryMutation,
   useFetchSubCategoriesQuery,
 } from "features/subCategory/subCategorySlice";
-import { useDeleteSubCategoryMutation } from "features/subCategory/subCategorySlice";
 
 const SubCategories = () => {
   const { data = [] } = useFetchCategoriesQuery();
@@ -31,11 +30,6 @@ const SubCategories = () => {
   };
 
   const [createSubCategory] = useCreateSubCategoryMutation();
-  const [deleteSubCategory] = useDeleteSubCategoryMutation();
-
-  const deleteHandler = async (id: any) => {
-    await deleteSubCategory(id);
-  };
 
   const initialValue = {
     idSubCategory: 1,
@@ -63,7 +57,7 @@ const SubCategories = () => {
     notify();
   };
 
-  const [selectedValue, setSelectedValue] = useState<string>();
+  const [selectedValue, setSelectedValue] = useState<string>("");
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedValue(event.target.value);
@@ -189,7 +183,7 @@ const SubCategories = () => {
             </Col>
             <Col xxl={9}>
               <Row className="justify-content-between mb-4">
-                <Col xxl={3} lg={6}>
+                {/* <Col xxl={3} lg={6}>
                   <div className="search-box mb-3 mb-lg-0">
                     <input
                       type="text"
@@ -200,7 +194,7 @@ const SubCategories = () => {
                     />
                     <i className="ri-search-line search-icon"></i>
                   </div>
-                </Col>
+                </Col> */}
                 {/* <Col xxl={2} lg={6}>
                   <select
                     className="form-select"

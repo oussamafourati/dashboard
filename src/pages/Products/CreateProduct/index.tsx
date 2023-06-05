@@ -324,12 +324,6 @@ const CreateProduct = () => {
     }));
   };
 
-  // const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   createProduct(formData).then(() => setFormData(formData));
-  //   notify();
-  // };
-
   //Common Function
   function convertToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -684,6 +678,26 @@ const CreateProduct = () => {
                           </div>
                         </div>
                       </Col>
+                      <Col lg={2} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="prixAchatHt">TVA</Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <Form.Control
+                              type="text"
+                              value={"19%"}
+                              // onChange={onChange}
+                              id="prixAchatHt"
+                              placeholder="Taper prix"
+                              aria-label="Price"
+                              aria-describedby="product-price-addon"
+                              required
+                            />
+                            <div className="invalid-feedback">
+                              Please enter a product price.
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
                       <Col lg={3} sm={6}>
                         <div className="mb-3">
                           <Form.Label htmlFor="prixAchatTtc">
@@ -694,8 +708,8 @@ const CreateProduct = () => {
                             id="prixAchatTtc"
                             placeholder="Prix Achat TTC"
                             required
-                            onChange={onChange}
-                            value={formData.prixAchatTtc}
+                            // onChange={onChange}
+                            value={formData.prixAchatHt * 1.19}
                           />
                           <div className="invalid-feedback">
                             Please enter a product stocks.
@@ -717,6 +731,34 @@ const CreateProduct = () => {
                           />
                           <div className="invalid-feedback">
                             Please enter a product orders.
+                          </div>
+                        </div>
+                      </Col>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="remise">Benifice</Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <span
+                              className="input-group-text"
+                              id="product-discount-addon"
+                            >
+                              %
+                            </span>
+                            <Form.Control
+                              type="text"
+                              value={
+                                formData.prixVente - formData.prixAchatHt * 1.19
+                              }
+                              // onChange={onChange}
+                              id="remise"
+                              placeholder="Taper Remise"
+                              aria-label="discount"
+                              aria-describedby="product-discount-addon"
+                              required
+                            />
+                            <div className="invalid-feedback">
+                              Please enter a product discount.
+                            </div>
                           </div>
                         </div>
                       </Col>

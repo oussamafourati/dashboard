@@ -16,16 +16,56 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 
 import offerbanner from "../../assets/images/ecommerce/offer-banner.jpg";
+import Swal from "sweetalert2";
 
 import {
   useFetchClientMoralesQuery,
   useAddClientMoraleMutation,
   useDeleteClientMoraleMutation,
-  useUpdateClientMoraleMutation,
   ClientMorale,
 } from "features/clientMoral/clientMoralSlice";
 
 const UserList = () => {
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: false,
+  });
+
+  const AlertDelete = async (id: number) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Êtes-vous sûr?",
+        text: "Vous ne pourrez pas revenir en arrière !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimez-le !",
+        cancelButtonText: "Non, annulez !",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteClientMorale(id);
+          swalWithBootstrapButtons.fire(
+            "Supprimé !",
+            "Le Client a été supprimé.",
+            "success"
+          );
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            "Annulé",
+            "Le Client est en sécurité :)",
+            "error"
+          );
+        }
+      });
+  };
+
   const { data = [] } = useFetchClientMoralesQuery();
   const [createClientMorale] = useAddClientMoraleMutation();
   const [deleteClientMorale] = useDeleteClientMoraleMutation();
@@ -41,10 +81,6 @@ const UserList = () => {
       progress: undefined,
       theme: "light",
     });
-  };
-
-  const deleteHandler = async (id: any) => {
-    await deleteClientMorale(id);
   };
 
   const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
@@ -271,7 +307,7 @@ const UserList = () => {
               <li>
                 <Link
                   to="/users-list"
-                  onClick={() => deleteHandler(clientMorale.idclient_m)}
+                  onClick={() => AlertDelete(clientMorale.idclient_m)}
                   data-bs-toggle="modal"
                   className="badge badge-soft-danger remove-item-btn"
                 >
@@ -363,7 +399,6 @@ const UserList = () => {
               </Col>
             </Row>
           </div>
-
           <Modal
             id="showModal"
             className="fade zoomIn"
@@ -513,12 +548,17 @@ const UserList = () => {
                   <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="etat">Etat</Form.Label>
-                      <select className="form-select" data-choices data-choices-search-false id="choices-payment-status" required>
-                                                    <option value="">Selectionner Etat</option>
-                                                    <option value="Actif">Actif</option>
-                                                    <option value="Inactif">Inactif</option>
-                                                   
-                                                </select>
+                      <select
+                        className="form-select"
+                        data-choices
+                        data-choices-search-false
+                        id="choices-payment-status"
+                        required
+                      >
+                        <option value="">Selectionner Etat</option>
+                        <option value="Actif">Actif</option>
+                        <option value="Inactif">Inactif</option>
+                      </select>
                     </div>
                   </Col>
                   <Col lg={6}>
@@ -647,9 +687,14 @@ const UserList = () => {
                         <i className="ri-close-line align-bottom me-1"></i>{" "}
                         Fermer
                       </Button>
-                      <Button onClick={() => {
+                      <Button
+                        onClick={() => {
                           tog_AddCouponsModals();
-                        }} type={"submit"} variant="primary" id="add-btn">
+                        }}
+                        type={"submit"}
+                        variant="primary"
+                        id="add-btn"
+                      >
                         Ajouter
                       </Button>
                     </div>

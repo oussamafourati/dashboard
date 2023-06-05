@@ -1,21 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 import { Provider } from "react-redux";
-import reportWebVitals from './reportWebVitals';
-import { BrowserRouter } from 'react-router-dom';
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter } from "react-router-dom";
+import "antd/dist/antd";
 
-import { store } from 'app/store';
+import { store } from "app/store";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 
 root.render(
   <React.Fragment>
-      <Provider store={store}>
+    <Provider store={store}>
       <BrowserRouter>
-          <App />
+        <App />
       </BrowserRouter>
     </Provider>
   </React.Fragment>

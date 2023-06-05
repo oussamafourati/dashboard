@@ -11,9 +11,7 @@ import {
 import { Table, Row, Col, Button } from "react-bootstrap";
 import { Filter, DefaultColumnFilter } from "./Filter";
 
-import {
-  ProductsGlobalFilter
-} from "./GlobalSearchFilter";
+import { ProductsGlobalFilter } from "./GlobalSearchFilter";
 
 interface GlobalFilterProps {
   preGlobalFilteredRows?: any;
@@ -29,7 +27,7 @@ function GlobalFilter({
   globalFilter,
   setGlobalFilter,
   SearchPlaceholder,
-  isProductsFilter
+  isProductsFilter,
 }: GlobalFilterProps) {
   const [value, setValue] = React.useState(globalFilter);
   const onChange = (value: any) => {
@@ -38,18 +36,16 @@ function GlobalFilter({
 
   return (
     <React.Fragment>
-      {isProductsFilter && (
-        <ProductsGlobalFilter />
-      )}
+      {isProductsFilter && <ProductsGlobalFilter />}
       <Col className="col-sm">
         {/* <div className="search-box me-xxl-2 my-3 my-xxl-0 d-inline-block"> */}
-        <div className="d-flex justify-content-sm-end">
+        <div className="search-box mb-3 mb-lg-0">
           <label htmlFor="search-bar-0" className="search-label">
             {/* <span id="search-bar-0-label" className="sr-only">
                 Search this table
               </span> */}
             <input
-              onChange={e => {
+              onChange={(e) => {
                 setValue(e.target.value);
                 onChange(e.target.value);
               }}
@@ -64,7 +60,6 @@ function GlobalFilter({
         </div>
         {/* </div> */}
       </Col>
-
     </React.Fragment>
   );
 }
@@ -76,7 +71,7 @@ interface TableContainerProps {
   isAddOptions?: any;
   divClassName?: any;
   tableClassName?: any;
-  theadClassName?: any,
+  theadClassName?: any;
   tableClass?: any;
   theadClass?: any;
   isBordered?: boolean;
@@ -110,7 +105,7 @@ const TableContainer = ({
   customPageSize,
   iscustomPageSize,
   customPageSizeOptions,
-  SearchPlaceholder
+  SearchPlaceholder,
 }: TableContainerProps) => {
   const {
     getTableProps,
@@ -152,7 +147,15 @@ const TableContainer = ({
   );
 
   const generateSortingIndicator = (column: any) => {
-    return column.isSorted ? (column.isSortedDesc ? <span>&#9650;</span> : <span>&#9660;</span>) : "";
+    return column.isSorted ? (
+      column.isSortedDesc ? (
+        <span>&#9650;</span>
+      ) : (
+        <span>&#9660;</span>
+      )
+    ) : (
+      ""
+    );
   };
 
   const onChangeInSelect = (event: any) => {
@@ -169,7 +172,7 @@ const TableContainer = ({
               value={pageSize}
               onChange={onChangeInSelect}
             >
-              {[10, 20, 30, 40, 50].map(pageSize => (
+              {[10, 20, 30, 40, 50].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
                   Show {pageSize}
                 </option>
@@ -234,7 +237,12 @@ const TableContainer = ({
       </Row>
 
       <div className="table-responsive react-table">
-        <Table hover {...getTableProps()} className={tableClass} bordered={isBordered}>
+        <Table
+          hover
+          {...getTableProps()}
+          className={tableClass}
+          bordered={isBordered}
+        >
           <thead className={theadClass}>
             {headerGroups.map((headerGroup: any) => (
               <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
@@ -273,22 +281,44 @@ const TableContainer = ({
       </div>
       <Row className="align-items-center mt-2 py-2 px-2 gy-2 text-center text-sm-start">
         <div className="col-sm">
-          <div className="text-muted">Affichage de  <span className="fw-semibold">{pageIndex + 1}</span> sur <span className="fw-semibold">{pageOptions.length}</span> Résultats</div>
+          <div className="text-muted">
+            Affichage de <span className="fw-semibold">{pageIndex + 1}</span>{" "}
+            sur <span className="fw-semibold">{pageOptions.length}</span>{" "}
+            Résultats
+          </div>
         </div>
         <div className="col-sm-auto">
           <ul className="pagination pagination-separated mb-0 justify-content-center justify-content-sm-start">
-            <li className={!canPreviousPage ? "page-item disabled" : "page-item"} onClick={previousPage}>
-              <Button variant="link" className="page-link">Précedent</Button>
+            <li
+              className={!canPreviousPage ? "page-item disabled" : "page-item"}
+              onClick={previousPage}
+            >
+              <Button variant="link" className="page-link">
+                Précedent
+              </Button>
             </li>
             {pageOptions.map((item: any, key: number) => (
               <React.Fragment key={key}>
                 <li className="page-item">
-                  <Button variant="link" className={pageIndex === item ? "page-link active" : "page-link"} onClick={() => gotoPage(item)}>{item + 1}</Button>
+                  <Button
+                    variant="link"
+                    className={
+                      pageIndex === item ? "page-link active" : "page-link"
+                    }
+                    onClick={() => gotoPage(item)}
+                  >
+                    {item + 1}
+                  </Button>
                 </li>
               </React.Fragment>
             ))}
-            <li className={!canNextPage ? "page-item disabled" : "page-item"} onClick={nextPage}>
-              <Button variant="link" className="page-link">Suivant</Button>
+            <li
+              className={!canNextPage ? "page-item disabled" : "page-item"}
+              onClick={nextPage}
+            >
+              <Button variant="link" className="page-link">
+                Suivant
+              </Button>
             </li>
           </ul>
         </div>
