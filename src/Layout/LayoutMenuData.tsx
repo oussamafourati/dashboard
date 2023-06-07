@@ -165,7 +165,28 @@ const Navdata = () => {
       id: "shipping",
       label: "Arrivage",
       icon: "bi bi-truck",
-      link: "/shipments",
+      link: "/#",
+      click: function (e: any) {
+        e.preventDefault();
+        setIsShipping(!isShipping);
+        setIscurrentState("Shipping");
+        updateIconSidebar(e);
+      },
+      stateVariables: isShipping,
+      subItems: [
+        {
+          id: "shippinglist",
+          label: "Créer Arrivage",
+          link: "/shipping-list",
+          parentId: "shipping",
+        },
+        {
+          id: "shipments",
+          label: "Liste Arrivage",
+          link: "/shipments",
+          parentId: "shipping",
+        },
+      ],
     },
     {
       id: "products",

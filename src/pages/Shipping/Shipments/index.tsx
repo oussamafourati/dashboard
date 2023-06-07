@@ -11,7 +11,7 @@ import {
 import Breadcrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
 import { shipments } from "Common/data";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Flatpickr from "react-flatpickr";
 import {
   useGetAllArrivagesQuery,
@@ -22,8 +22,11 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import { useFetchFournisseurQuery } from "../../../features/fournisseur/fournisseurSlice";
 import Swal from "sweetalert2";
+import AddArrivageProduit from "../CreateArrivageProduit";
 
 const Shipments = () => {
+  const navigate = useNavigate();
+
   document.title = "Arrivage | Radhouani";
   const notify = () => {
     Swal.fire({
@@ -180,184 +183,81 @@ const Shipments = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumb title="Arrivage" pageTitle="Tableau de bord" />
-          <Row>
-            <Col xxl={4}>
-              <Card>
-                <Card.Header>
-                  <h6 className="card-title mb-0" id="addCategoryLabel">
-                    Créer Achats
-                  </h6>
-                </Card.Header>
-                <Card.Body>
-                  <form
-                    autoComplete="off"
-                    className="needs-validation createCategory-form"
-                    id="createCategory-form"
-                    noValidate
-                    onSubmit={onSubmit}
+
+          <Card id="shipmentsList">
+            <Card.Header className="border-bottom-dashed">
+              <Row className="align-items-center g-3">
+                <Col xxl={3} sm={6}>
+                  <h6 className="card-title mb-0">Arrivage</h6>
+                </Col>
+                <Col className="col-xxl-auto col-sm-auto ms-auto">
+                  <Button
+                    variant="success"
+                    onClick={() => navigate("/shipping-list")}
+                    className="add-btn"
                   >
+                    <i className="bi bi-plus-circle me-1 align-middle"></i>{" "}
+                    Ajouter Arrivage
+                  </Button>
+                </Col>
+              </Row>
+            </Card.Header>
+            <Card.Header className="border-bottom-dashed">
+              <Row className="g-3">
+                <Col xxl={3} lg={6}>
+                  <div className="search-box">
                     <input
-                      type="hidden"
-                      id="categoryid-input"
-                      className="form-control"
-                      value=""
+                      type="text"
+                      className="form-control search"
+                      placeholder="Rechercher arrivage par date..."
                     />
-                    <Row>
-                      <Col xxl={12} lg={6}>
-                        <div className="mb-3">
-                          <label htmlFor="title" className="form-label">
-                            Nom Produit
-                            <span className="text-danger">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="title"
-                            placeholder="Entrer Titre"
-                            required
-                            // value={formData.title}
-                            onChange={onChange}
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a sub category title.
-                          </div>
-                        </div>
-                      </Col>
-                      <Col xxl={12} lg={6}>
-                        <div className="mb-3">
-                          <label
-                            htmlFor="categorySelect"
-                            className="form-label"
-                          >
-                            Catégorie <span className="text-danger">*</span>
-                          </label>
-                          <select
-                            className="form-select"
-                            name="categorySelect"
-                            id="categorySelect"
-                          >
-                            <option value="">Choose an option</option>
-                          </select>
-                          <div className="error-msg mt-n3">
-                            Please select a category.
-                          </div>
-                        </div>
-                      </Col>
-                      <Col xxl={12} lg={6}>
-                        <div className="mb-3">
-                          <label
-                            htmlFor="subDescription"
-                            className="form-label"
-                          >
-                            Description
-                          </label>
-                          <input
-                            className="form-control"
-                            id="subDescription"
-                            placeholder="Description"
-                            required
-                            onChange={onChange}
-                            // value={formData.subDescription}
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a description.
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg={12}>
-                        <div className="text-end">
-                          <Button
-                            variant="success"
-                            type="submit"
-                            id="addNewCategory"
-                          >
-                            Ajouter
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
-                  </form>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col xxl={8}>
-              <Card id="shipmentsList">
-                <Card.Header className="border-bottom-dashed">
-                  <Row className="align-items-center g-3">
-                    <Col xxl={3} sm={6}>
-                      <h6 className="card-title mb-0">Arrivage</h6>
-                    </Col>
-                    <Col className="col-xxl-auto col-sm-auto ms-auto">
-                      <Button
-                        variant="success"
-                        onClick={() => tog_AddShippingModals()}
-                        className="add-btn"
-                      >
-                        <i className="bi bi-plus-circle me-1 align-middle"></i>{" "}
-                        Ajouter Arrivage
-                      </Button>
-                    </Col>
-                  </Row>
-                </Card.Header>
-                <Card.Header className="border-bottom-dashed">
-                  <Row className="g-3">
-                    <Col xxl={3} lg={6}>
-                      <div className="search-box">
-                        <input
-                          type="text"
-                          className="form-control search"
-                          placeholder="Rechercher arrivage par date..."
-                        />
-                        <i className="ri-search-line search-icon"></i>
-                      </div>
-                    </Col>
-                    <Col xxl={3} lg={6}>
-                      {/* <input type="text" className="form-control" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" id="demo-datepicker" placeholder="Select date" /> */}
-                      <Flatpickr
-                        className="form-control flatpickr-input"
-                        placeholder="Selectionner Date"
-                        options={{
-                          mode: "range",
-                          dateFormat: "d M, Y",
-                        }}
-                      />
-                    </Col>
-                  </Row>
-                </Card.Header>
-                <Card.Body>
-                  <div className="table-responsive table-card">
-                    <TableContainer
-                      columns={columns || []}
-                      data={data || []}
-                      isGlobalFilter={false}
-                      iscustomPageSize={false}
-                      isBordered={false}
-                      customPageSize={10}
-                      className="custom-header-css table align-middle table-nowrap"
-                      tableClassName="table-centered align-middle table-nowrap mb-0"
-                      theadClassName="text-muted table-light"
-                      SearchPlaceholder="Search Products..."
-                    />
+                    <i className="ri-search-line search-icon"></i>
                   </div>
-                  <div className="noresult" style={{ display: "none" }}>
-                    <div className="text-center py-4">
-                      <div className="avatar-md mx-auto mb-4">
-                        <div className="avatar-title bg-primary-subtle text-primary rounded-circle fs-24">
-                          <i className="bi bi-search"></i>
-                        </div>
-                      </div>
-                      <h5 className="mt-2">Sorry! No Result Found</h5>
-                      <p className="text-muted mb-0">
-                        We've searched more than 150+ shipment orders We did not
-                        find any shipment orders for you search.
-                      </p>
+                </Col>
+                <Col xxl={3} lg={6}>
+                  {/* <input type="text" className="form-control" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" id="demo-datepicker" placeholder="Select date" /> */}
+                  <Flatpickr
+                    className="form-control flatpickr-input"
+                    placeholder="Selectionner Date"
+                    options={{
+                      mode: "range",
+                      dateFormat: "d M, Y",
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Card.Header>
+            <Card.Body>
+              <div className="table-responsive table-card">
+                <TableContainer
+                  columns={columns || []}
+                  data={data || []}
+                  isGlobalFilter={false}
+                  iscustomPageSize={false}
+                  isBordered={false}
+                  customPageSize={10}
+                  className="custom-header-css table align-middle table-nowrap"
+                  tableClassName="table-centered align-middle table-nowrap mb-0"
+                  theadClassName="text-muted table-light"
+                  SearchPlaceholder="Search Products..."
+                />
+              </div>
+              <div className="noresult" style={{ display: "none" }}>
+                <div className="text-center py-4">
+                  <div className="avatar-md mx-auto mb-4">
+                    <div className="avatar-title bg-primary-subtle text-primary rounded-circle fs-24">
+                      <i className="bi bi-search"></i>
                     </div>
                   </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
+                  <h5 className="mt-2">Sorry! No Result Found</h5>
+                  <p className="text-muted mb-0">
+                    We've searched more than 150+ shipment orders We did not
+                    find any shipment orders for you search.
+                  </p>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
           <Modal
             className="fade zoomIn"
             size="xl"

@@ -6,6 +6,8 @@ export interface ArrivageProduit {
   arrivageID: number;
   quantite: number;
   piecejointes: string;
+  nomProduit: string;
+  prixAchatTtc: number;
 }
 
 export const arrivageProduitSlice = createApi({
