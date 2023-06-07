@@ -1,46 +1,79 @@
-import React, { useMemo, useState } from 'react';
-import { productList } from 'Common/data';
-import TableContainer from 'Common/TableContainer';
-import { Col, Dropdown, Form, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import moment from 'moment';
-import { useAddProduitMutation, useDeleteProduitMutation, useFetchProduitsQuery, Produit } from 'features/produit/productSlice';
+import React, { useMemo, useState } from "react";
+import TableContainer from "Common/TableContainer";
+import { Col, Form, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import moment from "moment";
+import {
+  useDeleteProduitMutation,
+  useFetchProduitsQuery,
+  Produit,
+} from "features/produit/productSlice";
+import Swal from "sweetalert2";
 
 const ProductTable = () => {
-  const {data = []} = useFetchProduitsQuery()
-  console.log(data)
-  const [createProduct] = useAddProduitMutation()
-  const [deleteProduct] = useDeleteProduitMutation()
-  const deleteHandler = async (id: any) => {
-    await deleteProduct(id);
+  const { data = [] } = useFetchProduitsQuery();
+
+  const [deleteProduit] = useDeleteProduitMutation();
+  const handleDelete = async (id: number) => {
+    deleteProduit(id);
   };
-  const notify = () => {
-    toast.success("Le Product a été créé avec succès", {
-      position: "top-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: false,
+  });
+
+  const AlertDelete = async (id: any) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Êtes-vous sûr?",
+        text: "Vous ne pourrez pas revenir en arrière !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimez-le !",
+        cancelButtonText: "Non, annulez !",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteProduit(id);
+          swalWithBootstrapButtons.fire(
+            "Supprimé !",
+            "Le Produit a été supprimé.",
+            "success"
+          );
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            "Annulé",
+            "Le Produit est en sécurité :)",
+            "error"
+          );
+        }
+      });
   };
 
   const [formData, setFormData] = useState({
     idproduit: 99,
     nomProduit: "",
-    imageProduit:  "",
+    imageProduit: "",
     marque: "",
     prixAchatHt: 11,
     prixAchatTtc: 22,
     prixVente: 33,
-    remise: 0.12 ,
+    remise: 0.12,
+    PourcentageBenifice: 15,
+    Benifice: 150,
+    PrixRemise: 126,
+    PourcentageRemise: 20,
     remarqueProduit: "",
     nom: "",
-    raison_sociale: ""
+    raison_sociale: "",
   });
 
   const {
@@ -51,10 +84,14 @@ const ProductTable = () => {
     prixAchatHt,
     prixAchatTtc,
     prixVente,
-    remise ,
+    remise,
+    PourcentageBenifice,
+    Benifice,
+    PrixRemise,
+    PourcentageRemise,
     remarqueProduit,
     nom,
-    raison_sociale
+    raison_sociale,
   } = formData;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,12 +99,6 @@ const ProductTable = () => {
       ...prevState,
       [e.target.id]: e.target.value,
     }));
-  };
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    createProduct(formData).then(() => setFormData(formData));
-    notify();
   };
 
   const handleFileUpload = async (
@@ -78,8 +109,6 @@ const ProductTable = () => {
     ).files?.item(0) as File;
 
     const base64 = await convertToBase64(fileLogo);
-    
-    
 
     setFormData({
       ...formData,
@@ -120,115 +149,149 @@ const ProductTable = () => {
     } else {
       meridiem = "AM";
     }
-    const updateTime = moment(getTime, 'hh:mm').format('hh:mm') + " " + meridiem;
+    const updateTime =
+      moment(getTime, "hh:mm").format("hh:mm") + " " + meridiem;
     return updateTime;
   };
 
-  const columns = useMemo(() => [
-    {
-      Header: "Nom Produit",
-      disableFilters: true,
-      filterable: true,
-      accessor: (produit: Produit) => {
-        return (
-              <>
-          <div className="d-flex align-items-center gap-2">
-            <div className="flex-shrink-0">
-              <img
-                src={`data:image/jpeg;base64, ${produit.imageProduit}`}
-                alt=""
-                className="avatar-xs rounded-circle user-profile-img"
-                />
-            </div>
-            <div className="flex-grow-1 ms-2 user_name">
-              {produit.nomProduit}
-            </div>
-            
-          </div><div className="flex-grow-1 ms-2 user_name">{produit.nom}</div>
-                </>
-        );
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Nom Produit",
+        // disableFilters: true,
+        // filterable: true,
+        Filter: true,
+        accessor: (produit: Produit) => {
+          return (
+            <>
+              <div className="d-flex align-items-center gap-2">
+                <div className="flex-shrink-0">
+                  <img
+                    src={`data:image/jpeg;base64, ${produit.imageProduit}`}
+                    alt=""
+                    className="avatar-xs rounded-circle user-profile-img"
+                  />
+                </div>
+                <div className="flex-grow-1 ms-2 user_name">
+                  {produit.nomProduit}
+                </div>
+              </div>
+              {/* <div className="flex-grow-1 ms-2 user_name">{produit.nom}</div> */}
+            </>
+          );
+        },
       },
-    },
-    {
-      Header: "Category",
-      accessor: "nom",
-      Filter: true,
-    },
-    
-    {
-      Header: "Prix Achat HT",
-      accessor: "prixAchatHt",
-      Filter: false
-    },
-    {
-      Header: "Prix Achat TTC",
-      accessor: "prixAchatTtc",
-      Filter: false,
-    },
-    {
-      Header: "Prix Vente",
-      accessor: "prixVente",
-      Filter: false,
-    },
-   
-    {
-      Header: "Action",
-      Cell: (produit: Produit) => {
-        return (
-          <React.Fragment>
-            <Dropdown className="text-center">
-              <Dropdown.Toggle href="#" className="btn btn-ghost-primary btn-icon btn-sm arrow-none">
-                <i className="mdi mdi-dots-horizontal" />
-              </Dropdown.Toggle>
-              <Dropdown.Menu as="ul" className="dropdown-menu-end">
-                <li>
-                  <Dropdown.Item href="/product-create" >
-                    <i className="ri-pencil-fill align-bottom me-2 text-muted" /> Edit
-                  </Dropdown.Item>
-                </li>
-                <li>
-                  <Dropdown.Item href="#" className="remove-list" onClick={()=> deleteHandler(produit.idproduit)}>
-                    <i className="ri-delete-bin-fill align-bottom me-2 text-muted" />Delete
-                  </Dropdown.Item>
-                </li>
-              </Dropdown.Menu>
-            </Dropdown>
-          </React.Fragment>
-        );
+      // {
+      //   Header: "Category",
+      //   accessor: "nom",
+      //   Filter: true,
+      // },
+      {
+        Header: "Prix Achat HT",
+        accessor: "prixAchatHt",
+        Filter: false,
       },
-    },
-  ],
+      {
+        Header: "Prix Achat TTC",
+        accessor: "prixAchatTtc",
+        Filter: false,
+      },
+      {
+        Header: "Prix Vente",
+        accessor: "prixVente",
+        Filter: false,
+      },
+      {
+        Header: "Benifice",
+        accessor: "Benifice",
+        Filter: false,
+      },
+      {
+        Header: "Pourcentage Benifice",
+        accessor: "PourcentageBenifice",
+        Filter: false,
+      },
+      {
+        Header: "Prix Remise",
+        accessor: "remise",
+        Filter: false,
+      },
+      {
+        Header: "Pourcentage Remise",
+        accessor: "PourcentageRemise",
+        Filter: false,
+      },
+      {
+        Header: "Action",
+        Filter: true,
+        accessor: (produit: Produit) => {
+          return (
+            <React.Fragment>
+              <ul className="hstack gap-2 list-unstyled mb-0">
+                {/* <li>
+                  <Link to="#">
+                    <i className="ri-pencil-fill align-bottom me-2 text-muted" />
+                    Modifier
+                  </Link>
+                </li> */}
+                <li>
+                  <Link
+                    to="#"
+                    className="remove-list"
+                    onClick={() => AlertDelete(produit.idproduit)}
+                  >
+                    <i className="ri-delete-bin-fill align-bottom me-2 text-muted" />
+                    Supprimer
+                  </Link>
+                </li>
+              </ul>
+            </React.Fragment>
+          );
+        },
+      },
+    ],
     []
   );
   return (
     <React.Fragment>
       <Row className="g-4 mb-4">
-          <Col className="col-sm-auto">
-              <div>
-                <Link to="/product-create" className="btn btn-success" id="addproduct-btn"><i className="ri-add-line align-bottom me-1"></i> Ajouter Produit</Link>
-              </div>
-          </Col>
-          <Col className="col-sm">
-              <div className="d-flex justify-content-sm-end">
-                  <div className="search-box ms-2">
-                    <Form.Control type="text" autoComplete="off" id="searchProductList" placeholder="Rechercher Produits..." />
-                    <i className="ri-search-line search-icon"></i>
-                  </div>
-              </div>
-          </Col>
+        <Col className="col-sm-auto">
+          <div>
+            <Link
+              to="/product-create"
+              className="btn btn-success"
+              id="addproduct-btn"
+            >
+              <i className="ri-add-line align-bottom me-1"></i> Ajouter Produit
+            </Link>
+          </div>
+        </Col>
+        {/* <Col className="col-sm">
+          <div className="d-flex justify-content-sm-end">
+            <div className="search-box ms-2">
+              <Form.Control
+                type="text"
+                autoComplete="off"
+                id="searchProductList"
+                placeholder="Rechercher Produits..."
+              />
+              <i className="ri-search-line search-icon"></i>
+            </div>
+          </div>
+        </Col> */}
       </Row>
       <div>
         <TableContainer
           columns={columns}
-          data={(data || [])}
-          // isGlobalFilter={true}
+          data={data || []}
+          isGlobalFilter={true}
           isAddUserList={false}
           customPageSize={10}
           // divClassName="table-responsive mb-1"
           tableClassName="gridjs-table"
           theadClassName="gridjs-thead"
           isProductsFilter={true}
-          SearchPlaceholder='Search Products...'
+          SearchPlaceholder="Search Products..."
         />
       </div>
     </React.Fragment>

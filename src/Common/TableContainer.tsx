@@ -11,7 +11,7 @@ import {
 import { Table, Row, Col, Button } from "react-bootstrap";
 import { Filter, DefaultColumnFilter } from "./Filter";
 
-import { ProductsGlobalFilter } from "./GlobalSearchFilter";
+// import { ProductsGlobalFilter } from "./GlobalSearchFilter";
 
 interface GlobalFilterProps {
   preGlobalFilteredRows?: any;
@@ -36,7 +36,7 @@ function GlobalFilter({
 
   return (
     <React.Fragment>
-      {isProductsFilter && <ProductsGlobalFilter />}
+      {/* {isProductsFilter && <ProductsGlobalFilter />} */}
       <Col className="col-sm">
         {/* <div className="search-box me-xxl-2 my-3 my-xxl-0 d-inline-block"> */}
         <div className="search-box mb-3 mb-lg-0">

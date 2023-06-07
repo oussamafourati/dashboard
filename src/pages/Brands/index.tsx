@@ -160,26 +160,12 @@ const InvoiceList = () => {
                         Charges Totale
                       </p>
                     </div>
-                    {/* <div className="flex-shrink-0">
-                      <h5 className="text-success fs-14 mb-0">
-                        <i className="ri-arrow-right-up-line fs-13 align-middle"></i>{" "}
-                        +89.24 %
-                      </h5>
-                    </div> */}
                   </div>
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp
-                          end={559.25}
-                          decimals={2}
-                          
-                        />
+                        <CountUp end={559.25} decimals={2} />
                       </h4>
-                      {/* <span className="badge bg-info me-1">6,258</span>{" "}
-                      <span className="text-muted align-bottom">
-                        Invoices sent
-                      </span> */}
                     </div>
                     <div className="avatar-sm flex-shrink-0">
                       <span className="avatar-title bg-white text-primary rounded fs-3">
@@ -191,7 +177,6 @@ const InvoiceList = () => {
               </Card>
             </Col>
           </Row>
-
           <BrandsTable />
         </Container>
       </div>

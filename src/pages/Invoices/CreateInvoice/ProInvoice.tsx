@@ -61,7 +61,8 @@ const ProInvoice = () => {
   };
 
   //Query to Fetch All Client Morale
-  const { data: allClientMorale = [] } = useFetchClientMoralesQuery();
+  const { data: allClientMorale = [], isLoading } =
+    useFetchClientMoralesQuery();
 
   // Mutation to create a new Client
   const [createClientMorale] = useAddClientMoraleMutation();
@@ -116,9 +117,11 @@ const ProInvoice = () => {
     }));
   };
 
+  const [state, setState] = useState({ loading: false });
   const onClientMoraleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createClientMorale(clientMData).then(() => setClientMData(clientMData));
+    setState({ ...state, loading: true });
     notifyClientMorale();
   };
 
@@ -177,33 +180,6 @@ const ProInvoice = () => {
               <Card.Body className="border-bottom border-bottom-dashed p-4">
                 <Row>
                   <Col lg={4}>
-                    <div className="profile-user mx-auto mb-3">
-                      <input
-                        id="profile-img-file-input"
-                        type="file"
-                        className="profile-img-file-input"
-                      />
-                      <label
-                        htmlFor="profile-img-file-input"
-                        className="d-block"
-                      >
-                        <span
-                          className="overflow-hidden border border-dashed d-flex align-items-center justify-content-center rounded"
-                          style={{ height: "60px", width: "256px" }}
-                        >
-                          <img
-                            src={logoDark}
-                            className="card-logo card-logo-dark user-profile-image img-fluid"
-                            alt="logo dark"
-                          />
-                          <img
-                            src={logoLight}
-                            className="card-logo card-logo-light user-profile-image img-fluid"
-                            alt="logo light"
-                          />
-                        </span>
-                      </label>
-                    </div>
                     <div>
                       <div className="mb-3">
                         <select
@@ -225,66 +201,25 @@ const ProInvoice = () => {
                         {selected.map((s) => {
                           return (
                             <div className="mb-2">
-                              <Form.Control
-                                type="text"
-                                id="registrationNumber"
-                                value={s.raison_sociale}
-                                placeholder="Nom Client Pro"
-                                required
-                              />
-                              <div className="invalid-feedback">
-                                Please enter a registration no, Ex.,
-                                012345678912
+                              <strong>Raison Sociale: </strong>
+                              <span>{s.raison_sociale}</span>
+
+                              <div>
+                                <strong>Matricule Fiscale: </strong>
+                                <span>{s.mat}</span>
                               </div>
                               <div>
-                                <Form.Control
-                                  type="number"
-                                  data-plugin="cleave-phone"
-                                  id="compnayContactno"
-                                  placeholder="Matricule Fiscale"
-                                  value={s.mat}
-                                  required
-                                />
-                                <div className="invalid-feedback">
-                                  Please enter a contact number
-                                </div>
-                              </div>
-                              <div>
-                                <Form.Control
-                                  type="number"
-                                  data-plugin="cleave-phone"
-                                  id="compnayContactno"
-                                  value={s.tel}
-                                  placeholder="Numéro Téléphone"
-                                  required
-                                />
-                                <div className="invalid-feedback">
-                                  Please enter a contact number
-                                </div>
+                                <strong>Numéro Téléphone: </strong>
+                                <span>{s.tel}</span>
                               </div>
                               <div className="mb-2">
-                                <textarea
-                                  className="form-control"
-                                  id="companyAddress"
-                                  value={s.adresse}
-                                  placeholder="Taper votre adresse"
-                                />
-                                <div className="invalid-feedback">Adresse</div>
+                                <strong>Adresse: </strong>
+                                <span>{s.adresse}</span>
                               </div>
                               <div className="mb-2 mb-lg-0"></div>
-                              <div className="mb-2">
-                                <Form.Control
-                                  type="email"
-                                  id="companyEmail"
-                                  value={s.mail}
-                                  placeholder="Adresse e-mail"
-                                  required
-                                />
-                                <div className="invalid-feedback">
-                                  Please enter a valid email, Ex.,
-                                  example@gamil.com
-                                </div>
-                              </div>
+
+                              <strong>Email: </strong>
+                              <span>{s.mail}</span>
                             </div>
                           );
                         })}
@@ -294,6 +229,33 @@ const ProInvoice = () => {
                   <Col lg={4}></Col>
                   <Col lg={4}>
                     <div className="mb-2">
+                      <div className="profile-user mx-auto mb-3">
+                        <input
+                          id="profile-img-file-input"
+                          type="file"
+                          className="profile-img-file-input"
+                        />
+                        <label
+                          htmlFor="profile-img-file-input"
+                          className="d-block"
+                        >
+                          <span
+                            className="overflow-hidden border border-dashed d-flex align-items-center justify-content-center rounded"
+                            style={{ height: "60px", width: "256px" }}
+                          >
+                            <img
+                              src={logoDark}
+                              className="card-logo card-logo-dark user-profile-image img-fluid"
+                              alt="logo dark"
+                            />
+                            <img
+                              src={logoLight}
+                              className="card-logo card-logo-light user-profile-image img-fluid"
+                              alt="logo light"
+                            />
+                          </span>
+                        </label>
+                      </div>
                       <span>
                         <strong>Matricule Fiscale:</strong>{" "}
                         <span>147852369</span>
@@ -616,7 +578,12 @@ const ProInvoice = () => {
           </h5>
         </Modal.Header>
         <Modal.Body className="p-4">
-          <Form className="tablelist-form" onSubmit={onClientMoraleSubmit}>
+          <Form className="tablelist-form">
+            {!state.loading ? (
+              "Join Now!"
+            ) : (
+              <span className="spinner-grow spinner-grow-sm"></span>
+            )}
             <Row>
               <div
                 id="alert-error-msg"

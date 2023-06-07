@@ -12,6 +12,8 @@ import {
   useCreateSubCategoryMutation,
   useFetchSubCategoriesQuery,
 } from "features/subCategory/subCategorySlice";
+import axios from "axios";
+import { number } from "yup";
 
 const SubCategories = () => {
   const { data = [] } = useFetchCategoriesQuery();
@@ -57,11 +59,11 @@ const SubCategories = () => {
     notify();
   };
 
-  const [selectedValue, setSelectedValue] = useState<string>("");
+  // const [selectedValue, setSelectedValue] = useState<string>("");
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedValue(event.target.value);
-  };
+  // const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setSelectedValue(event.target.value);
+  // };
 
   document.title = "Sous-Catégorie | Toner eCommerce + Admin React Template";
 
@@ -125,20 +127,9 @@ const SubCategories = () => {
                             className="form-select"
                             name="categorySelect"
                             id="categorySelect"
-                            value={selectedValue}
-                            onChange={handleSelectChange}
                           >
-                            <option>Choisir Catégorie</option>
-                            {data.map((category) => (
-                              <option
-                                key={category.idcategory}
-                                value={category.idcategory}
-                              >
-                                {category.nom}
-                              </option>
-                            ))}
+                            <option value="">Choose an option</option>
                           </select>
-                          {selectedValue && <h2>{selectedValue}</h2>}
                           <div className="error-msg mt-n3">
                             Please select a category.
                           </div>
@@ -182,41 +173,7 @@ const SubCategories = () => {
               </Card>
             </Col>
             <Col xxl={9}>
-              <Row className="justify-content-between mb-4">
-                {/* <Col xxl={3} lg={6}>
-                  <div className="search-box mb-3 mb-lg-0">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="searchResultList"
-                      autoComplete="off"
-                      placeholder="Rechercher catégorie, sous-catégorie..."
-                    />
-                    <i className="ri-search-line search-icon"></i>
-                  </div>
-                </Col> */}
-                {/* <Col xxl={2} lg={6}>
-                  <select
-                    className="form-select"
-                    data-choices
-                    data-choices-search-false
-                    name="choices-single-default"
-                    id="idStatus"
-                  >
-                    <option value="">Status</option>
-                    <option value="all" defaultValue="All">
-                      All
-                    </option>
-                    <option value="Today">Today</option>
-                    <option value="Yesterday">Yesterday</option>
-                    <option value="Last 7 Days">Last 7 Days</option>
-                    <option value="Last 30 Days">Last 30 Days</option>
-                    <option value="This Month">This Month</option>
-                    <option value="Last Month">Last Month</option>
-                  </select>
-                </Col> */}
-              </Row>
-
+              <Row className="justify-content-between mb-4"></Row>
               <SubCategoriesTable />
             </Col>
           </Row>

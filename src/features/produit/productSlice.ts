@@ -9,8 +9,12 @@ export interface Produit {
   prixAchatTtc: number;
   prixVente: number;
   remise: number;
+  PourcentageBenifice: number;
+  Benifice: number;
+  PrixRemise: number;
+  PourcentageRemise: number;
   remarqueProduit: string;
-  nom: string;
+  nom?: string;
 }
 
 export const produitSlice = createApi({
@@ -23,7 +27,13 @@ export const produitSlice = createApi({
     return {
       fetchProduits: builder.query<Produit[], number | void>({
         query() {
-          return `/getAll`;
+          return `/getAllProducts`;
+        },
+        providesTags: ["Produit"],
+      }),
+      fetchOneCategory: builder.query<Produit, number | void>({
+        query(idproduit) {
+          return `/getOneProduct/${idproduit}`;
         },
         providesTags: ["Produit"],
       }),

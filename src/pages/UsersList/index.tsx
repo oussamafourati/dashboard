@@ -71,15 +71,10 @@ const UserList = () => {
   const [deleteClientMorale] = useDeleteClientMoraleMutation();
 
   const notify = () => {
-    toast.success("Le Client Morale a été créé avec succès", {
-      position: "top-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+    Swal.fire({
+      icon: "success",
+      title: "Ajouté",
+      text: "Le Client Morale a été créer avec succès",
     });
   };
 
@@ -198,13 +193,13 @@ const UserList = () => {
         },
       },
       {
-        Header: "raison sociale",
+        Header: "Raison sociale",
         accessor: "raison_sociale",
         disableFilters: true,
         filterable: true,
       },
       {
-        Header: "mat",
+        Header: "Matricule",
         accessor: "mat",
         disableFilters: true,
         filterable: true,
@@ -282,19 +277,6 @@ const UserList = () => {
         accessor: (clientMorale: ClientMorale) => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
-              {/* <li>
-                <Link
-                  to="#couponDetails"
-                  data-bs-toggle="offcanvas"
-                  className="badge badge-soft-dark view-item-btn"
-                  onClick={() => {
-                    setShowCouponsDetails(clientMorale);
-                    setShowCoupons(!showCoupons);
-                  }}
-                >
-                  View
-                </Link>
-              </li> */}
               <li>
                 <Link
                   to="#showModal"
@@ -374,7 +356,7 @@ const UserList = () => {
                       <TableContainer
                         columns={columns || []}
                         data={data || []}
-                        // isGlobalFilter={false}
+                        isGlobalFilter={true}
                         iscustomPageSize={false}
                         isBordered={false}
                         customPageSize={10}

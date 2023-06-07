@@ -17,11 +17,11 @@ const CreateInvoice = () => {
     <React.Fragment>
       <div className="page-content">
         <Switch
-          checkedChildren="Passager"
-          unCheckedChildren="Pro"
+          checkedChildren="Pro"
+          unCheckedChildren="Passager"
           onClick={toggler}
         />
-        {toggle ? <PassagerInvoice /> : <ProInvoice />}
+        {toggle ? <ProInvoice /> : <PassagerInvoice />}
       </div>
     </React.Fragment>
   );

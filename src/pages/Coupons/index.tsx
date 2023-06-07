@@ -23,27 +23,61 @@ import {
   useAddClientPhysiqueMutation,
   ClientPhysique,
 } from "features/clientPhysique/clientPhysiqueSlice";
+import Swal from "sweetalert2";
 
 const Coupons = () => {
   const { data = [] } = useFetchClientPhysiquesQuery();
   const [deleteClientPhysique] = useDeleteClientPhysiqueMutation();
   const [createClientPhysique] = useAddClientPhysiqueMutation();
 
-  const deleteHandler = async (id: any) => {
-    await deleteClientPhysique(id);
+  const notify = () => {
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Le Client Physique a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
+    });
   };
 
-  const notify = () => {
-    toast.success("Le Client Physique a été créé avec succès", {
-      position: "top-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: false,
+  });
+
+  const AlertDelete = async (id: number) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Êtes-vous sûr?",
+        text: "Vous ne pourrez pas revenir en arrière !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimez-le !",
+        cancelButtonText: "Non, annulez !",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteClientPhysique(id);
+          swalWithBootstrapButtons.fire(
+            "Supprimé !",
+            "Le Client Physique a été supprimé.",
+            "success"
+          );
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            "Annulé",
+            "Le Client Physique est en sécurité :)",
+            "error"
+          );
+        }
+      });
   };
 
   const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
@@ -129,7 +163,7 @@ const Coupons = () => {
     });
   }
 
-  document.title = "Client Physique | Toner eCommerce + Admin React Template";
+  document.title = "Client Physique | Radhouani";
 
   const [showCoupons, setShowCoupons] = useState<boolean>(false);
   const [showCouponDetails, setShowCouponsDetails] = useState<any>({});
@@ -245,19 +279,6 @@ const Coupons = () => {
         accessor: (clientPhy: ClientPhysique) => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
-              {/* <li>
-                <Link
-                  to="#couponDetails"
-                  data-bs-toggle="offcanvas"
-                  className="badge badge-soft-dark view-item-btn"
-                  onClick={() => {
-                    setShowCouponsDetails(clientPhy);
-                    setShowCoupons(!showCoupons);
-                  }}
-                >
-                  View
-                </Link>
-              </li> */}
               <li>
                 <Link
                   to="#"
@@ -270,7 +291,7 @@ const Coupons = () => {
               <li>
                 <Link
                   to="/coupons"
-                  onClick={() => deleteHandler(clientPhy.idclient_p)}
+                  onClick={() => AlertDelete(clientPhy.idclient_p)}
                   data-bs-toggle="modal"
                   className="badge badge-soft-danger remove-item-btn"
                 >
@@ -446,6 +467,19 @@ const Coupons = () => {
                   </Col>
                   <Col lg={6}>
                     <div className="mb-3">
+                      <Form.Label htmlFor="cin">C.I.N</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.cin}
+                        onChange={onChange}
+                        id="cin"
+                        placeholder="Taper C.I.N"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={6}>
+                    <div className="mb-3">
                       <Form.Label htmlFor="adresse">Adresse</Form.Label>
                       <Form.Control
                         type="text"
@@ -470,19 +504,7 @@ const Coupons = () => {
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="cin">C.I.N</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.cin}
-                        onChange={onChange}
-                        id="cin"
-                        placeholder="Taper C.I.N"
-                        required
-                      />
-                    </div>
-                  </Col>
+
                   <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="rib">RIB</Form.Label>
@@ -509,48 +531,7 @@ const Coupons = () => {
                       />
                     </div>
                   </Col>
-                  {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="ProductSelect">Product Type</Form.Label>
-                                            <select className="form-select" name="categorySelect" id="productType-field">
-                                                <option value="">Select Product</option>
-                                                <option value="Headphone">Headphone</option>
-                                                <option value="Watch">Watch</option>
-                                                <option value="Furniture">Furniture</option>
-                                                <option value="Clothing">Clothing</option>
-                                                <option value="Footwear">Footwear</option>
-                                                <option value="Lighting">Lighting</option>
-                                                <option value="Beauty & Personal Care">Beauty & Personal Care</option>
-                                                <option value="Books">Books</option>
-                                                <option value="Other Accessories">Other Accessories</option>
-                                            </select>
-                                        </div> */}
-                  {/* </Col> */}
-                  {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="startDate">Start Date</Form.Label>
-                                            {/* <Form.Control type="text" id="startdate-field" data-provider="flatpickr" data-date-format="d M, Y" placeholder="Select date" required/> */}
-                  {/* <Flatpickr
-                                                className="form-control flatpickr-input"
-                                                placeholder='Select date'
-                                                options={{
-                                                    dateFormat: "d M, Y",
-                                                }}
-                                            />
-                                        </div>
-                                    </Col> */}
-                  {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="endDate">END Date</Form.Label>
-                                            <Flatpickr
-                                                className="form-control flatpickr-input"
-                                                placeholder='Select date'
-                                                options={{
-                                                    dateFormat: "d M, Y",
-                                                }}
-                                            />
-                                        </div>
-                                    </Col> */}
+
                   <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="statusSelect">Statut</Form.Label>

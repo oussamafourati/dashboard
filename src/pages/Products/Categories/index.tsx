@@ -14,28 +14,26 @@ import Breadcrumb from "Common/BreadCrumb";
 import {
   useFetchCategoriesQuery,
   useDeleteCategoryMutation,
+  Category,
 } from "features/category/categorySlice";
-import { useFetchSubCategoriesQuery } from "features/subCategory/subCategorySlice";
+import {
+  SubCategory,
+  useFetchSubCategoriesQuery,
+} from "features/subCategory/subCategorySlice";
 import { useCreateCategoryMutation } from "features/category/categorySlice";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-// import { *asYup } from 'yup';
+import Swal from "sweetalert2";
 
 const Categories = () => {
   // Toast Notification
   const notify = () => {
-    toast.success("Le catégorie a été créé avec succès", {
-      position: "top-center",
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Le catégorie a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
     });
   };
-
   // Fetch Category
   const { data = [] } = useFetchCategoriesQuery();
   const [createCategory] = useCreateCategoryMutation();
@@ -101,18 +99,6 @@ const Categories = () => {
       fileReader.readAsDataURL(file);
     });
   }
-
-  // const onSubmit = async(data:any)=>{
-
-  //   try {
-  //     await createCategory(nom, image).unwrap()
-  //     setNom('')
-  //     setImage('')
-
-  //   } catch (error) {
-  //     console.error('failed to save category')
-  //   }
-  // }
 
   document.title = "Categories | Toner eCommerce + Admin React Template";
 
@@ -223,19 +209,6 @@ const Categories = () => {
                           </div>
                         </div>
                       </Col>
-                      {/* <Col xxl={12} lg={6}>
-                        <div className="mb-3">
-                          <label htmlFor="slugInput" className="form-label">
-                            Slug <span className="text-danger">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="slugInput"
-                            placeholder="Enter slug"
-                          />
-                        </div>
-                      </Col> */}
                       <Col xxl={12} lg={6}>
                         <div className="mb-3">
                           <label htmlFor="image" className="form-label d-block">
@@ -282,26 +255,6 @@ const Categories = () => {
                           </div>
                         </div>
                       </Col>
-                      {/* <Col xxl={12} lg={6}>
-                        <div className="mb-3">
-                          <label
-                            htmlFor="descriptionInput"
-                            className="form-label"
-                          >
-                            Description
-                          </label>
-                          <textarea
-                            className="form-control"
-                            id="descriptionInput"
-                            rows={3}
-                            placeholder="Description"
-                            required
-                          ></textarea>
-                          <div className="invalid-feedback">
-                            Please enter a description.
-                          </div>
-                        </div>
-                      </Col> */}
                       <Col xxl={12}>
                         <div className="text-end">
                           <Button variant="success" type="submit">
@@ -327,24 +280,6 @@ const Categories = () => {
                     <i className="ri-search-line search-icon"></i>
                   </div>
                 </Col>
-                {/* <Col xxl={2} lg={6}>
-                  <select
-                    className="form-select"
-                    data-choices
-                    data-choices-search-false
-                    name="choices-single-default"
-                    id="idStatus"
-                  >
-                    <option value="">Status</option>
-                    <option defaultValue="all">All</option>
-                    <option value="Today">Today</option>
-                    <option value="Yesterday">Yesterday</option>
-                    <option value="Last 7 Days">Last 7 Days</option>
-                    <option value="Last 30 Days">Last 30 Days</option>
-                    <option value="This Month">This Month</option>
-                    <option value="Last Month">Last Month</option>
-                  </select>
-                </Col> */}
               </Row>
               <Row id="categories-list">
                 {data.map((category) => (
@@ -352,16 +287,11 @@ const Categories = () => {
                     <Card className="categrory-widgets overflow-hidden">
                       <Card.Body className="p-4">
                         <div className="d-flex align-items-center mb-3">
-                          <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
                           <ul
                             className="flex-shrink-0 list-unstyled hstack gap-1 mb-0"
                             key={category.idcategory}
                           >
-                            {/* <li>
-                              <Link to="#" className="badge badge-soft-info">
-                                Edit
-                              </Link>
-                            </li> */}
+                            <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
                             <li>
                               <Link
                                 to="#"
@@ -376,22 +306,6 @@ const Categories = () => {
                             </li>
                           </ul>
                         </div>
-                        {/* <ul className="list-unstyled vstack gap-2 mb-0">
-                          <li>{category.id_parent}</li>
-                        </ul> */}
-                        {/* <div className="mt-3">
-                          <Link
-                            to="#"
-                            className="fw-medium link-effect"
-                            onClick={() => {
-                              setShow(true);
-                              setInfo(category.nom);
-                            }}
-                          >
-                            Read More{" "}
-                            <i className="ri-arrow-right-line align-bottom ms-1"></i>
-                          </Link>
-                        </div> */}
                         <img
                           src={`data:image/jpeg;base64,${category.image}`}
                           alt=""
@@ -545,7 +459,7 @@ const Categories = () => {
           </Row>
         </div>
       </Offcanvas>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </React.Fragment>
   );
 };

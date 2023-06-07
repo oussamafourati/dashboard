@@ -58,7 +58,7 @@ const PassagerInvoice = () => {
   };
 
   //Query to Fetch All Client Physique
-  const { data = [] } = useFetchClientPhysiquesQuery();
+  const { data = [], isLoading } = useFetchClientPhysiquesQuery();
 
   // Mutation to create a new Client
   const [createClientPhysique] = useAddClientPhysiqueMutation();
@@ -174,6 +174,55 @@ const PassagerInvoice = () => {
               <Card.Body className="border-bottom border-bottom-dashed p-4">
                 <Row>
                   <Col lg={4}>
+                    <div>
+                      <div className="mb-3">
+                        <select
+                          className="form-select"
+                          id="choices-category-input"
+                          name="choices-category-input"
+                          onChange={handleClientPhy}
+                        >
+                          <option value="">Selectionner Client</option>
+                          {clientPhysique.map((clientph) => (
+                            <option
+                              key={clientph.idclient_p}
+                              value={clientph.idclient_p}
+                            >
+                              {clientph.raison_sociale}
+                            </option>
+                          ))}
+                        </select>
+                        {selected.map((s) => {
+                          return (
+                            <div className="mb-2">
+                              <strong>Nom Client: </strong>
+                              <span>{s.raison_sociale}</span>
+                              <div>
+                                <strong>C.I.N: </strong>
+                                <span>{s.cin}</span>
+                              </div>
+                              <div>
+                                <strong>Numéro Télephone: </strong>
+                                <span>{s.tel}</span>
+                              </div>
+                              <div>
+                                <strong>Adresse: </strong>
+                                <span>{s.adresse}</span>
+                              </div>
+                              <div>
+                                <strong>Email: </strong>
+                                <span>{s.mail}</span>
+                              </div>
+
+                              <div className="mb-2 mb-lg-0"></div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col lg={4}></Col>
+                  <Col lg={4}>
                     <div className="profile-user mx-auto mb-3">
                       <input
                         id="profile-img-file-input"
@@ -201,95 +250,6 @@ const PassagerInvoice = () => {
                         </span>
                       </label>
                     </div>
-                    <div>
-                      <div className="mb-3">
-                        <select
-                          className="form-select"
-                          id="choices-category-input"
-                          name="choices-category-input"
-                          onChange={handleClientPhy}
-                        >
-                          <option value="">Selectionner Client</option>
-                          {clientPhysique.map((clientph) => (
-                            <option
-                              key={clientph.idclient_p}
-                              value={clientph.idclient_p}
-                            >
-                              {clientph.raison_sociale}
-                            </option>
-                          ))}
-                        </select>
-                        {selected.map((s) => {
-                          return (
-                            <div className="mb-2">
-                              <Form.Control
-                                type="text"
-                                id="registrationNumber"
-                                value={s.raison_sociale}
-                                placeholder="Nom Client Pro"
-                                required
-                              />
-                              <div className="invalid-feedback">
-                                Please enter a registration no, Ex.,
-                                012345678912
-                              </div>
-                              <div>
-                                <Form.Control
-                                  type="number"
-                                  data-plugin="cleave-phone"
-                                  id="compnayContactno"
-                                  placeholder="Matricule Fiscale"
-                                  value={s.cin}
-                                  required
-                                />
-                                <div className="invalid-feedback">
-                                  Please enter a contact number
-                                </div>
-                              </div>
-                              <div>
-                                <Form.Control
-                                  type="number"
-                                  data-plugin="cleave-phone"
-                                  id="compnayContactno"
-                                  value={s.tel}
-                                  placeholder="Numéro Téléphone"
-                                  required
-                                />
-                                <div className="invalid-feedback">
-                                  Please enter a contact number
-                                </div>
-                              </div>
-                              <div className="mb-2">
-                                <textarea
-                                  className="form-control"
-                                  id="companyAddress"
-                                  value={s.adresse}
-                                  placeholder="Taper votre adresse"
-                                />
-                                <div className="invalid-feedback">Adresse</div>
-                              </div>
-                              <div className="mb-2 mb-lg-0"></div>
-                              <div className="mb-2">
-                                <Form.Control
-                                  type="email"
-                                  id="companyEmail"
-                                  value={s.mail}
-                                  placeholder="Adresse e-mail"
-                                  required
-                                />
-                                <div className="invalid-feedback">
-                                  Please enter a valid email, Ex.,
-                                  example@gamil.com
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={4}></Col>
-                  <Col lg={4}>
                     <div className="mb-2">
                       <span>
                         <strong>Matricule Fiscale:</strong>{" "}

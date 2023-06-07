@@ -11,26 +11,60 @@ import {
   useAddChargeMutation,
   useDeleteChargesMutation,
 } from "features/charge/chargeSlice";
+import Swal from "sweetalert2";
 
 const BrandsTable = () => {
   const notify = () => {
-    toast.success("Le charge a été créé avec succès", {
-      position: "top-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Le Charge a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
     });
   };
   const { data = [] } = useGetAllChargesQuery();
   const [createCharge] = useAddChargeMutation();
   const [deleteCharge] = useDeleteChargesMutation();
 
-  const deleteHandler = async (id: any) => {
-    await deleteCharge(id);
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: false,
+  });
+
+  const AlertDelete = async (id: number) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Êtes-vous sûr?",
+        text: "Vous ne pourrez pas revenir en arrière !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimez-le !",
+        cancelButtonText: "Non, annulez !",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteCharge(id);
+          swalWithBootstrapButtons.fire(
+            "Supprimé !",
+            "Le Charge a été supprimé.",
+            "success"
+          );
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            "Annulé",
+            "Le Charge est en sécurité :)",
+            "error"
+          );
+        }
+      });
   };
 
   const [formData, setFormData] = useState({
@@ -211,35 +245,18 @@ const BrandsTable = () => {
         filterable: true,
         accessor: (charge: Charges) => {
           return (
-            <React.Fragment>
-              <Dropdown>
-                <Dropdown.Toggle
-                  href="#!"
-                  className="btn btn-soft-secondary btn-sm dropdown btn-icon arrow-none"
+            <ul className="hstack gap-2 list-unstyled mb-0">
+              <li>
+                <Link
+                  onClick={() => AlertDelete(charge.idCharges)}
+                  data-bs-toggle="modal"
+                  className="badge badge-soft-danger remove-item-btn"
+                  to="/charges"
                 >
-                  <i className="ri-more-fill align-middle"></i>
-                </Dropdown.Toggle>
-                <Dropdown.Menu as="ul" className="dropdown-menu-end">
-                  {/* <li>
-                    <Dropdown.Item href="#" className="remove-list">
-                      <i className="ri-pencil-fill align-bottom me-2 text-muted" />
-                      Modifier
-                    </Dropdown.Item>
-                  </li> */}
-                  <Dropdown.Divider />
-                  <li>
-                    <Dropdown.Item
-                      onClick={() => deleteHandler(charge.idCharges)}
-                      href="/charges"
-                      className="remove-list"
-                    >
-                      <i className="ri-delete-bin-fill align-bottom me-2 text-muted" />
-                      Supprimer
-                    </Dropdown.Item>
-                  </li>
-                </Dropdown.Menu>
-              </Dropdown>
-            </React.Fragment>
+                  Supprimer
+                </Link>
+              </li>
+            </ul>
           );
         },
       },

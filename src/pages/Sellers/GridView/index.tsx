@@ -9,8 +9,6 @@ import {
   Modal,
   Row,
 } from "react-bootstrap";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
 import Breadcrumb from "Common/BreadCrumb";
 import { sellerGrid } from "Common/data";
 import CountUp from "react-countup";
@@ -21,18 +19,16 @@ import {
   useDeleteFournisseurMutation,
   useFetchFournisseurQuery,
 } from "features/fournisseur/fournisseurSlice";
+import Swal from "sweetalert2";
 
 const SellersGridView = () => {
   const notify = () => {
-    toast.success("Le fournisseur a été créé avec succès", {
-      position: "top-center",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Le Fournisseur a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
     });
   };
   const { data = [] } = useFetchFournisseurQuery();
@@ -42,8 +38,44 @@ const SellersGridView = () => {
   const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
   const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
 
-  const deleteHandler = async (id: any) => {
-    await deleteFournisseur(id);
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: false,
+  });
+
+  const AlertDelete = async (id: number) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Êtes-vous sûr?",
+        text: "Vous ne pourrez pas revenir en arrière !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimez-le !",
+        cancelButtonText: "Non, annulez !",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteFournisseur(id);
+          swalWithBootstrapButtons.fire(
+            "Supprimé !",
+            "Le Fournisseur a été supprimé.",
+            "success"
+          );
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            "Annulé",
+            "Le Fournisseur est en sécurité :)",
+            "error"
+          );
+        }
+      });
   };
 
   const [formData, setFormData] = useState({
@@ -694,23 +726,6 @@ const SellersGridView = () => {
                 Ajouter Fournisseur
               </Button>
             </Col>
-            {/* <Col xxl={2} sm={6}>
-              <select
-                className="form-select mt-3 mt-sm-0"
-                data-choices
-                data-choices-search-false
-                name="choices-single-default"
-                id="idStatus"
-              >
-                <option value="all">All</option>
-                <option value="Today">Today</option>
-                <option value="Yesterday">Yesterday</option>
-                <option value="Last 7 Days">Last 7 Days</option>
-                <option value="Last 30 Days">Last 30 Days</option>
-                <option defaultValue="This Month">This Month</option>
-                <option value="Last Month">Last Month</option>
-              </select>
-            </Col> */}
           </Row>
 
           <Modal
@@ -785,18 +800,36 @@ const SellersGridView = () => {
                       required
                     />
                   </div>
-                  <div className="mb-3">
-                    <Form.Label htmlFor="adresse">Adresse</Form.Label>
-                    <Form.Control
-                      type="text"
-                      id="adresse"
-                      placeholder="Entrer adresse"
-                      required
-                      value={formData.adresse}
-                      onChange={onChange}
-                    />
-                  </div>
+
                   <Row>
+                    <Col md={6}>
+                      <div className="mb-3">
+                        <Form.Label htmlFor="matricule_fiscale">
+                          Matricule Fiscale
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          id="matricule_fiscale"
+                          placeholder="Entrer Matricule Fiscale"
+                          required
+                          onChange={onChange}
+                          value={formData.matricule_fiscale}
+                        />
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      <div className="mb-3">
+                        <Form.Label htmlFor="adresse">Adresse</Form.Label>
+                        <Form.Control
+                          type="text"
+                          id="adresse"
+                          placeholder="Entrer Adresse"
+                          required
+                          onChange={onChange}
+                          value={formData.adresse}
+                        />
+                      </div>
+                    </Col>
                     <Col md={6}>
                       <div className="mb-3">
                         <Form.Label htmlFor="tel">Téléphone</Form.Label>
@@ -841,21 +874,7 @@ const SellersGridView = () => {
                         </select>
                       </div>
                     </Col>
-                    <Col md={6}>
-                      <div className="mb-3">
-                        <Form.Label htmlFor="matricule_fiscale">
-                          Matricule Fiscale
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          id="matricule_fiscale"
-                          placeholder="Entrer Matricule Fiscale"
-                          required
-                          onChange={onChange}
-                          value={formData.matricule_fiscale}
-                        />
-                      </div>
-                    </Col>
+
                     <Col md={6}>
                       <div className="mb-3">
                         <Form.Label htmlFor="rib">R.I.B</Form.Label>
@@ -885,43 +904,45 @@ const SellersGridView = () => {
                         </select>
                       </div>
                     </Col>
-                    <div className="text-center mb-3">
-                      <div className="position-relative d-inline-block">
-                        <div className="position-absolute top-100 start-100 translate-middle">
-                          <label
-                            htmlFor="piecejointes"
-                            className="mb-0"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="Select company logo"
-                          >
-                            <span className="avatar-xs d-inline-block">
-                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                                <i className="ri-image-fill"></i>
+                    <Col md={6}>
+                      <div className="text-center mb-3">
+                        <div className="position-relative d-inline-block">
+                          <div className="position-absolute top-100 start-100 translate-middle">
+                            <label
+                              htmlFor="piecejointes"
+                              className="mb-0"
+                              data-bs-toggle="tooltip"
+                              data-bs-placement="right"
+                              title="Select company logo"
+                            >
+                              <span className="avatar-xs d-inline-block">
+                                <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
+                                  <i className="ri-image-fill"></i>
+                                </span>
                               </span>
-                            </span>
-                          </label>
-                          <input
-                            className="form-control d-none"
-                            type="file"
-                            name="piecejointes"
-                            id="piecejointes"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(e)}
-                          />
-                        </div>
-                        <div className="avatar-lg">
-                          <div className="avatar-title bg-light rounded-3">
-                            <img
-                              src={`data:image/jpeg;base64, ${formData.piecejointes}`}
-                              alt={formData.raison_sociale}
-                              id="companyPJ-img"
-                              className="avatar-md h-auto rounded-3 object-fit-cover"
+                            </label>
+                            <input
+                              className="form-control d-none"
+                              type="file"
+                              name="piecejointes"
+                              id="piecejointes"
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(e)}
                             />
+                          </div>
+                          <div className="avatar-lg">
+                            <div className="avatar-title bg-light rounded-3">
+                              <img
+                                src={`data:image/jpeg;base64, ${formData.piecejointes}`}
+                                alt={formData.raison_sociale}
+                                id="companyPJ-img"
+                                className="avatar-md h-auto rounded-3 object-fit-cover"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Col>
                   </Row>
                 </div>
                 <div className="hstack gap-2 justify-content-end">
@@ -966,13 +987,13 @@ const SellersGridView = () => {
                       <Link to="/seller-overview">
                         <h5 className="mb-1">{fournisseur.raison_sociale}</h5>
                       </Link>
-                      {fournisseur.type === 0 ? (
+                      {fournisseur.etat === 0 ? (
                         <span className="badge badge-soft-danger text-uppercase">
-                          inactif
+                          Inactif
                         </span>
                       ) : (
                         <span className="badge badge-soft-success text-uppercase">
-                          actif
+                          Actif
                         </span>
                       )}
                       <p className="text-muted fs-16 mb-4">
@@ -1013,7 +1034,7 @@ const SellersGridView = () => {
                             {" "}
                             <Dropdown.Item
                               onClick={() =>
-                                deleteHandler(fournisseur.idfournisseur)
+                                AlertDelete(fournisseur.idfournisseur)
                               }
                               className="remove-list"
                             >
@@ -1107,7 +1128,6 @@ const SellersGridView = () => {
             </Row>
           )}
         </Container>
-        <ToastContainer />
       </div>
     </React.Fragment>
   );

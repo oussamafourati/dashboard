@@ -23,7 +23,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useFetchFournisseurQuery } from "../../../features/fournisseur/fournisseurSlice";
 import Swal from "sweetalert2";
 
-const Shipments = () => {
+const AddArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
   const notify = () => {
     Swal.fire({
@@ -360,7 +360,7 @@ const Shipments = () => {
 
           <Modal
             className="fade zoomIn"
-            size="xl"
+            size="lg"
             show={modal_AddShippingModals}
             onHide={() => {
               tog_AddShippingModals();
@@ -484,4 +484,4 @@ const Shipments = () => {
   );
 };
 
-export default Shipments;
+export default AddArrivageProduit;
