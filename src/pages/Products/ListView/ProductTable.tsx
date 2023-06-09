@@ -187,38 +187,13 @@ const ProductTable = () => {
       //   Filter: true,
       // },
       {
-        Header: "Prix Achat HT",
-        accessor: "prixAchatHt",
+        Header: "marque",
+        accessor: "marque",
         Filter: false,
       },
       {
-        Header: "Prix Achat TTC",
-        accessor: "prixAchatTtc",
-        Filter: false,
-      },
-      {
-        Header: "Prix Vente",
-        accessor: "prixVente",
-        Filter: false,
-      },
-      {
-        Header: "Benifice",
-        accessor: "Benifice",
-        Filter: false,
-      },
-      {
-        Header: "Pourcentage Benifice",
-        accessor: "PourcentageBenifice",
-        Filter: false,
-      },
-      {
-        Header: "Prix Remise",
-        accessor: "remise",
-        Filter: false,
-      },
-      {
-        Header: "Pourcentage Remise",
-        accessor: "PourcentageRemise",
+        Header: "remarqueProduit",
+        accessor: "remarqueProduit",
         Filter: false,
       },
       {

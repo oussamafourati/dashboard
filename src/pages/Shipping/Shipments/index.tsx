@@ -19,7 +19,6 @@ import {
   useDeleteArrivageMutation,
   Arrivage,
 } from "features/arrivage/arrivageSlice";
-import { ToastContainer, toast } from "react-toastify";
 import { useFetchFournisseurQuery } from "../../../features/fournisseur/fournisseurSlice";
 import Swal from "sweetalert2";
 import AddArrivageProduit from "../CreateArrivageProduit";
@@ -36,8 +35,12 @@ const Shipments = () => {
     });
   };
 
+  // All Arrivage
   const { data = [] } = useGetAllArrivagesQuery();
+
+  //All Fournisseur
   const { data: allfournisseur = [] } = useFetchFournisseurQuery();
+
   const [deleteArrivage] = useDeleteArrivageMutation();
   const [addArrivage] = useAddArrivageMutation();
 
@@ -215,7 +218,6 @@ const Shipments = () => {
                   </div>
                 </Col>
                 <Col xxl={3} lg={6}>
-                  {/* <input type="text" className="form-control" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" id="demo-datepicker" placeholder="Select date" /> */}
                   <Flatpickr
                     className="form-control flatpickr-input"
                     placeholder="Selectionner Date"
@@ -232,7 +234,7 @@ const Shipments = () => {
                 <TableContainer
                   columns={columns || []}
                   data={data || []}
-                  isGlobalFilter={false}
+                  isGlobalFilter={true}
                   iscustomPageSize={false}
                   isBordered={false}
                   customPageSize={10}
@@ -379,7 +381,6 @@ const Shipments = () => {
           </Modal>
         </Container>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

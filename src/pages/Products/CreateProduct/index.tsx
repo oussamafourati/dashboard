@@ -41,17 +41,10 @@ const CreateProduct = () => {
     nomProduit: "",
     imageProduit: "",
     marque: "",
-    prixAchatHt: 0,
-    prixAchatTtc: 0,
-    prixVente: 1234,
-    remise: 15,
+
     remarqueProduit: "",
     fournisseurID: 17,
     categoryID: 18,
-    PourcentageBenifice: 15,
-    Benifice: 150,
-    PrixRemise: 126,
-    PourcentageRemise: 20,
   };
 
   const [formData, setFormData] = useState(initialValue);
@@ -59,14 +52,6 @@ const CreateProduct = () => {
     nomProduit,
     imageProduit,
     marque,
-    prixAchatHt,
-    prixAchatTtc,
-    prixVente,
-    remise,
-    PourcentageBenifice,
-    Benifice,
-    PrixRemise,
-    PourcentageRemise,
     remarqueProduit,
     fournisseurID,
     categoryID,
@@ -229,223 +214,7 @@ const CreateProduct = () => {
                     </Row>
                   </Card.Body>
                 </Card>
-                <Card>
-                  <Card.Header>
-                    <div className="d-flex">
-                      <div className="flex-shrink-0 me-3"></div>
-                      <div className="flex-grow-1">
-                        <h5 className="card-title mb-1">Prix d'Achat</h5>
-                      </div>
-                    </div>
-                  </Card.Header>
-                  <Card.Body>
-                    <Row>
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="prixAchatHt">
-                            Prix d'Achat HT
-                          </Form.Label>
-                          <div className="input-group has-validation mb-3">
-                            <Form.Control
-                              type="text"
-                              value={formData.prixAchatHt}
-                              onChange={onChange}
-                              id="prixAchatHt"
-                              placeholder="Taper prix"
-                              aria-label="Price"
-                              aria-describedby="product-price-addon"
-                              required
-                            />
-                            <div className="invalid-feedback">
-                              Please enter a product price.
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg={2} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="tva">TVA</Form.Label>
-                          <div className="input-group has-validation mb-3">
-                            <Form.Control
-                              type="text"
-                              value={"19%"}
-                              // onChange={onChange}
-                              // defaultValue="19"
-                              id="tva"
-                              placeholder="Taper prix"
-                              aria-label="Price"
-                              aria-describedby="product-price-addon"
-                              required
-                            />
-                            <div className="invalid-feedback">
-                              Please enter a product price.
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
 
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="prixAchatTtc">
-                            Prix d'Achat TTC
-                          </Form.Label>
-                          <Form.Control
-                            type="number"
-                            id="prixAchatTtc"
-                            placeholder="Prix Achat TTC"
-                            required
-                            value={prixAchatTtc}
-                            // onChange={onChange}
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a product stocks.
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                  <Card.Header>
-                    <div className="d-flex">
-                      <div className="flex-shrink-0 me-3"></div>
-                      <div className="flex-grow-1">
-                        <h5 className="card-title mb-1">
-                          Prix Vente et Bénifice
-                        </h5>
-                      </div>
-                    </div>
-                  </Card.Header>
-                  <Card.Body>
-                    <Row>
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="prixVente">
-                            Prix de Vente
-                          </Form.Label>
-                          <Form.Control
-                            type="text"
-                            id="prixVente"
-                            placeholder=" Taper Prix de Vente"
-                            required
-                            value={formData.prixVente}
-                            onChange={onChange}
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a product orders.
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="Benifice">Benifice</Form.Label>
-                          <div className="input-group has-validation mb-3">
-                            <Form.Control
-                              type="text"
-                              value={formData.Benifice}
-                              readOnly={true}
-                              id="Benifice"
-                              placeholder="Taper Benifice"
-                              aria-label="discount"
-                              aria-describedby="product-discount-addon"
-                              required
-                            />
-                            <div className="invalid-feedback">
-                              Please enter a product discount.
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="PourcentageBenifice">
-                            Benifice en %
-                          </Form.Label>
-                          <div className="input-group has-validation mb-3">
-                            <span
-                              className="input-group-text"
-                              id="product-discount-addon"
-                            >
-                              %
-                            </span>
-                            <Form.Control
-                              type="text"
-                              value={formData.PourcentageBenifice}
-                              id="PourcentageBenifice"
-                              placeholder="Taper Remise"
-                              aria-label="discount"
-                              aria-describedby="product-discount-addon"
-                              readOnly={true}
-                              required
-                            />
-                            <div className="invalid-feedback">
-                              Please enter a product discount.
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                  <Card.Header>
-                    <div className="d-flex">
-                      <div className="flex-shrink-0 me-3"></div>
-                      <div className="flex-grow-1">
-                        <h5 className="card-title mb-1">Remise</h5>
-                      </div>
-                    </div>
-                  </Card.Header>
-                  <Card.Body>
-                    <Row>
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="remise">
-                            Prix après Remise
-                          </Form.Label>
-                          <div className="input-group has-validation mb-3">
-                            <Form.Control
-                              type="text"
-                              value={formData.remise}
-                              onChange={onChange}
-                              id="remise"
-                              placeholder="Taper Remise"
-                              aria-label="discount"
-                              aria-describedby="product-discount-addon"
-                              required
-                            />
-                            <div className="invalid-feedback">
-                              Please enter a product discount.
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="PourcentageRemise">
-                            Remise Max en %
-                          </Form.Label>
-                          <div className="input-group has-validation mb-3">
-                            <span
-                              className="input-group-text"
-                              id="product-discount-addon"
-                            >
-                              %
-                            </span>
-                            <Form.Control
-                              type="text"
-                              value={formData.PourcentageRemise}
-                              id="PourcentageRemise"
-                              placeholder="Taper Pourcentage Remise"
-                              aria-label="discount"
-                              aria-describedby="product-discount-addon"
-                              required
-                            />
-                            <div className="invalid-feedback">
-                              Please enter a product discount.
-                            </div>
-                          </div>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                </Card>
                 <Card>
                   <Card.Header>
                     <div className="d-flex">

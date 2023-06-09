@@ -5,14 +5,6 @@ export interface Produit {
   nomProduit: string;
   imageProduit: string;
   marque: string;
-  prixAchatHt: number;
-  prixAchatTtc: number;
-  prixVente: number;
-  remise: number;
-  PourcentageBenifice: number;
-  Benifice: number;
-  PrixRemise: number;
-  PourcentageRemise: number;
   remarqueProduit: string;
   nom?: string;
 }

@@ -7,7 +7,14 @@ export interface ArrivageProduit {
   quantite: number;
   piecejointes: string;
   nomProduit: string;
+  prixAchatHt: number;
   prixAchatTtc: number;
+  prixVente: number;
+  remise: number;
+  PourcentageBenifice: number;
+  Benifice: number;
+  PrixRemise: number;
+  PourcentageRemise: number;
 }
 
 export const arrivageProduitSlice = createApi({
