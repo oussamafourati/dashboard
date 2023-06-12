@@ -12,8 +12,6 @@ import {
   useCreateSubCategoryMutation,
   useFetchSubCategoriesQuery,
 } from "features/subCategory/subCategorySlice";
-import axios from "axios";
-import { number } from "yup";
 
 const SubCategories = () => {
   const { data = [] } = useFetchCategoriesQuery();
@@ -49,6 +47,7 @@ const SubCategories = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
+      parentID: parseInt(categoryStateID),
       [e.target.id]: e.target.value,
     }));
   };
@@ -59,13 +58,37 @@ const SubCategories = () => {
     notify();
   };
 
-  // const [selectedValue, setSelectedValue] = useState<string>("");
+  const [categoryState, setCategoryState] = useState<Category[]>([]);
+  const [selected, setSelected] = useState<Category[]>([]);
+  const [categoryStateID, setCategoryStateID] = useState("");
 
-  // const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   setSelectedValue(event.target.value);
-  // };
+  useEffect(() => {
+    const getCategory = async () => {
+      const reqdata = await fetch("http://localhost:8000/category/all");
+      const resdata = await reqdata.json();
+      console.log(resdata);
+      setCategoryState(resdata);
+    };
+    getCategory();
+  }, []);
 
-  document.title = "Sous-Catégorie | Toner eCommerce + Admin React Template";
+  const handleCategory = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const categoryId = e.target.value;
+    if (categoryId !== "") {
+      const reqstatedata = await fetch(
+        `http://localhost:8000/category/one/${categoryId}`
+      );
+      const resstatedata = await reqstatedata.json();
+      setSelected(await resstatedata);
+      console.log(reqstatedata);
+      setCategoryStateID(categoryId);
+    } else {
+      setSelected([]);
+    }
+    console.log(categoryId);
+  };
+
+  document.title = "Sous-Catégorie | Radhouani";
 
   return (
     <React.Fragment>
@@ -127,8 +150,17 @@ const SubCategories = () => {
                             className="form-select"
                             name="categorySelect"
                             id="categorySelect"
+                            onChange={handleCategory}
                           >
-                            <option value="">Choose an option</option>
+                            <option value="">Choisir un Catégorie</option>
+                            {data.map((category) => (
+                              <option
+                                key={category.idcategory}
+                                value={category.idcategory}
+                              >
+                                {category.nom}
+                              </option>
+                            ))}
                           </select>
                           <div className="error-msg mt-n3">
                             Please select a category.

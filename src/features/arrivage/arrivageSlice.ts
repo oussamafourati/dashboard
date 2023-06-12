@@ -6,7 +6,7 @@ export interface Arrivage {
   montantTotal: number;
   dateArrivage: string;
   raison_sociale: string;
-  fournisseurID:number
+  fournisseurID?: number;
 }
 
 export const arrivageSlice = createApi({

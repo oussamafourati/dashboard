@@ -15,6 +15,8 @@ export interface ArrivageProduit {
   Benifice: number;
   PrixRemise: number;
   PourcentageRemise: number;
+  MontantTotalProduit: number;
+  MontantTotal: number;
 }
 
 export const arrivageProduitSlice = createApi({

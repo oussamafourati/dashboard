@@ -31,12 +31,6 @@ const SellersGridView = () => {
       timer: 2500,
     });
   };
-  const { data = [] } = useFetchFournisseurQuery();
-  const [createFournisseur] = useAddFournisseurMutation();
-  const [deleteFournisseur] = useDeleteFournisseurMutation();
-
-  const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
-  const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
 
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -78,6 +72,26 @@ const SellersGridView = () => {
       });
   };
 
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  // This function is triggered when the select changes
+  const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedOption(value);
+  };
+  const [selectedEtat, setSelectedEtat] = useState<string>("");
+  // This function is triggered when the select changes
+  const selectChangeEtat = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedEtat(value);
+  };
+
+  const { data = [] } = useFetchFournisseurQuery();
+  const [createFournisseur] = useAddFournisseurMutation();
+  const [deleteFournisseur] = useDeleteFournisseurMutation();
+
+  const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
+  const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
+
   const [formData, setFormData] = useState({
     idfournisseur: 99,
     raison_sociale: "",
@@ -108,6 +122,8 @@ const SellersGridView = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
+      type: parseInt(selectedOption),
+      etat: parseInt(selectedEtat),
       [e.target.id]: e.target.value,
     }));
   };
@@ -860,18 +876,20 @@ const SellersGridView = () => {
                       <div className="mb-3">
                         <Form.Label htmlFor="type">Type Fournisseur</Form.Label>
                         <select
+                          onChange={selectChange}
                           className="form-select"
                           data-choices
                           data-choices-search-false
-                          id="choices-payment-status"
+                          id="type"
                           required
                         >
                           <option value="">
-                            Selectionner Type de Fournisseur
+                            Selectionner type de fournisseur
                           </option>
-                          <option value="Morale">Morale</option>
-                          <option value="Physique">Physique</option>
+                          <option value={0}>Morale</option>
+                          <option value={1}>Physique</option>
                         </select>
+                        {selectedOption && <h2>{selectedOption}</h2>}
                       </div>
                     </Col>
 
@@ -893,15 +911,17 @@ const SellersGridView = () => {
                         <Form.Label htmlFor="etat">Etat Fournisseur</Form.Label>
                         <select
                           className="form-select"
+                          onChange={selectChangeEtat}
                           data-choices
                           data-choices-search-false
-                          id="choices-payment-status"
+                          id="etat"
                           required
                         >
                           <option value="">Selectionner Etat</option>
                           <option value="1">Actif</option>
                           <option value="0">Inactif</option>
                         </select>
+                        {selectedEtat && <h2>{selectedEtat}</h2>}
                       </div>
                     </Col>
                     <Col md={6}>
@@ -1015,9 +1035,6 @@ const SellersGridView = () => {
                       </div>
                     </Row>
                     <div className="mt-4 hstack gap-2">
-                      {/* <Button variant="soft-secondary" className="w-100">
-                        Voir détails
-                      </Button> */}
                       <Dropdown className="flex-shrink-0">
                         <Dropdown.Toggle className="btn btn-soft-info btn-icon arrow-none">
                           <i className="ph-dots-three-outline-vertical-fill"></i>

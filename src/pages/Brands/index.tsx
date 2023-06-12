@@ -8,6 +8,7 @@ import { useGetAllChargesQuery } from "features/charge/chargeSlice";
 const InvoiceList = () => {
   const { data = [], isFetching } = useGetAllChargesQuery();
   document.title = "Charges | Toner eCommerce + Admin React Template";
+  const chargeTotal = data.reduce((sum, i) => (sum += i.montantCharges), 0);
 
   return (
     <React.Fragment>
@@ -164,7 +165,7 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp end={559.25} decimals={2} />
+                        <CountUp end={chargeTotal} decimals={2} />
                       </h4>
                     </div>
                     <div className="avatar-sm flex-shrink-0">

@@ -23,9 +23,45 @@ import {
   useAddClientPhysiqueMutation,
   useFetchClientPhysiquesQuery,
 } from "features/clientPhysique/clientPhysiqueSlice";
+import { Produit, useFetchProduitsQuery } from "features/produit/productSlice";
 
 const PassagerInvoice = () => {
   document.title = "Créer Facture | Radhouani";
+
+  const [inputFields, setInputFields] = useState<string[]>([""]);
+
+  const handleAddFields = () => {
+    const newInputFields = [...inputFields];
+    newInputFields.push("");
+    setInputFields(newInputFields);
+  };
+
+  const handleRemoveFields = (index: number) => {
+    const newInputFields = [...inputFields];
+    newInputFields.splice(index, 1);
+    setInputFields(newInputFields);
+  };
+
+  const [value, setValue] = useState<string>("");
+  const handleChange = (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newInputFields = [...inputFields];
+    newInputFields[index] = event.target.value;
+    setInputFields(newInputFields);
+    setValue(event.target.value);
+  };
+
+  // const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setValue(e.target.value);
+  // };
+
+  const onSearch = (searchValue: string) => {
+    setValue(searchValue);
+  };
+
+  const { data: allProduit = [] } = useFetchProduitsQuery();
 
   const [clientPhysique, setClientPhysique] = useState<ClientPhysique[]>([]);
   const [selected, setSelected] = useState<ClientPhysique[]>([]);
@@ -302,6 +338,7 @@ const PassagerInvoice = () => {
                       <Form.Label htmlFor="date-field">Date</Form.Label>
                       <Flatpickr
                         className="form-control flatpickr-input"
+                        id="date-field"
                         placeholder="Selectionner Date"
                         options={{
                           dateFormat: "d M, Y",
@@ -331,7 +368,11 @@ const PassagerInvoice = () => {
                       <Form.Label htmlFor="totalamountInput">
                         Montant Total
                       </Form.Label>
-                      <span>1780</span>
+                      <Form.Control
+                        type="number"
+                        id="totalamountInput"
+                        placeholder="0.00"
+                      />
                     </div>
                   </Col>
                 </Row>
@@ -367,66 +408,105 @@ const PassagerInvoice = () => {
                         ></th>
                       </tr>
                     </thead>
-                    <tbody id="newlink">
-                      <tr id="1" className="product">
-                        <th scope="row" className="product-id">
-                          1
-                        </th>
-                        <td className="text-start">
-                          <div className="mb-2">
+                    {inputFields.map((inputField, index) => (
+                      <tbody id="newlink">
+                        <tr id="1" className="product" key={index}>
+                          <th scope="row" className="product-id">
+                            {" "}
+                            {index + 1}
+                          </th>
+                          <td className="text-start">
+                            <div className="search-box mb-3 mb-lg-0">
+                              <label
+                                htmlFor="search-bar-0"
+                                className="search-label"
+                              >
+                                <input
+                                  value={inputField}
+                                  onChange={(e) => handleChange(index, e)}
+                                  id="search-bar-0"
+                                  type="text"
+                                  className="form-control"
+                                />
+                              </label>
+                              <i
+                                className="bx bx-search-alt search-icon"
+                                onClick={() => onSearch(value)}
+                              ></i>
+                              {allProduit
+                                .filter((item) => {
+                                  const searchTerm = value.toLowerCase();
+                                  const nameProduct =
+                                    item.nomProduit.toLowerCase();
+                                  return (
+                                    searchTerm &&
+                                    nameProduct.startsWith(searchTerm) &&
+                                    nameProduct !== searchTerm
+                                  );
+                                })
+                                .map((item) => (
+                                  <div
+                                    onClick={() => onSearch(item.nomProduit)}
+                                    key={item.idproduit}
+                                  >
+                                    {item.nomProduit}
+                                  </div>
+                                ))}
+                            </div>
+                            <div className="search-box mb-3 mb-lg-0">
+                              <div className="invalid-feedback">
+                                Please enter a product name
+                              </div>
+                            </div>
+                          </td>
+                          <td>
                             <Form.Control
-                              type="text"
-                              id="productName-1"
-                              placeholder="Ref. Art"
+                              type="number"
+                              className="product-price"
+                              id="productRate-1"
+                              step="0.01"
+                              placeholder="0.00"
                               required
                             />
                             <div className="invalid-feedback">
-                              Please enter a product name
+                              Please enter a rate
                             </div>
-                          </div>
-                        </td>
-                        <td>
-                          <Form.Control
-                            type="number"
-                            className="product-price"
-                            id="productRate-1"
-                            step="0.01"
-                            placeholder="0.00"
-                            required
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a rate
-                          </div>
-                        </td>
-                        <td>
-                          <div className="input-step">
-                            <Button className="minus">–</Button>
-                            <input
-                              type="number"
-                              className="product-quantity"
-                              id="product-qty-1"
-                              defaultValue="0"
-                            />
-                            <Button className="plus">+</Button>
-                          </div>
-                        </td>
-                        <td className="text-end">
-                          <div>
-                            <Form.Control
-                              type="number"
-                              className="product-line-price"
-                              id="productPrice-1"
-                              placeholder="$0.00"
-                            />
-                          </div>
-                        </td>
-                        <td className="product-removal">
-                          <Link to="#" className="btn btn-danger">
-                            Supprimer
-                          </Link>
-                        </td>
-                      </tr>
-                    </tbody>
+                          </td>
+                          <td>
+                            <div className="input-step">
+                              <Button className="minus">–</Button>
+                              <input
+                                type="number"
+                                className="product-quantity"
+                                id="product-qty-1"
+                                defaultValue="0"
+                              />
+                              <Button className="plus">+</Button>
+                            </div>
+                          </td>
+                          <td className="text-end">
+                            <div>
+                              <Form.Control
+                                type="number"
+                                className="product-line-price"
+                                id="productPrice-1"
+                                placeholder="0.00"
+                              />
+                            </div>
+                          </td>
+                          <td className="product-removal">
+                            <Link
+                              onClick={() => handleRemoveFields(index)}
+                              to="#"
+                              className="btn btn-danger"
+                            >
+                              Supprimer
+                            </Link>
+                          </td>
+                        </tr>
+                      </tbody>
+                    ))}
+
                     <tbody>
                       <tr id="newForm" style={{ display: "none" }}>
                         <td className="d-none">
@@ -439,8 +519,9 @@ const PassagerInvoice = () => {
                             to="#"
                             id="add-item"
                             className="btn btn-soft-secondary fw-medium"
+                            onClick={handleAddFields}
                           >
-                            <i className="ri-add-fill me-1 align-bottom"></i>{" "}
+                            <i className="ri-add-fill me-1 align-bottom"></i>
                             Ajouter élement
                           </Link>
                         </td>
@@ -518,12 +599,6 @@ const PassagerInvoice = () => {
                         <option value="Visa">Visa</option>
                       </select>
                     </div>
-                    {/* <div className="mb-2">
-                                                    <Form.Control type="text" id="cardholderName" placeholder="Card Holder Name" />
-                                                </div> */}
-                    {/* <div className="mb-2">
-                                                    <Form.Control type="number" id="cardNumber" placeholder="xxxx xxxx xxxx xxxx" />
-                                                </div> */}
                     <div>
                       <Form.Control
                         type="number"
@@ -556,7 +631,6 @@ const PassagerInvoice = () => {
                     <i className="ri-download-2-line align-bottom me-1"></i>{" "}
                     Telecharger Facture
                   </Link>
-                  {/* <Link to="#" className="btn btn-danger"><i className="ri-send-plane-fill align-bottom me-1"></i> Send Invoice</Link> */}
                 </div>
               </Card.Body>
             </Form>

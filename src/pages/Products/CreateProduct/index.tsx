@@ -41,7 +41,6 @@ const CreateProduct = () => {
     nomProduit: "",
     imageProduit: "",
     marque: "",
-
     remarqueProduit: "",
     fournisseurID: 17,
     categoryID: 18,

@@ -29,7 +29,7 @@ const SubCategoriesTable = () => {
       },
       {
         Header: "Category",
-        accessor: "parentID",
+        accessor: "nom",
         Filter: true,
       },
       {
@@ -39,6 +39,7 @@ const SubCategoriesTable = () => {
       },
       {
         Header: "Action",
+        Filter: true,
         accessor: (subCat: SubCategory) => {
           return (
             <span>

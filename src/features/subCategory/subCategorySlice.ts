@@ -5,6 +5,7 @@ export interface SubCategory {
   title: string;
   subDescription: string;
   parentID: number;
+  nom?: string;
 }
 
 export const subCategorySlice = createApi({
