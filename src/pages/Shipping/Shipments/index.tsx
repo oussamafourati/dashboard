@@ -207,7 +207,7 @@ const Shipments = () => {
             </Card.Header>
             <Card.Header className="border-bottom-dashed">
               <Row className="g-3">
-                <Col xxl={3} lg={6}>
+                {/* <Col xxl={3} lg={6}>
                   <div className="search-box">
                     <input
                       type="text"
@@ -216,7 +216,7 @@ const Shipments = () => {
                     />
                     <i className="ri-search-line search-icon"></i>
                   </div>
-                </Col>
+                </Col> */}
                 <Col xxl={3} lg={6}>
                   <Flatpickr
                     className="form-control flatpickr-input"
@@ -241,7 +241,7 @@ const Shipments = () => {
                   className="custom-header-css table align-middle table-nowrap"
                   tableClassName="table-centered align-middle table-nowrap mb-0"
                   theadClassName="text-muted table-light"
-                  SearchPlaceholder="Search Products..."
+                  SearchPlaceholder="Rechercher Arrivage..."
                 />
               </div>
               <div className="noresult" style={{ display: "none" }}>

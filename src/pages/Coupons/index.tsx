@@ -201,6 +201,12 @@ const Coupons = () => {
         filterable: true,
       },
       {
+        Header: "C.I.N ",
+        accessor: "cin",
+        disableFilters: true,
+        filterable: true,
+      },
+      {
         Header: "Adresse",
         accessor: "adresse",
         disableFilters: true,
@@ -215,12 +221,6 @@ const Coupons = () => {
       {
         Header: "E-mail",
         accessor: "mail",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "C.I.N ",
-        accessor: "cin",
         disableFilters: true,
         filterable: true,
       },
@@ -324,7 +324,7 @@ const Coupons = () => {
                   <Card.Body>
                     <Row className="align-items-center">
                       <Col xxl={3} md={5}>
-                        <div className="search-box mb-3 mb-md-0">
+                        {/* <div className="search-box mb-3 mb-md-0">
                           <input
                             type="text"
                             className="form-control search"
@@ -332,7 +332,7 @@ const Coupons = () => {
                             placeholder="Rechercher client par nom, date..."
                           />
                           <i className="ri-search-line search-icon"></i>
-                        </div>
+                        </div> */}
                       </Col>
                       <Col className="col-md-auto ms-auto">
                         <Button
@@ -358,14 +358,14 @@ const Coupons = () => {
                       <TableContainer
                         columns={columns || []}
                         data={data || []}
-                        // isGlobalFilter={false}
+                        isGlobalFilter={true}
                         iscustomPageSize={false}
                         isBordered={false}
                         customPageSize={10}
                         className="custom-header-css table align-middle table-nowrap"
                         tableClassName="table-centered align-middle table-nowrap mb-0"
                         theadClassName="text-muted table-light"
-                        SearchPlaceholder="Search Products..."
+                        SearchPlaceholder="Rechercher Client Physique..."
                       />
                       <div className="noresult" style={{ display: "none" }}>
                         <div className="text-center">
@@ -538,7 +538,7 @@ const Coupons = () => {
                       <select
                         className="form-select"
                         name="choices-single-default"
-                        id="status-Field"
+                        id="statusSelect"
                       >
                         <option value="">Status</option>
                         <option value="Active">Actif</option>

@@ -889,7 +889,6 @@ const SellersGridView = () => {
                           <option value={0}>Morale</option>
                           <option value={1}>Physique</option>
                         </select>
-                        {selectedOption && <h2>{selectedOption}</h2>}
                       </div>
                     </Col>
 
@@ -921,7 +920,6 @@ const SellersGridView = () => {
                           <option value="1">Actif</option>
                           <option value="0">Inactif</option>
                         </select>
-                        {selectedEtat && <h2>{selectedEtat}</h2>}
                       </div>
                     </Col>
                     <Col md={6}>

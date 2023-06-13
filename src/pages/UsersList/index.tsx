@@ -12,8 +12,6 @@ import {
 import Breadcrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
 import { Link } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
 
 import offerbanner from "../../assets/images/ecommerce/offer-banner.jpg";
 import Swal from "sweetalert2";
@@ -66,10 +64,6 @@ const UserList = () => {
       });
   };
 
-  const { data = [] } = useFetchClientMoralesQuery();
-  const [createClientMorale] = useAddClientMoraleMutation();
-  const [deleteClientMorale] = useDeleteClientMoraleMutation();
-
   const notify = () => {
     Swal.fire({
       icon: "success",
@@ -77,6 +71,19 @@ const UserList = () => {
       text: "Le Client Morale a été créer avec succès",
     });
   };
+
+  const [selectedEtatClient, setSelectedEtatClient] = useState<string>("");
+  // This function is triggered when the select changes
+  const selectChangeEtatClient = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = event.target.value;
+    setSelectedEtatClient(value);
+  };
+
+  const { data = [] } = useFetchClientMoralesQuery();
+  const [createClientMorale] = useAddClientMoraleMutation();
+  const [deleteClientMorale] = useDeleteClientMoraleMutation();
 
   const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
   const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
@@ -113,6 +120,7 @@ const UserList = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
+      etat: parseInt(selectedEtatClient),
       [e.target.id]: e.target.value,
     }));
   };
@@ -144,17 +152,18 @@ const UserList = () => {
     });
   };
 
-  function convertToBase64(file: File): Promise<string> {
+  function convertToBase64(file: File | Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
 
       fileReader.onload = () => {
-        const base64String = fileReader.result as string;
-        const base64Data = base64String.split(",")[1];
+        // const base64String = fileReader.result as string;
+        // const base64Data = base64String.split(",")[1];
 
-        resolve(base64Data);
+        // resolve(base64Data);
+        resolve(fileReader.result as string);
       };
+      fileReader.readAsDataURL(file);
       fileReader.onerror = (error) => {
         reject(error);
       };
@@ -321,17 +330,6 @@ const UserList = () => {
                 <Card>
                   <Card.Body>
                     <Row className="align-items-center">
-                      <Col xxl={3} md={5}>
-                        <div className="search-box mb-3 mb-md-0">
-                          <input
-                            type="text"
-                            className="form-control search"
-                            id="searchProductList"
-                            placeholder="Rechercher client par nom..."
-                          />
-                          <i className="ri-search-line search-icon"></i>
-                        </div>
-                      </Col>
                       <Col className="col-md-auto ms-auto">
                         <Button
                           variant="success"
@@ -363,7 +361,7 @@ const UserList = () => {
                         className="custom-header-css table align-middle table-nowrap"
                         tableClassName="table-centered align-middle table-nowrap mb-0"
                         theadClassName="text-muted table-light"
-                        SearchPlaceholder="Search Products..."
+                        SearchPlaceholder="Rechercher Client Morale..."
                       />
                       <div className="noresult" style={{ display: "none" }}>
                         <div className="text-center">
@@ -464,6 +462,19 @@ const UserList = () => {
                   </Col>
                   <Col lg={6}>
                     <div className="mb-3">
+                      <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.mat}
+                        onChange={onChange}
+                        id="mat"
+                        placeholder="Taper matricule fiscale"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={6}>
+                    <div className="mb-3">
                       <Form.Label htmlFor="adresse">Adresse</Form.Label>
                       <Form.Control
                         type="text"
@@ -484,19 +495,6 @@ const UserList = () => {
                         onChange={onChange}
                         id="tel"
                         placeholder="Taper numéro"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.mat}
-                        onChange={onChange}
-                        id="mat"
-                        placeholder="Taper matricule fiscale"
                         required
                       />
                     </div>
@@ -534,7 +532,8 @@ const UserList = () => {
                         className="form-select"
                         data-choices
                         data-choices-search-false
-                        id="choices-payment-status"
+                        id="etat"
+                        onChange={selectChangeEtatClient}
                         required
                       >
                         <option value="">Selectionner Etat</option>
@@ -570,11 +569,7 @@ const UserList = () => {
                     </div>
                   </Col>
                   <Col lg={12}>
-                    <div className="mb-3">
-                      <label htmlFor="avatar" className="form-label d-block">
-                        Piece Jointes <span className="text-danger">*</span>
-                      </label>
-
+                    <div className="text-center mb-3">
                       <div className="position-relative d-inline-block">
                         <div className="position-absolute top-100 start-100 translate-middle">
                           <label
@@ -582,7 +577,7 @@ const UserList = () => {
                             className="mb-0"
                             data-bs-toggle="tooltip"
                             data-bs-placement="right"
-                            title="Select Client Physique Avatar"
+                            title="Select company logo"
                           >
                             <span className="avatar-xs d-inline-block">
                               <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
@@ -591,73 +586,27 @@ const UserList = () => {
                             </span>
                           </label>
                           <input
-                            className="form-control d-none"
+                            className="d-none"
+                            id="piecejointes"
                             type="file"
                             name="piecejointes"
-                            id="piecejointes"
                             accept="image/*"
                             onChange={(e) => handleFileUpload(e)}
                           />
                         </div>
-                        <div className="avatar-lg">
+                        <div className="avatar-xl">
                           <div className="avatar-title bg-light rounded-3">
                             <img
                               src={`data:image/jpeg;base64, ${formData.piecejointes}`}
-                              alt=""
-                              id="category-img"
-                              className="avatar-md h-auto rounded-3 object-fit-cover"
+                              alt={formData.piecejointes}
+                              id="companyLogo-img"
+                              className="avatar-xl h-auto rounded-3 object-fit-cover"
                             />
                           </div>
                         </div>
                       </div>
-
-                      <div className="error-msg mt-1">
-                        Please add a category images.
-                      </div>
                     </div>
                   </Col>
-                  {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="ProductSelect">Product Type</Form.Label>
-                                            <select className="form-select" name="categorySelect" id="productType-field">
-                                                <option value="">Select Product</option>
-                                                <option value="Headphone">Headphone</option>
-                                                <option value="Watch">Watch</option>
-                                                <option value="Furniture">Furniture</option>
-                                                <option value="Clothing">Clothing</option>
-                                                <option value="Footwear">Footwear</option>
-                                                <option value="Lighting">Lighting</option>
-                                                <option value="Beauty & Personal Care">Beauty & Personal Care</option>
-                                                <option value="Books">Books</option>
-                                                <option value="Other Accessories">Other Accessories</option>
-                                            </select>
-                                        </div> */}
-                  {/* </Col> */}
-                  {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="startDate">Start Date</Form.Label>
-                                            {/* <Form.Control type="text" id="startdate-field" data-provider="flatpickr" data-date-format="d M, Y" placeholder="Select date" required/> */}
-                  {/* <Flatpickr
-                                                className="form-control flatpickr-input"
-                                                placeholder='Select date'
-                                                options={{
-                                                    dateFormat: "d M, Y",
-                                                }}
-                                            />
-                                        </div>
-                                    </Col> */}
-                  {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="endDate">END Date</Form.Label>
-                                            <Flatpickr
-                                                className="form-control flatpickr-input"
-                                                placeholder='Select date'
-                                                options={{
-                                                    dateFormat: "d M, Y",
-                                                }}
-                                            />
-                                        </div>
-                                    </Col> */}
                   <Col lg={12} className="modal-footer">
                     <div className="hstack gap-2 justify-content-end">
                       <Button
@@ -776,7 +725,6 @@ const UserList = () => {
           </div>
         </Offcanvas.Body>
       </Offcanvas>
-      <ToastContainer />
     </React.Fragment>
   );
 };

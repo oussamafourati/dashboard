@@ -24,6 +24,10 @@ import {
   useFetchClientPhysiquesQuery,
 } from "features/clientPhysique/clientPhysiqueSlice";
 import { Produit, useFetchProduitsQuery } from "features/produit/productSlice";
+import {
+  ArrivageProduit,
+  useGetAllArrivagesProduitQuery,
+} from "features/arrivageProduit/arrivageProduitSlice";
 
 const PassagerInvoice = () => {
   document.title = "Créer Facture | Radhouani";
@@ -61,8 +65,6 @@ const PassagerInvoice = () => {
     setValue(searchValue);
   };
 
-  const { data: allProduit = [] } = useFetchProduitsQuery();
-
   const [clientPhysique, setClientPhysique] = useState<ClientPhysique[]>([]);
   const [selected, setSelected] = useState<ClientPhysique[]>([]);
   const [clientPhyId, setClientPhyId] = useState("");
@@ -93,8 +95,46 @@ const PassagerInvoice = () => {
     console.log(clientPhysiqueId);
   };
 
+  const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
+
+  const [arrivageProduit, setArrivageProduit] = useState<ArrivageProduit[]>([]);
+  const [selectedArrivage, setSelectedArrivage] = useState<ArrivageProduit[]>(
+    []
+  );
+  const [arrivageProduitId, setArrivageProduitId] = useState("");
+
+  useEffect(() => {
+    const getArrivageProduit = async () => {
+      const reqdata = await fetch(
+        "http://localhost:8000/arrivageProduit/allArrivageProduit"
+      );
+      const resdata = await reqdata.json();
+      console.log(resdata);
+      setArrivageProduit(resdata);
+    };
+    getArrivageProduit();
+  }, []);
+
+  const handleArrivageProduit = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const produitId = e.target.value;
+    if (produitId !== "") {
+      const reqstatedata = await fetch(
+        `http://localhost:8000/arrivageProduit/SingleArrivageProduit/${produitId}`
+      );
+      const resstatedata = await reqstatedata.json();
+      setSelectedArrivage(await resstatedata);
+      console.log(reqstatedata);
+      setArrivageProduitId(produitId);
+    } else {
+      setSelectedArrivage([]);
+    }
+    console.log(produitId);
+  };
+
   //Query to Fetch All Client Physique
-  const { data = [], isLoading } = useFetchClientPhysiquesQuery();
+  const { data: allProduit = [] } = useFetchProduitsQuery();
 
   // Mutation to create a new Client
   const [createClientPhysique] = useAddClientPhysiqueMutation();
@@ -416,7 +456,7 @@ const PassagerInvoice = () => {
                             {index + 1}
                           </th>
                           <td className="text-start">
-                            <div className="search-box mb-3 mb-lg-0">
+                            {/* <div className="search-box mb-3 mb-lg-0">
                               <label
                                 htmlFor="search-bar-0"
                                 className="search-label"
@@ -452,7 +492,24 @@ const PassagerInvoice = () => {
                                     {item.nomProduit}
                                   </div>
                                 ))}
-                            </div>
+                            </div> */}
+                            <select
+                              className="form-select"
+                              id="choices-arrivage-input"
+                              name="choices-arrivage-input"
+                              onChange={handleArrivageProduit}
+                            >
+                              <option value="">Selectionner Produit</option>
+                              {arrivageProduit.map((arrivageProd) => (
+                                <option
+                                  key={arrivageProd.idArrivageProduit}
+                                  value={arrivageProd.idArrivageProduit}
+                                >
+                                  {arrivageProd.nomProduit}
+                                </option>
+                              ))}
+                            </select>
+                            {arrivageProduitId && <h5>{arrivageProduitId}</h5>}
                             <div className="search-box mb-3 mb-lg-0">
                               <div className="invalid-feedback">
                                 Please enter a product name
@@ -608,6 +665,9 @@ const PassagerInvoice = () => {
                     </div>
                   </Col>
                 </Row>
+                {selectedArrivage.map((arriProd, index) => {
+                  return <h5>{arriProd.prixAchatTtc}</h5>;
+                })}{" "}
                 <div className="mt-4">
                   <Form.Label
                     htmlFor="exampleFormControlTextarea1"

@@ -294,17 +294,6 @@ const BrandsTable = () => {
             <Card.Body className="bg-soft-light border border-dashed border-start-0 border-end-0">
               <form>
                 <Row className="g-3">
-                  <Col xxl={5} sm={12}>
-                    <div className="search-box">
-                      <input
-                        type="text"
-                        className="form-control search bg-light border-light"
-                        placeholder="Rechercher type de charge, montant ou date.."
-                      />
-                      <i className="ri-search-line search-icon"></i>
-                    </div>
-                  </Col>
-
                   <Col xxl={3} sm={4}>
                     {/* <input type="text" className="form-control bg-light border-light" id="datepicker-range" placeholder="Select date" /> */}
                     <Flatpickr
@@ -351,14 +340,14 @@ const BrandsTable = () => {
                   <TableContainer
                     columns={columns || []}
                     data={data || []}
-                    // isGlobalFilter={false}
+                    isGlobalFilter={true}
                     iscustomPageSize={false}
                     isBordered={false}
                     customPageSize={10}
                     className="custom-header-css table align-middle table-nowrap"
                     tableClassName="table-centered align-middle table-nowrap mb-0"
                     theadClassName="text-muted table-light"
-                    SearchPlaceholder="Search Products..."
+                    SearchPlaceholder="Rechercher charge..."
                   />
                   <div className="noresult" style={{ display: "none" }}>
                     <div className="text-center">
