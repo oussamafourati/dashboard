@@ -28,6 +28,7 @@ import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
+import axios from "axios";
 
 const PassagerInvoice = () => {
   document.title = "Créer Facture | Radhouani";
@@ -46,25 +47,6 @@ const PassagerInvoice = () => {
     setInputFields(newInputFields);
   };
 
-  const [value, setValue] = useState<string>("");
-  const handleChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newInputFields = [...inputFields];
-    newInputFields[index] = event.target.value;
-    setInputFields(newInputFields);
-    setValue(event.target.value);
-  };
-
-  // const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setValue(e.target.value);
-  // };
-
-  const onSearch = (searchValue: string) => {
-    setValue(searchValue);
-  };
-
   const [clientPhysique, setClientPhysique] = useState<ClientPhysique[]>([]);
   const [selected, setSelected] = useState<ClientPhysique[]>([]);
   const [clientPhyId, setClientPhyId] = useState("");
@@ -73,7 +55,6 @@ const PassagerInvoice = () => {
     const getClientPhysique = async () => {
       const reqdata = await fetch("http://localhost:8000/clientPyh/clients");
       const resdata = await reqdata.json();
-      console.log(resdata);
       setClientPhysique(resdata);
     };
     getClientPhysique();
@@ -95,47 +76,44 @@ const PassagerInvoice = () => {
     console.log(clientPhysiqueId);
   };
 
-  const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
-
-  const [arrivageProduit, setArrivageProduit] = useState<ArrivageProduit[]>([]);
-  const [selectedArrivage, setSelectedArrivage] = useState<ArrivageProduit[]>(
-    []
-  );
-  const [arrivageProduitId, setArrivageProduitId] = useState("");
+  const ProdData: Produit[] = [];
+  const [arrProduit, setArrProduit] = useState<Produit[]>([]);
+  const [selectedProduit, setSelectedProduit] = useState<Produit[]>([]);
+  const [produitId, setProduitId] = useState("");
 
   useEffect(() => {
-    const getArrivageProduit = async () => {
+    const getProduit = async () => {
       const reqdata = await fetch(
-        "http://localhost:8000/arrivageProduit/allArrivageProduit"
+        "http://localhost:8000/product/getAllProducts"
       );
       const resdata = await reqdata.json();
-      console.log(resdata);
-      setArrivageProduit(resdata);
+      setArrProduit(resdata);
     };
-    getArrivageProduit();
+    getProduit();
   }, []);
 
-  const handleArrivageProduit = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleProduit = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const produitId = e.target.value;
     if (produitId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/arrivageProduit/SingleArrivageProduit/${produitId}`
+        `http://localhost:8000/product/getOneProduct/${produitId}`
       );
       const resstatedata = await reqstatedata.json();
-      setSelectedArrivage(await resstatedata);
-      console.log(reqstatedata);
-      setArrivageProduitId(produitId);
+      setSelectedProduit(await resstatedata);
+
+      setProduitId(produitId);
     } else {
-      setSelectedArrivage([]);
+      setSelectedProduit([]);
     }
-    console.log(produitId);
   };
 
   //Query to Fetch All Client Physique
   const { data: allProduit = [] } = useFetchProduitsQuery();
-
+  const mTotalHT = allProduit.reduce(
+    (sum, i) => (sum += i.MontantTotalProduit),
+    0
+  );
+  const mTotal = mTotalHT * 1.19;
   // Mutation to create a new Client
   const [createClientPhysique] = useAddClientPhysiqueMutation();
 
@@ -399,8 +377,6 @@ const PassagerInvoice = () => {
                     >
                       <option value="">Selectionner Status</option>
                       <option value="Paid">Payé</option>
-                      <option value="Unpaid">Impayé</option>
-                      <option value="Refund">Rembourser</option>
                     </select>
                   </Col>
                   <Col lg={3} sm={6}>
@@ -418,223 +394,153 @@ const PassagerInvoice = () => {
                 </Row>
               </Card.Body>
               <Card.Body className="p-4">
-                <div className="table-responsive">
-                  <Table className="invoice-table table-borderless table-nowrap mb-0">
-                    <thead className="align-middle">
-                      <tr className="table-active">
-                        <th scope="col" style={{ width: "50px" }}>
-                          #
-                        </th>
-                        <th scope="col">Details Produit</th>
-                        <th scope="col" style={{ width: "120px" }}>
-                          <div className="d-flex currency-select input-light align-items-center">
-                            Prix unitaire
-                          </div>
-                        </th>
-                        <th scope="col" style={{ width: "120px" }}>
-                          Quantité
-                        </th>
-                        <th
-                          scope="col"
-                          className="text-end"
-                          style={{ width: "180px" }}
+                <Row style={{ marginBottom: 20 }}>
+                  <Col lg={1}>#</Col>
+                  <Col lg={3}>Details Produit</Col>
+                  <Col lg={2}>Prix unitaire</Col>
+                  <Col lg={2}>Quantité</Col>
+                  <Col lg={2}>Montant</Col>
+                  <Col lg={2}></Col>
+                </Row>
+                {inputFields.map((inputField, index) => (
+                  <Row style={{ marginBottom: 15 }}>
+                    <Col lg={1} key={index}>
+                      {index + 1}
+                    </Col>
+                    <Col lg={3}>
+                      <div className="search-box mb-3 mb-lg-0">
+                        <select
+                          className="form-select"
+                          data-choices
+                          data-choices-search-false
+                          id="choices-product-name"
+                          onChange={handleProduit}
+                          required
                         >
-                          Montant
-                        </th>
-                        <th
-                          scope="col"
-                          className="text-end"
-                          style={{ width: "105px" }}
-                        ></th>
-                      </tr>
-                    </thead>
-                    {inputFields.map((inputField, index) => (
-                      <tbody id="newlink">
-                        <tr id="1" className="product" key={index}>
-                          <th scope="row" className="product-id">
-                            {" "}
-                            {index + 1}
-                          </th>
-                          <td className="text-start">
-                            {/* <div className="search-box mb-3 mb-lg-0">
-                              <label
-                                htmlFor="search-bar-0"
-                                className="search-label"
-                              >
-                                <input
-                                  value={inputField}
-                                  onChange={(e) => handleChange(index, e)}
-                                  id="search-bar-0"
-                                  type="text"
-                                  className="form-control"
-                                />
-                              </label>
-                              <i
-                                className="bx bx-search-alt search-icon"
-                                onClick={() => onSearch(value)}
-                              ></i>
-                              {allProduit
-                                .filter((item) => {
-                                  const searchTerm = value.toLowerCase();
-                                  const nameProduct =
-                                    item.nomProduit.toLowerCase();
-                                  return (
-                                    searchTerm &&
-                                    nameProduct.startsWith(searchTerm) &&
-                                    nameProduct !== searchTerm
-                                  );
-                                })
-                                .map((item) => (
-                                  <div
-                                    onClick={() => onSearch(item.nomProduit)}
-                                    key={item.idproduit}
-                                  >
-                                    {item.nomProduit}
-                                  </div>
-                                ))}
-                            </div> */}
-                            <select
-                              className="form-select"
-                              id="choices-arrivage-input"
-                              name="choices-arrivage-input"
-                              onChange={handleArrivageProduit}
-                            >
-                              <option value="">Selectionner Produit</option>
-                              {arrivageProduit.map((arrivageProd) => (
-                                <option
-                                  key={arrivageProd.idArrivageProduit}
-                                  value={arrivageProd.idArrivageProduit}
-                                >
-                                  {arrivageProd.nomProduit}
-                                </option>
-                              ))}
-                            </select>
-                            {arrivageProduitId && <h5>{arrivageProduitId}</h5>}
-                            <div className="search-box mb-3 mb-lg-0">
-                              <div className="invalid-feedback">
-                                Please enter a product name
-                              </div>
-                            </div>
-                          </td>
-                          <td>
+                          <option value="">Selectionner Désignation</option>
+                          {arrProduit.map((prod) => (
+                            <option value={prod.idproduit} key={prod.idproduit}>
+                              {prod.nomProduit}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </Col>
+                    {selectedProduit.map((selectedProd) => (
+                      <>
+                        <Col lg={2}>
+                          <Form.Control
+                            type="number"
+                            className="product-price"
+                            id="productRate-1"
+                            step="0.01"
+                            value={selectedProd.prixAchatHt}
+                            placeholder="0.00"
+                            required
+                          />
+                          <div className="invalid-feedback">
+                            Please enter a rate
+                          </div>
+                        </Col>
+                        <Col lg={2}>
+                          <div className="input-step">
+                            <Button className="minus">–</Button>
+                            <Form.Control
+                              value={selectedProd.PrixRemise}
+                              type="number"
+                              className="product-quantity"
+                              id="product-qty-1"
+                              defaultValue="0"
+                            />
+                            <Button className="plus">+</Button>
+                          </div>
+                        </Col>
+                        <Col lg={2} className="text-end">
+                          <div>
                             <Form.Control
                               type="number"
-                              className="product-price"
-                              id="productRate-1"
-                              step="0.01"
+                              className="product-line-price"
+                              value={selectedProd.MontantTotalProduit}
+                              id="productPrice-1"
                               placeholder="0.00"
-                              required
                             />
-                            <div className="invalid-feedback">
-                              Please enter a rate
-                            </div>
-                          </td>
-                          <td>
-                            <div className="input-step">
-                              <Button className="minus">–</Button>
-                              <input
-                                type="number"
-                                className="product-quantity"
-                                id="product-qty-1"
-                                defaultValue="0"
-                              />
-                              <Button className="plus">+</Button>
-                            </div>
-                          </td>
-                          <td className="text-end">
-                            <div>
+                          </div>
+                        </Col>
+                      </>
+                    ))}
+                    <Col lg={2}>
+                      <Link
+                        onClick={() => handleRemoveFields(index)}
+                        to="#"
+                        className="btn btn-danger"
+                      >
+                        Supprimer
+                      </Link>
+                    </Col>
+                  </Row>
+                ))}
+                <Row>
+                  <Col id="newForm" style={{ display: "none" }}>
+                    <td className="d-none">
+                      <p>Add New Form</p>
+                    </td>
+                  </Col>
+                  <Col>
+                    <td>
+                      <Link
+                        to="#"
+                        id="add-item"
+                        className="btn btn-soft-secondary fw-medium"
+                        onClick={handleAddFields}
+                      >
+                        <i className="ri-add-fill me-1 align-bottom"></i>
+                        Ajouter élement
+                      </Link>
+                    </td>
+                  </Col>
+                  <tr className="border-top border-top-dashed mt-2">
+                    <td colSpan={3}></td>
+                    <td className="p-0" colSpan={2}>
+                      <Table className="table-borderless table-sm table-nowrap align-middle mb-0">
+                        <tbody>
+                          <tr>
+                            <th scope="row">Total</th>
+                            <td style={{ width: "150px" }}>
                               <Form.Control
                                 type="number"
-                                className="product-line-price"
-                                id="productPrice-1"
+                                value={mTotalHT}
+                                id="cart-subtotal"
                                 placeholder="0.00"
                               />
-                            </div>
-                          </td>
-                          <td className="product-removal">
-                            <Link
-                              onClick={() => handleRemoveFields(index)}
-                              to="#"
-                              className="btn btn-danger"
-                            >
-                              Supprimer
-                            </Link>
-                          </td>
-                        </tr>
-                      </tbody>
-                    ))}
-
-                    <tbody>
-                      <tr id="newForm" style={{ display: "none" }}>
-                        <td className="d-none">
-                          <p>Add New Form</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <Link
-                            to="#"
-                            id="add-item"
-                            className="btn btn-soft-secondary fw-medium"
-                            onClick={handleAddFields}
-                          >
-                            <i className="ri-add-fill me-1 align-bottom"></i>
-                            Ajouter élement
-                          </Link>
-                        </td>
-                      </tr>
-                      <tr className="border-top border-top-dashed mt-2">
-                        <td colSpan={3}></td>
-                        <td className="p-0" colSpan={2}>
-                          <Table className="table-borderless table-sm table-nowrap align-middle mb-0">
-                            <tbody>
-                              <tr>
-                                <th scope="row">Total</th>
-                                <td style={{ width: "150px" }}>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-subtotal"
-                                    placeholder="0.00"
-                                  />
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Taxe (19%)</th>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-tax"
-                                    placeholder="$0.00"
-                                  />
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Reduction </th>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-discount"
-                                    placeholder="$0.00"
-                                  />
-                                </td>
-                              </tr>
-                              <tr className="border-top border-top-dashed">
-                                <th scope="row">Montant Total</th>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-total"
-                                    placeholder="0.00"
-                                  />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Taxe (19%)</th>
+                            <td>
+                              <Form.Control
+                                type="number"
+                                value={mTotal - mTotalHT}
+                                id="cart-tax"
+                                placeholder="$0.00"
+                              />
+                            </td>
+                          </tr>
+                          <tr className="border-top border-top-dashed">
+                            <th scope="row">Montant Total</th>
+                            <td>
+                              <Form.Control
+                                value={mTotal}
+                                type="number"
+                                id="cart-total"
+                                placeholder="0.00"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    </td>
+                  </tr>
+                </Row>
                 <Row className="mt-3">
                   <Col lg={4}>
                     <div className="mb-2">
@@ -665,9 +571,6 @@ const PassagerInvoice = () => {
                     </div>
                   </Col>
                 </Row>
-                {selectedArrivage.map((arriProd, index) => {
-                  return <h5>{arriProd.prixAchatTtc}</h5>;
-                })}{" "}
                 <div className="mt-4">
                   <Form.Label
                     htmlFor="exampleFormControlTextarea1"

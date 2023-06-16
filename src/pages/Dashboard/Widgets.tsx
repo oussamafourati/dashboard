@@ -1,3 +1,4 @@
+import { useGetAllArrivagesQuery } from "features/arrivage/arrivageSlice";
 import { useGetAllChargesQuery } from "features/charge/chargeSlice";
 import React from "react";
 import { Card, Col } from "react-bootstrap";
@@ -12,7 +13,12 @@ interface WidgetsProps {
 }
 
 const Widgets = () => {
-  const { data = [], isFetching } = useGetAllChargesQuery();
+  const { data = [] } = useGetAllChargesQuery();
+  const { data: allArrivage = [] } = useGetAllArrivagesQuery();
+  const arrivageTotal = allArrivage.reduce(
+    (sum, i) => (sum += i.montantTotal),
+    0
+  );
   const chargeTotal = data.reduce((sum, i) => (sum += i.montantCharges), 0);
 
   const widgetsData: Array<WidgetsProps> = [
@@ -26,7 +32,7 @@ const Widgets = () => {
     {
       id: 2,
       name: "TOTAL ACHAT",
-      amount: 65802,
+      amount: arrivageTotal,
       icon: "ph-storefront",
       iconColor: "info",
     },

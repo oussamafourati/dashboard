@@ -191,6 +191,51 @@ const ProductTable = () => {
         accessor: "marque",
         Filter: false,
       },
+      // {
+      //   Header: "quantite",
+      //   accessor: "quantite",
+      //   Filter: false,
+      // },
+      {
+        Header: "prixAchatHt",
+        accessor: "prixAchatHt",
+        Filter: false,
+      },
+      {
+        Header: "prixAchatTtc",
+        accessor: "prixAchatTtc",
+        Filter: false,
+      },
+      {
+        Header: "prixVente",
+        accessor: "prixVente",
+        Filter: false,
+      },
+      {
+        Header: "Benifice",
+        accessor: "Benifice",
+        Filter: false,
+      },
+      {
+        Header: "PourcentageBenifice",
+        accessor: "PourcentageBenifice",
+        Filter: false,
+      },
+      {
+        Header: "PrixRemise",
+        accessor: "PrixRemise",
+        Filter: false,
+      },
+      {
+        Header: "PourcentageRemise",
+        accessor: "PourcentageRemise",
+        Filter: false,
+      },
+      // {
+      //   Header: "MontantTotalProduit",
+      //   accessor: "MontantTotalProduit",
+      //   Filter: false,
+      // },
       {
         Header: "remarqueProduit",
         accessor: "remarqueProduit",

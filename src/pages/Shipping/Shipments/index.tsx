@@ -21,7 +21,6 @@ import {
 } from "features/arrivage/arrivageSlice";
 import { useFetchFournisseurQuery } from "../../../features/fournisseur/fournisseurSlice";
 import Swal from "sweetalert2";
-import AddArrivageProduit from "../CreateArrivageProduit";
 
 const Shipments = () => {
   const navigate = useNavigate();
@@ -207,23 +206,16 @@ const Shipments = () => {
             </Card.Header>
             <Card.Header className="border-bottom-dashed">
               <Row className="g-3">
-                {/* <Col xxl={3} lg={6}>
-                  <div className="search-box">
-                    <input
-                      type="text"
-                      className="form-control search"
-                      placeholder="Rechercher arrivage par date..."
-                    />
-                    <i className="ri-search-line search-icon"></i>
-                  </div>
-                </Col> */}
+                <Col xxl={3} lg={2}></Col>
+                <Col xxl={3} lg={2}></Col>
+                <Col xxl={3} lg={2}></Col>
                 <Col xxl={3} lg={6}>
                   <Flatpickr
                     className="form-control flatpickr-input"
                     placeholder="Selectionner Date"
                     options={{
                       mode: "range",
-                      dateFormat: "d M, Y",
+                      dateFormat: "d.m.Y",
                     }}
                   />
                 </Col>

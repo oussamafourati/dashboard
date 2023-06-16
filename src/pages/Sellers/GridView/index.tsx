@@ -59,10 +59,7 @@ const SellersGridView = () => {
             "Le Fournisseur a été supprimé.",
             "success"
           );
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
           swalWithBootstrapButtons.fire(
             "Annulé",
             "Le Fournisseur est en sécurité :)",

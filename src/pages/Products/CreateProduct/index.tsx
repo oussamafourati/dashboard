@@ -41,6 +41,14 @@ const CreateProduct = () => {
     nomProduit: "",
     imageProduit: "",
     marque: "",
+    prixAchatHt: 1,
+    prixAchatTtc: 1,
+    prixVente: 1,
+    Benifice: 1,
+    PourcentageBenifice: 1,
+    PrixRemise: 1,
+    PourcentageRemise: 1,
+    MontantTotalProduit: 1,
     remarqueProduit: "",
     fournisseurID: 17,
     categoryID: 18,
@@ -51,6 +59,14 @@ const CreateProduct = () => {
     nomProduit,
     imageProduit,
     marque,
+    prixAchatHt,
+    prixAchatTtc,
+    prixVente,
+    Benifice,
+    PourcentageBenifice,
+    PrixRemise,
+    PourcentageRemise,
+    MontantTotalProduit,
     remarqueProduit,
     fournisseurID,
     categoryID,
@@ -183,6 +199,91 @@ const CreateProduct = () => {
                         Veuillez saisir le titre du produit.
                       </div>
                     </div>
+                    <Row>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="prixAchatHt">
+                            Prix d'Achat HT
+                          </Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <Form.Control
+                              type="text"
+                              value={formData.prixAchatHt}
+                              onChange={onChange}
+                              id="prixAchatHt"
+                              placeholder="Taper prix"
+                              aria-label="Price"
+                              aria-describedby="product-price-addon"
+                              // required
+                            />
+                            <div className="invalid-feedback">
+                              Please enter a product price.
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
+                      <Col lg={2} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="TVA">TVA</Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <Form.Control
+                              type="text"
+                              value={"19%"}
+                              readOnly={true}
+                              // onChange={onChange}
+                              id="TVA"
+                              placeholder="Taper prix"
+                              aria-label="Price"
+                              aria-describedby="product-price-addon"
+                              required
+                            />
+                            <div className="invalid-feedback">
+                              Please enter a product price.
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="prixVente">
+                            Prix de Vente
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="prixVente"
+                            placeholder=" Taper Prix de Vente"
+                            // required
+                            value={formData.prixVente}
+                            onChange={onChange}
+                          />
+                          <div className="invalid-feedback">
+                            Please enter a product orders.
+                          </div>
+                        </div>
+                      </Col>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="PrixRemise">
+                            Prix en Remise
+                          </Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <Form.Control
+                              type="text"
+                              value={formData.PrixRemise}
+                              onChange={onChange}
+                              id="PrixRemise"
+                              placeholder="Taper Remise"
+                              aria-label="discount"
+                              aria-describedby="product-discount-addon"
+                              required
+                            />
+                            <div className="invalid-feedback">
+                              Please enter a product discount.
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
                     <Row>
                       <Col lg={5}>
                         <div className="mb-3">

@@ -5,8 +5,18 @@ export interface Produit {
   nomProduit: string;
   imageProduit: string;
   marque: string;
+  // quantite: number;
+  prixAchatHt: number;
+  prixAchatTtc: number;
+  prixVente: number;
+  Benifice: number;
+  PourcentageBenifice: number;
+  PrixRemise: number;
+  PourcentageRemise: number;
+  MontantTotalProduit: number;
   remarqueProduit: string;
-  nom?: string;
+  categoryID?: number;
+  fournisseurID?: number;
 }
 
 export const produitSlice = createApi({
@@ -23,11 +33,11 @@ export const produitSlice = createApi({
         },
         providesTags: ["Produit"],
       }),
-      fetchOneCategory: builder.query<Produit, number | void>({
-        query(idproduit) {
-          return `/getOneProduct/${idproduit}`;
-        },
-        providesTags: ["Produit"],
+      getProduit: builder.query<Produit, number>({
+        query: (idproduit) => `getOneProduct/${idproduit}`,
+        providesTags: (result, error, idproduit) => [
+          { type: "Produit", idproduit },
+        ],
       }),
       addProduit: builder.mutation<void, Produit>({
         query(payload) {
@@ -39,13 +49,37 @@ export const produitSlice = createApi({
         },
         invalidatesTags: ["Produit"],
       }),
-      updateProduit: builder.mutation<void, Produit>({
-        query: ({ idproduit, ...rest }) => ({
-          url: `/updateproduct/${idproduit}`,
-          method: "PATCH",
-          body: rest,
+      updateProduit: builder.mutation<
+        void,
+        Pick<Produit, "idproduit"> & Partial<Produit>
+      >({
+        query: ({ idproduit, ...patch }) => ({
+          url: `posts/${idproduit}`,
+          method: "PUT",
+          body: patch,
         }),
-        invalidatesTags: ["Produit"],
+        async onQueryStarted(
+          { idproduit, ...patch },
+          { dispatch, queryFulfilled }
+        ) {
+          const patchResult = dispatch(
+            produitSlice.util.updateQueryData(
+              "getProduit",
+              idproduit,
+              (draft) => {
+                Object.assign(draft, patch);
+              }
+            )
+          );
+          try {
+            await queryFulfilled;
+          } catch {
+            patchResult.undo();
+          }
+        },
+        invalidatesTags: (result, error, { idproduit }) => [
+          { type: "Produit", idproduit },
+        ],
       }),
       deleteProduit: builder.mutation<void, number>({
         query: (idproduit) => ({
@@ -59,6 +93,7 @@ export const produitSlice = createApi({
 });
 
 export const {
+  useGetProduitQuery,
   useFetchProduitsQuery,
   useAddProduitMutation,
   useDeleteProduitMutation,

@@ -6,17 +6,14 @@ export interface ArrivageProduit {
   arrivageID: number;
   quantite: number;
   piecejointes: string;
-  nomProduit: string;
-  prixAchatHt: number;
-  prixAchatTtc: number;
-  prixVente: number;
-  remise: number;
-  PourcentageBenifice: number;
-  Benifice: number;
-  PrixRemise: number;
-  PourcentageRemise: number;
-  MontantTotalProduit: number;
-  MontantTotal: number;
+  prixAchatHt?: number;
+  prixAchatTtc?: number | undefined;
+  prixVente?: number;
+  Benifice?: number;
+  PourcentageBenifice?: number;
+  PrixRemise?: number;
+  PourcentageRemise?: number;
+  nomProduit?: string;
 }
 
 export const arrivageProduitSlice = createApi({

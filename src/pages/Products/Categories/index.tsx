@@ -191,7 +191,7 @@ const Categories = () => {
                     />
                     <Row>
                       <Col xxl={12} lg={6}>
-                        <div className="mb-3">
+                        <div className="text-center mb-3">
                           <label htmlFor="nom" className="form-label">
                             Nom Catégorie<span className="text-danger">*</span>
                           </label>
@@ -210,7 +210,7 @@ const Categories = () => {
                         </div>
                       </Col>
                       <Col xxl={12} lg={6}>
-                        <div className="mb-3">
+                        <div className="text-center mb-3">
                           <label htmlFor="image" className="form-label d-block">
                             Image <span className="text-danger">*</span>
                           </label>
@@ -292,6 +292,11 @@ const Categories = () => {
                             key={category.idcategory}
                           >
                             <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
+                            {subdata.map((subcat) => {
+                              if (subcat.parentID === category.idcategory) {
+                                return <li>{subcat.title}</li>;
+                              }
+                            })}
                             <li>
                               <Link
                                 to="#"

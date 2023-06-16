@@ -102,12 +102,12 @@ const Navdata = () => {
           link: "/invoices-list",
           parentId: "invoice",
         },
-        // {
-        //     id: "overview",
-        //     label: "Overview",
-        //     link: "/invoices-details",
-        //     parentId: "invoice",
-        // },
+        {
+          id: "overview",
+          label: "Overview",
+          link: "/invoices-details",
+          parentId: "invoice",
+        },
       ],
     },
     {
@@ -180,6 +180,12 @@ const Navdata = () => {
           link: "/shipping-list",
           parentId: "shipping",
         },
+        // {
+        //   id: "shipment",
+        //   // label: "Liste Produit",
+        //   link: "/shipment",
+        //   parentId: "shipping",
+        // },
         {
           id: "shipments",
           label: "Liste Arrivage",
