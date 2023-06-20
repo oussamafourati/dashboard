@@ -11,6 +11,9 @@ import {
 } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import Flatpickr from "react-flatpickr";
+import PaiementTotal from "./PaiementTotal";
+import PaiementEspece from "./PaiementEspece";
+import PaiementCheque from "./PaiementCheque";
 
 // Import Images
 import logoDark from "assets/images/logo-dark.png";
@@ -27,6 +30,24 @@ import {
 
 const ProInvoice = () => {
   document.title = "Créer Facture | Radhouani";
+
+  const [selectedd, setSelectedd] = useState("Paiement total en espèces");
+
+  const handleChangeselect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedd(e.target.value);
+  };
+
+  const [inputFields, setInputFields] = useState<string[]>([""]);
+  const handleAddFields = () => {
+    const newInputFields = [...inputFields];
+    newInputFields.push("");
+    setInputFields(newInputFields);
+  };
+  const handleRemoveFields = (index: number) => {
+    const newInputFields = [...inputFields];
+    newInputFields.splice(index, 1);
+    setInputFields(newInputFields);
+  };
 
   const [clientMorale, setClientMorale] = useState<ClientMorale[]>([]);
   const [selected, setSelected] = useState<ClientMorale[]>([]);
@@ -314,31 +335,6 @@ const ProInvoice = () => {
                       />
                     </div>
                   </Col>
-                  <Col lg={3} sm={6}>
-                    <Form.Label htmlFor="choices-payment-status">
-                      Status de Payement
-                    </Form.Label>
-                    <select
-                      className="form-select"
-                      data-choices
-                      data-choices-search-false
-                      id="choices-payment-status"
-                      required
-                    >
-                      <option value="">Selectionner Status</option>
-                      <option value="Paid">Payé</option>
-                      <option value="Unpaid">Impayé</option>
-                      <option value="Refund">Rembourser</option>
-                    </select>
-                  </Col>
-                  <Col lg={3} sm={6}>
-                    <div>
-                      <Form.Label htmlFor="totalamountInput">
-                        Montant Total
-                      </Form.Label>
-                      <span>1780</span>
-                    </div>
-                  </Col>
                 </Row>
               </Card.Body>
               <Card.Body className="p-4">
@@ -503,49 +499,67 @@ const ProInvoice = () => {
                   </Table>
                 </div>
                 <Row className="mt-3">
-                  <Col lg={4}>
+                  <Col lg={9}>
                     <div className="mb-2">
                       <Form.Label
                         htmlFor="choices-payment-type"
                         className="text-muted text-uppercase fw-semibold"
                       >
-                        Payment Details
+                        Reglement
                       </Form.Label>
                       <select
                         className="form-select"
                         data-choices
                         data-choices-search-false
                         id="choices-payment-type"
+                        value={selectedd}
+                        onChange={(e) => handleChangeselect(e)}
                       >
-                        <option value="">Methode de Payement</option>
-                        <option value="Mastercard">Espèce</option>
-                        <option value="Credit Card">par chèque</option>
-                        <option value="Visa">Visa</option>
+                        <option value="Paiement total en espèces">
+                          Paiement total en espèces
+                        </option>
+                        <option value="Paiement partiel espèces">
+                          Paiement partiel espèces
+                        </option>
+                        <option value="Paiement partiel chèque">
+                          Paiement partiel chèque
+                        </option>
                       </select>
-                    </div>
-                    <div>
-                      <Form.Control
-                        type="number"
-                        id="amountTotalPay"
-                        placeholder="0.00"
-                      />
+                      {selectedd === "Paiement total en espèces" ? (
+                        <PaiementTotal />
+                      ) : (
+                        ""
+                      )}
+
+                      {selectedd === "Paiement partiel espèces" ? (
+                        <PaiementEspece />
+                      ) : (
+                        ""
+                      )}
+                      {selectedd === "Paiement partiel chèque" ? (
+                        <PaiementCheque />
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </Col>
+                  <Col lg={3} sm={6}>
+                    <Form.Label htmlFor="choices-payment-status">
+                      Status de Payement
+                    </Form.Label>
+                    <select
+                      className="form-select"
+                      data-choices
+                      data-choices-search-false
+                      id="choices-payment-status"
+                    >
+                      <option value="">Selectionner Status</option>
+                      <option value="Paid">Payé</option>
+                      <option value="Paid">impayé</option>
+                      <option value="Paid">Semi Payé</option>
+                    </select>
+                  </Col>
                 </Row>
-                <div className="mt-4">
-                  <Form.Label
-                    htmlFor="exampleFormControlTextarea1"
-                    className="text-muted text-uppercase fw-semibold"
-                  >
-                    NOTES
-                  </Form.Label>
-                  <textarea
-                    className="form-control alert alert-warning"
-                    id="exampleFormControlTextarea1"
-                    placeholder="Notes"
-                    defaultValue="Tous les comptes doivent être payés dans les 7 jours suivant la réception de la facture. A régler par chèque ou carte bancaire ou paiement direct en ligne."
-                  />
-                </div>
                 <div className="hstack gap-2 justify-content-end d-print-none mt-4">
                   <Button variant="success" type="submit">
                     <i className="ri-printer-line align-bottom me-1"></i>{" "}

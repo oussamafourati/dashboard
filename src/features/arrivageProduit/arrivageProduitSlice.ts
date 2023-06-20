@@ -7,7 +7,7 @@ export interface ArrivageProduit {
   quantite: number;
   piecejointes: string;
   prixAchatHt?: number;
-  prixAchatTtc?: number | undefined;
+  prixAchatTtc?: number;
   prixVente?: number;
   Benifice?: number;
   PourcentageBenifice?: number;

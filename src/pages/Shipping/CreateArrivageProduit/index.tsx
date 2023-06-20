@@ -478,8 +478,8 @@ const CreateArrivageProduit = () => {
                                         </td>
                                         <td>{produitArr.quantite}</td>
                                         <td>
-                                          {produitArr.quantite} *{" "}
-                                          {produitArr.prixAchatTtc}
+                                          {produitArr.quantite} *
+                                          {produitArr!.prixAchatTtc}
                                         </td>
                                         <td>
                                           <div className="hstack gap-3 fs-15">

@@ -6,12 +6,12 @@ export interface Facture {
   dateFacturation: string;
   montantHt: number;
   montantTtc: number;
+  quantiteProduit: number;
   datePaiement: string;
   modePaiement: string;
   statusFacture: number;
-  articles: string;
   clientID: number;
-  raison_sociale: string;
+  produitID: number;
 }
 
 export const facturetSlice = createApi({

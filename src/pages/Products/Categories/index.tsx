@@ -40,8 +40,41 @@ const Categories = () => {
   const { data: subdata = [] } = useFetchSubCategoriesQuery();
   const [deleteCategory] = useDeleteCategoryMutation();
 
-  const deleteHandler = async (id: any) => {
-    await deleteCategory(id);
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: false,
+  });
+
+  const AlertDelete = async (id: any) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Êtes-vous sûr?",
+        text: "Vous ne pourrez pas revenir en arrière !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimez-le !",
+        cancelButtonText: "Non, annulez !",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteCategory(id);
+          swalWithBootstrapButtons.fire(
+            "Supprimé !",
+            "Le Catégorie a été supprimé.",
+            "success"
+          );
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          swalWithBootstrapButtons.fire(
+            "Annulé",
+            "Le Catégorie est en sécurité :)",
+            "error"
+          );
+        }
+      });
   };
 
   const initialValue = {
@@ -294,7 +327,11 @@ const Categories = () => {
                             <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
                             {subdata.map((subcat) => {
                               if (subcat.parentID === category.idcategory) {
-                                return <li>{subcat.title}</li>;
+                                return (
+                                  <li className="flex-grow-1 mb-0">
+                                    {subcat.title}
+                                  </li>
+                                );
                               }
                             })}
                             <li>
@@ -302,9 +339,7 @@ const Categories = () => {
                                 to="#"
                                 data-bs-toggle="modal"
                                 className="badge badge-soft-danger"
-                                onClick={() =>
-                                  deleteHandler(category.idcategory)
-                                }
+                                onClick={() => AlertDelete(category.idcategory)}
                               >
                                 Supprimer
                               </Link>

@@ -186,28 +186,28 @@ const ProductTable = () => {
       //   accessor: "nom",
       //   Filter: true,
       // },
-      {
-        Header: "marque",
-        accessor: "marque",
-        Filter: false,
-      },
+      // {
+      //   Header: "marque",
+      //   accessor: "marque",
+      //   Filter: false,
+      // },
       // {
       //   Header: "quantite",
       //   accessor: "quantite",
       //   Filter: false,
       // },
       {
-        Header: "prixAchatHt",
+        Header: "prix Achat HT",
         accessor: "prixAchatHt",
         Filter: false,
       },
       {
-        Header: "prixAchatTtc",
+        Header: "Prix Achat TTC",
         accessor: "prixAchatTtc",
         Filter: false,
       },
       {
-        Header: "prixVente",
+        Header: "Prix Vente",
         accessor: "prixVente",
         Filter: false,
       },
@@ -217,17 +217,17 @@ const ProductTable = () => {
         Filter: false,
       },
       {
-        Header: "PourcentageBenifice",
+        Header: "Benifice en %",
         accessor: "PourcentageBenifice",
         Filter: false,
       },
       {
-        Header: "PrixRemise",
+        Header: "Prix Remise",
         accessor: "PrixRemise",
         Filter: false,
       },
       {
-        Header: "PourcentageRemise",
+        Header: "Remise en %",
         accessor: "PourcentageRemise",
         Filter: false,
       },
@@ -236,35 +236,31 @@ const ProductTable = () => {
       //   accessor: "MontantTotalProduit",
       //   Filter: false,
       // },
-      {
-        Header: "remarqueProduit",
-        accessor: "remarqueProduit",
-        Filter: false,
-      },
+      // {
+      //   Header: "remarqueProduit",
+      //   accessor: "remarqueProduit",
+      //   Filter: false,
+      // },
       {
         Header: "Action",
         Filter: true,
         accessor: (produit: Produit) => {
           return (
             <React.Fragment>
-              <ul className="hstack gap-2 list-unstyled mb-0">
-                {/* <li>
+              {/* <li>
                   <Link to="#">
                     <i className="ri-pencil-fill align-bottom me-2 text-muted" />
                     Modifier
                   </Link>
                 </li> */}
-                <li>
-                  <Link
-                    to="#"
-                    className="remove-list"
-                    onClick={() => AlertDelete(produit.idproduit)}
-                  >
-                    <i className="ri-delete-bin-fill align-bottom me-2 text-muted" />
-                    Supprimer
-                  </Link>
-                </li>
-              </ul>
+
+              <Link
+                to="#"
+                className="link-danger"
+                onClick={() => AlertDelete(produit.idproduit)}
+              >
+                <i className="ri-delete-bin-5-line" />
+              </Link>
             </React.Fragment>
           );
         },

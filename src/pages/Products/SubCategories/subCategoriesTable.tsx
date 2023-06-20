@@ -6,13 +6,47 @@ import {
   useDeleteSubCategoryMutation,
   useFetchSubCategoriesQuery,
 } from "features/subCategory/subCategorySlice";
+import Swal from "sweetalert2";
 
 const SubCategoriesTable = () => {
   const [deleteSubCategory] = useDeleteSubCategoryMutation();
   const { data = [] } = useFetchSubCategoriesQuery();
 
-  const deleteHandler = async (id: any) => {
-    await deleteSubCategory(id);
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger",
+    },
+    buttonsStyling: false,
+  });
+
+  const AlertDelete = async (id: any) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Êtes-vous sûr?",
+        text: "Vous ne pourrez pas revenir en arrière !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimez-le !",
+        cancelButtonText: "Non, annulez !",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteSubCategory(id);
+          swalWithBootstrapButtons.fire(
+            "Supprimé !",
+            "Le Sous-Catégorie a été supprimé.",
+            "success"
+          );
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          swalWithBootstrapButtons.fire(
+            "Annulé",
+            "Le Sous-Catégorie est en sécurité :)",
+            "error"
+          );
+        }
+      });
   };
 
   const columns = useMemo(
@@ -47,10 +81,10 @@ const SubCategoriesTable = () => {
                 <li>
                   <Link
                     to="/sub-categories"
-                    onClick={() => deleteHandler(subCat.idSubCategory)}
+                    onClick={() => AlertDelete(subCat.idSubCategory)}
                     className="badge badge-soft-danger"
                   >
-                    Delete
+                    Supprimer
                   </Link>
                 </li>
               </ul>

@@ -6,12 +6,13 @@ import {
   Container,
   Form,
   Row,
-  Table,
   Modal,
 } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import Flatpickr from "react-flatpickr";
-
+import PaiementTotal from "./PaiementTotal";
+import PaiementEspece from "./PaiementEspece";
+import PaiementCheque from "./PaiementCheque";
 // Import Images
 import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
@@ -24,23 +25,23 @@ import {
   useFetchClientPhysiquesQuery,
 } from "features/clientPhysique/clientPhysiqueSlice";
 import { Produit, useFetchProduitsQuery } from "features/produit/productSlice";
-import {
-  ArrivageProduit,
-  useGetAllArrivagesProduitQuery,
-} from "features/arrivageProduit/arrivageProduitSlice";
-import axios from "axios";
+import { useAddFactureMutation } from "features/facture/factureSlice";
+import NewComponent from "./NewComponent";
 
 const PassagerInvoice = () => {
   document.title = "Créer Facture | Radhouani";
+  const [selectedd, setSelectedd] = useState("Paiement total en espèces");
+
+  const handleChangeselect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedd(e.target.value);
+  };
 
   const [inputFields, setInputFields] = useState<string[]>([""]);
-
   const handleAddFields = () => {
     const newInputFields = [...inputFields];
     newInputFields.push("");
     setInputFields(newInputFields);
   };
-
   const handleRemoveFields = (index: number) => {
     const newInputFields = [...inputFields];
     newInputFields.splice(index, 1);
@@ -74,37 +75,6 @@ const PassagerInvoice = () => {
       setSelected([]);
     }
     console.log(clientPhysiqueId);
-  };
-
-  const ProdData: Produit[] = [];
-  const [arrProduit, setArrProduit] = useState<Produit[]>([]);
-  const [selectedProduit, setSelectedProduit] = useState<Produit[]>([]);
-  const [produitId, setProduitId] = useState("");
-
-  useEffect(() => {
-    const getProduit = async () => {
-      const reqdata = await fetch(
-        "http://localhost:8000/product/getAllProducts"
-      );
-      const resdata = await reqdata.json();
-      setArrProduit(resdata);
-    };
-    getProduit();
-  }, []);
-
-  const handleProduit = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const produitId = e.target.value;
-    if (produitId !== "") {
-      const reqstatedata = await fetch(
-        `http://localhost:8000/product/getOneProduct/${produitId}`
-      );
-      const resstatedata = await reqstatedata.json();
-      setSelectedProduit(await resstatedata);
-
-      setProduitId(produitId);
-    } else {
-      setSelectedProduit([]);
-    }
   };
 
   //Query to Fetch All Client Physique
@@ -218,6 +188,54 @@ const PassagerInvoice = () => {
     setmodal_AddClientPhyModals(!modal_AddClientPhyModals);
   }
 
+  const [addFacture] = useAddFactureMutation();
+
+  const factureValue = {
+    idFacture: 1,
+    designationFacture: "",
+    dateFacturation: "",
+    montantHt: 1,
+    montantTtc: 1,
+    quantiteProduit: 1,
+    datePaiement: "",
+    modePaiement: "",
+    statusFacture: 1,
+    clientID: 1,
+    produitID: 1,
+  };
+
+  const [factureData, setFactureData] = useState(factureValue);
+  const {
+    idFacture,
+    designationFacture,
+    dateFacturation,
+    montantHt,
+    montantTtc,
+    quantiteProduit,
+    datePaiement,
+    modePaiement,
+    statusFacture,
+    clientID,
+    produitID,
+  } = factureData;
+
+  const onChangeFacture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFactureData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const onSubmitFacture = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    addFacture(factureData).then(() => setFactureData(factureValue));
+    // notify();
+  };
+
+  function precise(x: number) {
+    return x.toPrecision(4);
+  }
+
   return (
     <Container fluid={true}>
       <Breadcrumb title="Créer Facture Passager" pageTitle="Factures" />
@@ -275,7 +293,9 @@ const PassagerInvoice = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col lg={4}></Col>
+                  <Col lg={4}>
+                    <h4>Facture Pro Format</h4>
+                  </Col>
                   <Col lg={4}>
                     <div className="profile-user mx-auto mb-3">
                       <input
@@ -364,144 +384,15 @@ const PassagerInvoice = () => {
                       />
                     </div>
                   </Col>
-                  <Col lg={3} sm={6}>
-                    <Form.Label htmlFor="choices-payment-status">
-                      Status de Payement
-                    </Form.Label>
-                    <select
-                      className="form-select"
-                      data-choices
-                      data-choices-search-false
-                      id="choices-payment-status"
-                      required
-                    >
-                      <option value="">Selectionner Status</option>
-                      <option value="Paid">Payé</option>
-                    </select>
-                  </Col>
-                  <Col lg={3} sm={6}>
-                    <div>
-                      <Form.Label htmlFor="totalamountInput">
-                        Montant Total
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        id="totalamountInput"
-                        placeholder="0.00"
-                      />
-                    </div>
-                  </Col>
                 </Row>
               </Card.Body>
               <Card.Body className="p-4">
-                <Row style={{ marginBottom: 20 }}>
-                  <Col lg={1}>#</Col>
-                  <Col lg={3}>Details Produit</Col>
-                  <Col lg={2}>Prix unitaire</Col>
-                  <Col lg={2}>Quantité</Col>
-                  <Col lg={2}>Montant</Col>
-                  <Col lg={2}></Col>
-                </Row>
-                {inputFields.map((inputField, index) => (
-                  <Row style={{ marginBottom: 15 }}>
-                    <Col lg={1} key={index}>
-                      {index + 1}
-                    </Col>
-                    <Col lg={3}>
-                      <div className="search-box mb-3 mb-lg-0">
-                        <select
-                          className="form-select"
-                          data-choices
-                          data-choices-search-false
-                          id="choices-product-name"
-                          onChange={handleProduit}
-                          required
-                        >
-                          <option value="">Selectionner Désignation</option>
-                          {arrProduit.map((prod) => (
-                            <option value={prod.idproduit} key={prod.idproduit}>
-                              {prod.nomProduit}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </Col>
-                    {selectedProduit.map((selectedProd) => (
-                      <>
-                        <Col lg={2}>
-                          <Form.Control
-                            type="number"
-                            className="product-price"
-                            id="productRate-1"
-                            step="0.01"
-                            value={selectedProd.prixAchatHt}
-                            placeholder="0.00"
-                            required
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a rate
-                          </div>
-                        </Col>
-                        <Col lg={2}>
-                          <div className="input-step">
-                            <Button className="minus">–</Button>
-                            <Form.Control
-                              value={selectedProd.PrixRemise}
-                              type="number"
-                              className="product-quantity"
-                              id="product-qty-1"
-                              defaultValue="0"
-                            />
-                            <Button className="plus">+</Button>
-                          </div>
-                        </Col>
-                        <Col lg={2} className="text-end">
-                          <div>
-                            <Form.Control
-                              type="number"
-                              className="product-line-price"
-                              value={selectedProd.MontantTotalProduit}
-                              id="productPrice-1"
-                              placeholder="0.00"
-                            />
-                          </div>
-                        </Col>
-                      </>
-                    ))}
-                    <Col lg={2}>
-                      <Link
-                        onClick={() => handleRemoveFields(index)}
-                        to="#"
-                        className="btn btn-danger"
-                      >
-                        Supprimer
-                      </Link>
-                    </Col>
-                  </Row>
-                ))}
-                <Row>
-                  <Col id="newForm" style={{ display: "none" }}>
-                    <td className="d-none">
-                      <p>Add New Form</p>
-                    </td>
-                  </Col>
+                <NewComponent />
+                <Row className="border-top border-top-dashed mt-2">
+                  <Col lg={8}></Col>
                   <Col>
-                    <td>
-                      <Link
-                        to="#"
-                        id="add-item"
-                        className="btn btn-soft-secondary fw-medium"
-                        onClick={handleAddFields}
-                      >
-                        <i className="ri-add-fill me-1 align-bottom"></i>
-                        Ajouter élement
-                      </Link>
-                    </td>
-                  </Col>
-                  <tr className="border-top border-top-dashed mt-2">
-                    <td colSpan={3}></td>
-                    <td className="p-0" colSpan={2}>
-                      <Table className="table-borderless table-sm table-nowrap align-middle mb-0">
+                    <div className="p-0">
+                      <Col className="table-borderless table-sm table-nowrap align-middle mb-0">
                         <tbody>
                           <tr>
                             <th scope="row">Total</th>
@@ -519,7 +410,7 @@ const PassagerInvoice = () => {
                             <td>
                               <Form.Control
                                 type="number"
-                                value={mTotal - mTotalHT}
+                                value={precise(mTotal - mTotalHT)}
                                 id="cart-tax"
                                 placeholder="$0.00"
                               />
@@ -529,7 +420,7 @@ const PassagerInvoice = () => {
                             <th scope="row">Montant Total</th>
                             <td>
                               <Form.Control
-                                value={mTotal}
+                                value={precise(mTotal)}
                                 type="number"
                                 id="cart-total"
                                 placeholder="0.00"
@@ -537,54 +428,121 @@ const PassagerInvoice = () => {
                             </td>
                           </tr>
                         </tbody>
-                      </Table>
-                    </td>
-                  </tr>
+                      </Col>
+                    </div>
+                  </Col>
                 </Row>
-                <Row className="mt-3">
-                  <Col lg={4}>
-                    <div className="mb-2">
-                      <Form.Label
-                        htmlFor="choices-payment-type"
-                        className="text-muted text-uppercase fw-semibold"
-                      >
-                        Payment Details
+                {clientPhyId === "18" ? (
+                  <Row className="mt-3">
+                    <Col lg={9}>
+                      <div className="mb-2">
+                        <Form.Label
+                          htmlFor="choices-payment-type"
+                          className="text-muted text-uppercase fw-semibold"
+                        >
+                          Reglement
+                        </Form.Label>
+                        <select
+                          className="form-select"
+                          data-choices
+                          data-choices-search-false
+                          id="choices-payment-type"
+                          value={selectedd}
+                          onChange={(e) => handleChangeselect(e)}
+                        >
+                          <option value="Paiement total en espèces">
+                            Paiement total en espèces
+                          </option>
+                        </select>
+                        {selectedd === "Paiement total en espèces" ? (
+                          <PaiementTotal />
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    </Col>
+                    <Col lg={3} sm={6}>
+                      <Form.Label htmlFor="choices-payment-status">
+                        Status de Payement
                       </Form.Label>
                       <select
                         className="form-select"
                         data-choices
                         data-choices-search-false
-                        id="choices-payment-type"
+                        id="choices-payment-status"
                       >
-                        <option value="">Methode de Payement</option>
-                        <option value="Mastercard">Espèce</option>
-                        <option value="Credit Card">par chèque</option>
-                        <option value="Visa">Visa</option>
+                        <option value="">Selectionner Status</option>
+                        <option value="Paid">Payé</option>
+                        <option value="Paid">impayé</option>
+                        <option value="Paid">Semi Payé</option>
                       </select>
-                    </div>
-                    <div>
-                      <Form.Control
-                        type="number"
-                        id="amountTotalPay"
-                        placeholder="0.00"
-                      />
-                    </div>
-                  </Col>
-                </Row>
-                <div className="mt-4">
-                  <Form.Label
-                    htmlFor="exampleFormControlTextarea1"
-                    className="text-muted text-uppercase fw-semibold"
-                  >
-                    NOTES
-                  </Form.Label>
-                  <textarea
-                    className="form-control alert alert-warning"
-                    id="exampleFormControlTextarea1"
-                    placeholder="Notes"
-                    defaultValue="Tous les comptes doivent être payés dans les 7 jours suivant la réception de la facture. A régler par chèque ou carte bancaire ou paiement direct en ligne."
-                  />
-                </div>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row className="mt-3">
+                    <Col lg={9}>
+                      <div className="mb-2">
+                        <Form.Label
+                          htmlFor="choices-payment-type"
+                          className="text-muted text-uppercase fw-semibold"
+                        >
+                          Reglement
+                        </Form.Label>
+                        <select
+                          className="form-select"
+                          data-choices
+                          data-choices-search-false
+                          id="choices-payment-type"
+                          value={selectedd}
+                          onChange={(e) => handleChangeselect(e)}
+                        >
+                          <option value="Paiement total en espèces">
+                            Paiement total en espèces
+                          </option>
+                          <option value="Paiement partiel espèces">
+                            Paiement partiel espèces
+                          </option>
+                          <option value="Paiement partiel chèque">
+                            Paiement partiel chèque
+                          </option>
+                        </select>
+                        {selectedd === "Paiement total en espèces" ? (
+                          <PaiementTotal />
+                        ) : (
+                          ""
+                        )}
+
+                        {selectedd === "Paiement partiel espèces" ? (
+                          <PaiementEspece />
+                        ) : (
+                          ""
+                        )}
+                        {selectedd === "Paiement partiel chèque" ? (
+                          <PaiementCheque />
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    </Col>
+                    <Col lg={3} sm={6}>
+                      <Form.Label htmlFor="choices-payment-status">
+                        Status de Payement
+                      </Form.Label>
+                      <select
+                        className="form-select"
+                        data-choices
+                        data-choices-search-false
+                        id="choices-payment-status"
+                      >
+                        <option value="">Selectionner Status</option>
+                        <option value="Paid">Payé</option>
+                        <option value="Paid">impayé</option>
+                        <option value="Paid">Semi Payé</option>
+                      </select>
+                    </Col>
+                  </Row>
+                )}
+
                 <div className="hstack gap-2 justify-content-end d-print-none mt-4">
                   <Button variant="success" type="submit">
                     <i className="ri-printer-line align-bottom me-1"></i>{" "}

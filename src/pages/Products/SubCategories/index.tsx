@@ -12,20 +12,18 @@ import {
   useCreateSubCategoryMutation,
   useFetchSubCategoriesQuery,
 } from "features/subCategory/subCategorySlice";
+import Swal from "sweetalert2";
 
 const SubCategories = () => {
   const { data = [] } = useFetchCategoriesQuery();
   const { data: subCategory = [] } = useFetchSubCategoriesQuery();
   const notify = () => {
-    toast.success("Le sous-catégorie a été créé avec succès", {
-      position: "top-center",
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Le sous-catégorie a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
     });
   };
 
