@@ -109,6 +109,7 @@ const Shipments = () => {
     e.preventDefault();
     addArrivage(formData).then(() => setFormData(formData));
     notify();
+    navigate("/shipping-list", { state: formData });
   };
 
   const [modal_AddShippingModals, setmodal_AddShippingModals] =
@@ -193,11 +194,7 @@ const Shipments = () => {
                   <h6 className="card-title mb-0">Arrivage</h6>
                 </Col>
                 <Col className="col-xxl-auto col-sm-auto ms-auto">
-                  <Button
-                    variant="success"
-                    onClick={() => navigate("/shipping-list")}
-                    className="add-btn"
-                  >
+                  <Button variant="success" type="submit" className="add-btn">
                     <i className="bi bi-plus-circle me-1 align-middle"></i>{" "}
                     Ajouter Arrivage
                   </Button>

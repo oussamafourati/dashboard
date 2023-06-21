@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Row,
-  Table,
-  Modal,
-} from "react-bootstrap";
-import { Produit, useFetchProduitsQuery } from "features/produit/productSlice";
+import { Card, Col, Form, Row } from "react-bootstrap";
+import { ArrivageProduit } from "features/arrivageProduit/arrivageProduitSlice";
 import { Link } from "react-router-dom";
 
 const NewComponent = () => {
@@ -39,12 +30,12 @@ const NewComponent = () => {
   };
 
   const [text, setText] = useState("");
-  const [products, setProducts] = useState<Produit[]>([]);
-  const [suggestions, setSuggestions] = useState<Produit[]>([]);
+  const [products, setProducts] = useState<ArrivageProduit[]>([]);
+  const [suggestions, setSuggestions] = useState<ArrivageProduit[]>([]);
   useEffect(() => {
     const loadProduct = async () => {
       const response = await fetch(
-        "http://localhost:8000/product/getAllProducts"
+        "http://localhost:8000/arrivageProduit/allArrivageProduit"
       );
       const resData = await response.json();
       setProducts(resData);
@@ -55,22 +46,20 @@ const NewComponent = () => {
   const onSuggestHandler = (text: string) => {
     setText(text);
     setSuggestions([]);
-    console.log(text);
   };
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text: string = e.target.value;
-    let matches: Produit[] = [];
+    let matches: ArrivageProduit[] = [];
     if (text.length > 0) {
       matches = products.filter((prd) => {
         const regex = new RegExp(`${text}`, "gi");
-        return prd.nomProduit.match(regex);
+        return prd?.nomProduit!.match(regex);
       });
     }
     setSuggestions(matches);
     setText(text);
   };
-
   return (
     <div>
       <Card.Body className="p-4">
@@ -111,11 +100,11 @@ const NewComponent = () => {
                   <div>
                     <ul>
                       <li
-                        key={product.idproduit}
+                        key={product.idArrivageProduit}
                         style={{ cursor: "pointer" }}
-                        onClick={() => onSuggestHandler(product.nomProduit)}
+                        onClick={() => onSuggestHandler(product?.nomProduit!)}
                       >
-                        {product.nomProduit}
+                        {product.nomProduit}__{product.designation}
                       </li>
                     </ul>
                   </div>

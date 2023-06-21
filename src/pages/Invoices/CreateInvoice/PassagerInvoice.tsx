@@ -36,18 +36,6 @@ const PassagerInvoice = () => {
     setSelectedd(e.target.value);
   };
 
-  const [inputFields, setInputFields] = useState<string[]>([""]);
-  const handleAddFields = () => {
-    const newInputFields = [...inputFields];
-    newInputFields.push("");
-    setInputFields(newInputFields);
-  };
-  const handleRemoveFields = (index: number) => {
-    const newInputFields = [...inputFields];
-    newInputFields.splice(index, 1);
-    setInputFields(newInputFields);
-  };
-
   const [clientPhysique, setClientPhysique] = useState<ClientPhysique[]>([]);
   const [selected, setSelected] = useState<ClientPhysique[]>([]);
   const [clientPhyId, setClientPhyId] = useState("");

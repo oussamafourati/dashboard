@@ -17,7 +17,7 @@ import {
   useUpdateProduitMutation,
 } from "features/produit/productSlice";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useGetAllArrivagesQuery } from "features/arrivage/arrivageSlice";
 import {
   useAddArrivageProduitMutation,
@@ -27,6 +27,8 @@ import {
 
 const CreateArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
+  const location = useLocation();
+  console.log(location);
 
   const { data: allProduit = [] } = useFetchProduitsQuery();
   const { data: allArrivage = [] } = useGetAllArrivagesQuery();
@@ -461,7 +463,6 @@ const CreateArrivageProduit = () => {
                                   ) {
                                     return (
                                       <tr key={produitArr.idArrivageProduit}>
-                                        {" "}
                                         <td className="fw-medium">
                                           {produitArr.idArrivageProduit}
                                         </td>
@@ -478,8 +479,8 @@ const CreateArrivageProduit = () => {
                                         </td>
                                         <td>{produitArr.quantite}</td>
                                         <td>
-                                          {produitArr.quantite} *
-                                          {produitArr!.prixAchatTtc}
+                                          {produitArr.quantite *
+                                            produitArr.prixAchatTtc!}
                                         </td>
                                         <td>
                                           <div className="hstack gap-3 fs-15">
@@ -495,7 +496,7 @@ const CreateArrivageProduit = () => {
                                               <i className="ri-delete-bin-5-line"></i>
                                             </Link>
                                           </div>
-                                        </td>{" "}
+                                        </td>
                                       </tr>
                                     );
                                   }

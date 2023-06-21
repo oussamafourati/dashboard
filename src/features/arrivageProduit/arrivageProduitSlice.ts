@@ -14,6 +14,9 @@ export interface ArrivageProduit {
   PrixRemise?: number;
   PourcentageRemise?: number;
   nomProduit?: string;
+  designation?: string;
+  montantTotal?: number;
+  dateArrivage?: string;
 }
 
 export const arrivageProduitSlice = createApi({

@@ -308,7 +308,8 @@ const CreateProduct = () => {
   const [createProduct] = useAddProduitMutation();
 
   // Product's Values and Functions
-  const initialValue = {
+
+  const [formData, setFormData] = useState({
     idproduit: 1,
     nomProduit: "",
     imageProduit: "",
@@ -324,25 +325,7 @@ const CreateProduct = () => {
     remarqueProduit: "",
     fournisseurID: 17,
     categoryID: 18,
-  };
-
-  const [formData, setFormData] = useState(initialValue);
-  const {
-    nomProduit,
-    imageProduit,
-    marque,
-    prixAchatHt,
-    prixAchatTtc,
-    prixVente,
-    Benifice,
-    PourcentageBenifice,
-    PrixRemise,
-    PourcentageRemise,
-    MontantTotalProduit,
-    remarqueProduit,
-    fournisseurID,
-    categoryID,
-  } = formData;
+  });
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
@@ -351,6 +334,89 @@ const CreateProduct = () => {
       fournisseurID: parseInt(fourniseurid),
       [e.target.id]: e.target.value,
     }));
+  };
+
+  const [prixAchatHt, setPrixAchatHt] = useState<string>("");
+  const [prixAchatTtc, setPrixAchatTtc] = useState<string>("");
+  const [prixVente, setPrixVente] = useState<string>("");
+  const [Benifice, setBenifice] = useState<string>("");
+  const [PourcentageBenifice, setPourcentageBenifice] = useState<string>("");
+  const [PrixRemise, setPrixRemise] = useState<string>("");
+  const [PourcentageRemise, setPourcentageRemise] = useState<string>("");
+
+  const onChangePAHT = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixAchatHt(event.target.value);
+    setPrixAchatTtc((parseInt(event.target.value) * 1.19).toString());
+  };
+  const onChangePATTC = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixAchatTtc(event.target.value);
+
+    setPrixAchatHt((parseInt(event.target.value) / 1.19).toString());
+  };
+
+  const onChangePV = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixVente(event.target.value);
+    setBenifice(
+      (parseInt(event.target.value) - parseInt(prixAchatTtc)).toString()
+    );
+    setPourcentageBenifice(
+      (
+        ((parseInt(event.target.value) - parseInt(prixAchatTtc)) * 100) /
+        parseInt(event.target.value)
+      ).toString()
+    );
+  };
+
+  const onChangeBenifice = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setBenifice(event.target.value);
+    setPrixVente(
+      (parseInt(event.target.value) + parseInt(prixAchatTtc)).toString()
+    );
+    setPourcentageBenifice(
+      (
+        (parseInt(event.target.value) * 100) /
+        (parseInt(event.target.value) + parseInt(prixAchatTtc))
+      ).toString()
+    );
+  };
+  const onChangePourcentageBenifice = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPourcentageBenifice(event.target.value);
+    setBenifice(
+      (
+        (parseInt(prixAchatTtc) * parseInt(event.target.value)) /
+        (100 - parseInt(event.target.value))
+      ).toString()
+    );
+    setPrixVente(
+      (
+        (parseInt(prixAchatTtc) * parseInt(event.target.value)) /
+          (100 - parseInt(event.target.value)) +
+        parseInt(prixAchatTtc)
+      ).toString()
+    );
+  };
+
+  const onChangePrixRemise = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixRemise(event.target.value);
+    setPourcentageRemise(
+      (
+        ((parseInt(prixVente) - parseInt(event.target.value)) * 100) /
+        parseInt(prixVente)
+      ).toString()
+    );
+  };
+  const onChangePourcentagePrixRemise = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPourcentageRemise(event.target.value);
+    setPrixRemise(
+      (
+        (parseInt(prixVente) * (100 - parseInt(event.target.value))) /
+        100
+      ).toString()
+    );
   };
 
   const notify = () => {
@@ -438,7 +504,7 @@ const CreateProduct = () => {
             <Row>
               <Col lg={8}>
                 <Card>
-                  <Card.Header>
+                  {/* <Card.Header>
                     <div className="d-flex">
                       <div className="flex-shrink-0 me-3">
                         <div className="avatar-sm">
@@ -454,7 +520,7 @@ const CreateProduct = () => {
                         </p>
                       </div>
                     </div>
-                  </Card.Header>
+                  </Card.Header> */}
                   <Card.Body>
                     <div className="mb-3">
                       <Form.Label htmlFor="nomProduit">
@@ -474,7 +540,7 @@ const CreateProduct = () => {
                       </div>
                     </div>
                     <Row>
-                      <Col lg={3} sm={6}>
+                      <Col lg={4} sm={6}>
                         <div className="mb-3">
                           <Form.Label htmlFor="prixAchatHt">
                             Prix d'Achat HT
@@ -482,21 +548,27 @@ const CreateProduct = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="text"
-                              value={formData.prixAchatHt}
-                              onChange={onChange}
+                              value={prixAchatHt!}
+                              onChange={onChangePAHT}
                               id="prixAchatHt"
-                              placeholder="Taper prix"
+                              placeholder="00.00"
                               aria-label="Price"
                               aria-describedby="product-price-addon"
-                              // required
+                              autoComplete="off"
                             />
+                            <span
+                              className="input-group-text"
+                              id="product-discount-addon"
+                            >
+                              TVA : 19%
+                            </span>
                             <div className="invalid-feedback">
                               Please enter a product price.
                             </div>
                           </div>
                         </div>
                       </Col>
-                      <Col lg={2} sm={6}>
+                      {/* <Col lg={3} sm={6}>
                         <div className="mb-3">
                           <Form.Label htmlFor="TVA">TVA</Form.Label>
                           <div className="input-group has-validation mb-3">
@@ -504,7 +576,6 @@ const CreateProduct = () => {
                               type="text"
                               value={"19%"}
                               readOnly={true}
-                              // onChange={onChange}
                               id="TVA"
                               placeholder="Taper prix"
                               aria-label="Price"
@@ -516,7 +587,30 @@ const CreateProduct = () => {
                             </div>
                           </div>
                         </div>
+                      </Col> */}
+                      <Col lg={1}></Col>
+                      <Col lg={4} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="prixAchatTtc">
+                            Prix Achat Ttc
+                          </Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <Form.Control
+                              type="text"
+                              value={prixAchatTtc}
+                              onChange={onChangePATTC}
+                              id="prixAchatTtc"
+                              placeholder="00.00"
+                              aria-label="Price"
+                              aria-describedby="product-price-addon"
+                            />
+                            <div className="invalid-feedback">
+                              Please enter a product price.
+                            </div>
+                          </div>
+                        </div>
                       </Col>
+
                       <Col lg={3} sm={6}>
                         <div className="mb-3">
                           <Form.Label htmlFor="prixVente">
@@ -525,13 +619,60 @@ const CreateProduct = () => {
                           <Form.Control
                             type="text"
                             id="prixVente"
-                            placeholder=" Taper Prix de Vente"
-                            // required
-                            value={formData.prixVente}
-                            onChange={onChange}
+                            placeholder="00.00"
+                            value={prixVente}
+                            onChange={onChangePV}
+                            aria-label="discount"
+                            aria-describedby="product-discount-addon"
                           />
                           <div className="invalid-feedback">
                             Please enter a product orders.
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="Benifice">Benifice</Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="Benifice"
+                            placeholder="00.00"
+                            value={Benifice}
+                            aria-label="discount"
+                            aria-describedby="product-discount-addon"
+                            onChange={onChangeBenifice}
+                          />
+                          <div className="invalid-feedback">
+                            Please enter a product orders.
+                          </div>
+                        </div>
+                      </Col>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="PourcentageBenifice">
+                            Benifice %
+                          </Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <Form.Control
+                              type="text"
+                              id="PourcentageBenifice"
+                              placeholder="0"
+                              aria-label="discount"
+                              aria-describedby="product-discount-addon"
+                              value={PourcentageBenifice}
+                              onChange={onChangePourcentageBenifice}
+                            />
+                            <span
+                              className="input-group-text"
+                              id="product-discount-addon"
+                            >
+                              %
+                            </span>
+                            <div className="invalid-feedback">
+                              Please enter a product orders.
+                            </div>
                           </div>
                         </div>
                       </Col>
@@ -543,14 +684,41 @@ const CreateProduct = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="text"
-                              value={formData.PrixRemise}
-                              onChange={onChange}
+                              value={PrixRemise}
+                              onChange={onChangePrixRemise}
                               id="PrixRemise"
-                              placeholder="Taper Remise"
+                              placeholder="00.00"
+                              aria-label="discount"
+                              aria-describedby="product-discount-addon"
+                            />
+                            <div className="invalid-feedback">
+                              Please enter a product discount.
+                            </div>
+                          </div>
+                        </div>
+                      </Col>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="PourcentageRemise">
+                            Prix en Remise %
+                          </Form.Label>
+                          <div className="input-group has-validation mb-3">
+                            <Form.Control
+                              type="text"
+                              value={PourcentageRemise}
+                              onChange={onChangePourcentagePrixRemise}
+                              id="PourcentageRemise"
+                              placeholder="0"
                               aria-label="discount"
                               aria-describedby="product-discount-addon"
                               required
                             />
+                            <span
+                              className="input-group-text"
+                              id="product-discount-addon"
+                            >
+                              %
+                            </span>
                             <div className="invalid-feedback">
                               Please enter a product discount.
                             </div>
@@ -559,7 +727,7 @@ const CreateProduct = () => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col lg={6}>
+                      <Col lg={6} style={{ marginBottom: 15 }}>
                         <div className="mb-3">
                           <Form.Label htmlFor="marque">Marque</Form.Label>
                           <Form.Control
@@ -578,18 +746,8 @@ const CreateProduct = () => {
                             <div className="flex-grow-1">
                               <Form.Label>Fournisseur</Form.Label>
                             </div>
-                            <div className="flex-shrink-0">
-                              <Button
-                                className="float-end"
-                                variant="success"
-                                id="add-btn"
-                                onClick={() => tog_AddFournisseurModals()}
-                              >
-                                +
-                              </Button>
-                            </div>
                           </div>
-                          <div>
+                          <div className="input-group mb-3">
                             <select
                               className="form-select"
                               id="choices-fournisseur-input"
@@ -608,6 +766,17 @@ const CreateProduct = () => {
                                 </option>
                               ))}
                             </select>
+                            <div className="flex-shrink-0">
+                              <Button
+                                className="float-end"
+                                variant="success"
+                                id="add-btn"
+                                onClick={() => tog_AddFournisseurModals()}
+                                style={{ marginLeft: 7 }}
+                              >
+                                +
+                              </Button>
+                            </div>
                           </div>
                           <div className="error-msg mt-1">
                             Please select a product category.
@@ -629,7 +798,7 @@ const CreateProduct = () => {
                         </div>
                       </Col> */}
                     </Row>
-                    <Row style={{ marginBottom: 15 }}>
+                    <Row>
                       <Col lg={6}>
                         {/* ******* Select Category ******* */}
                         <div>
@@ -637,18 +806,8 @@ const CreateProduct = () => {
                             <div className="flex-grow-1">
                               <Form.Label>Catégorie</Form.Label>
                             </div>
-                            <div className="flex-shrink-0">
-                              <Button
-                                className="float-end"
-                                variant="success"
-                                id="add-btn"
-                                onClick={() => tog_AddCategorysModals()}
-                              >
-                                +
-                              </Button>
-                            </div>
                           </div>
-                          <div>
+                          <div className="input-group mb-3">
                             <select
                               className="form-select"
                               id="choices-category-input"
@@ -665,6 +824,17 @@ const CreateProduct = () => {
                                 </option>
                               ))}
                             </select>
+                            <div className="flex-shrink-0">
+                              <Button
+                                className="float-end"
+                                variant="success"
+                                id="add-btn"
+                                onClick={() => tog_AddCategorysModals()}
+                                style={{ marginLeft: 7 }}
+                              >
+                                +
+                              </Button>
+                            </div>
                           </div>
                           <div className="error-msg mt-1">
                             svp selectionner la categorie.
@@ -678,18 +848,8 @@ const CreateProduct = () => {
                             <div className="flex-grow-1">
                               <Form.Label>Sous-Catégorie</Form.Label>
                             </div>
-                            <div className="flex-shrink-0">
-                              <Button
-                                className="float-end"
-                                variant="success"
-                                id="add-btn"
-                                onClick={() => tog_AddSubCategorysModals()}
-                              >
-                                +
-                              </Button>
-                            </div>
                           </div>
-                          <div>
+                          <div className="input-group mb-3">
                             <select
                               className="form-select"
                               id="choices-sous-category-input"
@@ -708,6 +868,17 @@ const CreateProduct = () => {
                                 </option>
                               ))}
                             </select>
+                            <div className="flex-shrink-0">
+                              <Button
+                                className="float-end"
+                                variant="success"
+                                id="add-btn"
+                                onClick={() => tog_AddSubCategorysModals()}
+                                style={{ marginLeft: 7 }}
+                              >
+                                +
+                              </Button>
+                            </div>
                           </div>
                           <div className="error-msg mt-1">
                             svp selectionner la categorie.
@@ -715,13 +886,13 @@ const CreateProduct = () => {
                         </div>
                       </Col>
                     </Row>
-                    <Row style={{ marginBottom: 15 }}></Row>
+                    {/* <Row style={{ marginBottom: 15 }}></Row> */}
                   </Card.Body>
                 </Card>
               </Col>
               <Col lg={4}>
-                <Card>
-                  <Card.Header>
+                <Card style={{ height: "27.4rem", marginBottom: 0 }}>
+                  {/* <Card.Header>
                     <div className="d-flex">
                       <div className="flex-shrink-0 me-3">
                         <div className="avatar-sm">
@@ -737,8 +908,14 @@ const CreateProduct = () => {
                         </p>
                       </div>
                     </div>
-                  </Card.Header>
-                  <Card.Body>
+                  </Card.Header> */}
+                  <Card.Body
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     <div className="text-center mb-3">
                       <div className="position-relative d-inline-block">
                         <div className="position-absolute top-100 start-100 translate-middle">
@@ -782,19 +959,19 @@ const CreateProduct = () => {
                     </div>
                   </Card.Body>
                 </Card>
+                <Row>
+                  <div className="text-end mb-3" style={{ marginTop: 13 }}>
+                    <Button
+                      variant="primary"
+                      // onClick={() => navigate("/products-list")}
+                      type="submit"
+                      className="w-sm"
+                    >
+                      Ajouter
+                    </Button>
+                  </div>
+                </Row>
               </Col>
-            </Row>
-            <Row>
-              <div className="text-end mb-3">
-                <Button
-                  variant="success"
-                  // onClick={() => navigate("/products-list")}
-                  type="submit"
-                  className="w-sm"
-                >
-                  Ajouter
-                </Button>
-              </div>
             </Row>
           </form>
           {/* ******Modal For Category****** */}
