@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from "react";
 import TableContainer from "Common/TableContainer";
-import { Col, Form, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import moment from "moment";
 import {
   useDeleteProduitMutation,
   useFetchProduitsQuery,
@@ -14,9 +13,6 @@ const ProductTable = () => {
   const { data = [] } = useFetchProduitsQuery();
 
   const [deleteProduit] = useDeleteProduitMutation();
-  const handleDelete = async (id: number) => {
-    deleteProduit(id);
-  };
 
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -45,10 +41,7 @@ const ProductTable = () => {
             "Le Produit a été supprimé.",
             "success"
           );
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
           swalWithBootstrapButtons.fire(
             "Annulé",
             "Le Produit est en sécurité :)",
@@ -58,108 +51,10 @@ const ProductTable = () => {
       });
   };
 
-  const [formData, setFormData] = useState({
-    idproduit: 99,
-    nomProduit: "",
-    imageProduit: "",
-    marque: "",
-    prixAchatHt: 11,
-    prixAchatTtc: 22,
-    prixVente: 33,
-    remise: 0.12,
-    PourcentageBenifice: 15,
-    Benifice: 150,
-    PrixRemise: 126,
-    PourcentageRemise: 20,
-    remarqueProduit: "",
-    nom: "",
-    raison_sociale: "",
-  });
-
-  const {
-    idproduit,
-    nomProduit,
-    imageProduit,
-    marque,
-    prixAchatHt,
-    prixAchatTtc,
-    prixVente,
-    remise,
-    PourcentageBenifice,
-    Benifice,
-    PrixRemise,
-    PourcentageRemise,
-    remarqueProduit,
-    nom,
-    raison_sociale,
-  } = formData;
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  };
-
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const fileLogo = (
-      document.getElementById("imageProduit") as HTMLInputElement
-    ).files?.item(0) as File;
-
-    const base64 = await convertToBase64(fileLogo);
-
-    setFormData({
-      ...formData,
-      imageProduit: base64 as string,
-    });
-  };
-
-  function convertToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-
-      fileReader.onload = () => {
-        const base64String = fileReader.result as string;
-        const base64Data = base64String.split(",")[1];
-
-        resolve(base64Data);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  }
-
-  const handleValidDate = (date: any) => {
-    const date1 = moment(new Date(date)).format("DD MMM Y");
-    return date1;
-  };
-
-  const handleValidTime = (time: any) => {
-    const time1 = new Date(time);
-    const getHour = time1.getUTCHours();
-    const getMin = time1.getUTCMinutes();
-    const getTime = `${getHour}:${getMin}`;
-    var meridiem = "";
-    if (getHour >= 12) {
-      meridiem = "PM";
-    } else {
-      meridiem = "AM";
-    }
-    const updateTime =
-      moment(getTime, "hh:mm").format("hh:mm") + " " + meridiem;
-    return updateTime;
-  };
-
   const columns = useMemo(
     () => [
       {
         Header: "Nom Produit",
-        // disableFilters: true,
-        // filterable: true,
         Filter: true,
         accessor: (produit: Produit) => {
           return (
@@ -176,84 +71,37 @@ const ProductTable = () => {
                   {produit.nomProduit}
                 </div>
               </div>
-              {/* <div className="flex-grow-1 ms-2 user_name">{produit.nom}</div> */}
             </>
           );
         },
       },
-      // {
-      //   Header: "Category",
-      //   accessor: "nom",
-      //   Filter: true,
-      // },
-      // {
-      //   Header: "marque",
-      //   accessor: "marque",
-      //   Filter: false,
-      // },
-      // {
-      //   Header: "quantite",
-      //   accessor: "quantite",
-      //   Filter: false,
-      // },
+
       {
-        Header: "prix Achat HT",
-        accessor: "prixAchatHt",
-        Filter: false,
+        Header: "Marque",
+        accessor: "marque",
+        Filter: true,
       },
       {
-        Header: "Prix Achat TTC",
-        accessor: "prixAchatTtc",
-        Filter: false,
+        Header: "Description",
+        accessor: "remarqueProduit",
+        Filter: true,
       },
       {
-        Header: "Prix Vente",
-        accessor: "prixVente",
-        Filter: false,
+        Header: "Category",
+        accessor: "nom",
+        Filter: true,
       },
       {
-        Header: "Benifice",
-        accessor: "Benifice",
-        Filter: false,
+        Header: "Sous-Category",
+        accessor: "title",
+        Filter: true,
       },
-      {
-        Header: "Benifice en %",
-        accessor: "PourcentageBenifice",
-        Filter: false,
-      },
-      {
-        Header: "Prix Remise",
-        accessor: "PrixRemise",
-        Filter: false,
-      },
-      {
-        Header: "Remise en %",
-        accessor: "PourcentageRemise",
-        Filter: false,
-      },
-      // {
-      //   Header: "MontantTotalProduit",
-      //   accessor: "MontantTotalProduit",
-      //   Filter: false,
-      // },
-      // {
-      //   Header: "remarqueProduit",
-      //   accessor: "remarqueProduit",
-      //   Filter: false,
-      // },
       {
         Header: "Action",
-        Filter: true,
+        Filter: false,
         accessor: (produit: Produit) => {
           return (
             <React.Fragment>
-              {/* <li>
-                  <Link to="#">
-                    <i className="ri-pencil-fill align-bottom me-2 text-muted" />
-                    Modifier
-                  </Link>
-                </li> */}
-
               <Link
                 to="#"
                 className="link-danger"
@@ -282,19 +130,6 @@ const ProductTable = () => {
             </Link>
           </div>
         </Col>
-        {/* <Col className="col-sm">
-          <div className="d-flex justify-content-sm-end">
-            <div className="search-box ms-2">
-              <Form.Control
-                type="text"
-                autoComplete="off"
-                id="searchProductList"
-                placeholder="Rechercher Produits..."
-              />
-              <i className="ri-search-line search-icon"></i>
-            </div>
-          </div>
-        </Col> */}
       </Row>
       <div>
         <TableContainer
@@ -307,7 +142,7 @@ const ProductTable = () => {
           tableClassName="gridjs-table"
           theadClassName="gridjs-thead"
           isProductsFilter={true}
-          SearchPlaceholder="Search Products..."
+          SearchPlaceholder="Rechercher..."
         />
       </div>
     </React.Fragment>

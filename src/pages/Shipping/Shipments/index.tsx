@@ -186,7 +186,6 @@ const Shipments = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumb title="Arrivage" pageTitle="Tableau de bord" />
-
           <Card id="shipmentsList">
             <Card.Header className="border-bottom-dashed">
               <Row className="align-items-center g-3">
@@ -194,8 +193,13 @@ const Shipments = () => {
                   <h6 className="card-title mb-0">Arrivage</h6>
                 </Col>
                 <Col className="col-xxl-auto col-sm-auto ms-auto">
-                  <Button variant="success" type="submit" className="add-btn">
-                    <i className="bi bi-plus-circle me-1 align-middle"></i>{" "}
+                  <Button
+                    onClick={() => navigate("/shipping-list")}
+                    variant="success"
+                    type="submit"
+                    className="add-btn"
+                  >
+                    <i className="bi bi-plus-circle me-1 align-middle"></i>
                     Ajouter Arrivage
                   </Button>
                 </Col>

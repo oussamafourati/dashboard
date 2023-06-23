@@ -6,17 +6,11 @@ import {
   Category,
   useFetchCategoriesQuery,
 } from "features/category/categorySlice";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import {
-  useCreateSubCategoryMutation,
-  useFetchSubCategoriesQuery,
-} from "features/subCategory/subCategorySlice";
+import { useCreateSubCategoryMutation } from "features/subCategory/subCategorySlice";
 import Swal from "sweetalert2";
 
 const SubCategories = () => {
   const { data = [] } = useFetchCategoriesQuery();
-  const { data: subCategory = [] } = useFetchSubCategoriesQuery();
   const notify = () => {
     Swal.fire({
       position: "center",
@@ -39,8 +33,6 @@ const SubCategories = () => {
   };
 
   const [formData, setFormData] = useState(initialValue);
-  const { nom, idSubCategory, title, subDescription, parentID, idcategory } =
-    formData;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
@@ -64,7 +56,6 @@ const SubCategories = () => {
     const getCategory = async () => {
       const reqdata = await fetch("http://localhost:8000/category/all");
       const resdata = await reqdata.json();
-      console.log(resdata);
       setCategoryState(resdata);
     };
     getCategory();
@@ -78,12 +69,10 @@ const SubCategories = () => {
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
-      console.log(reqstatedata);
       setCategoryStateID(categoryId);
     } else {
       setSelected([]);
     }
-    console.log(categoryId);
   };
 
   document.title = "Sous-Catégorie | Radhouani";
@@ -150,7 +139,7 @@ const SubCategories = () => {
                             id="categorySelect"
                             onChange={handleCategory}
                           >
-                            <option value="">Choisir un Catégorie</option>
+                            <option value="">Choisir ...</option>
                             {data.map((category) => (
                               <option
                                 key={category.idcategory}
@@ -209,7 +198,6 @@ const SubCategories = () => {
           </Row>
         </Container>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

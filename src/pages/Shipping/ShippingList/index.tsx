@@ -1,32 +1,49 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Modal,
-  Row,
-} from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import Swal from "sweetalert2";
 import { useAddArrivageMutation } from "features/arrivage/arrivageSlice";
-import { useFetchFournisseurQuery } from "../../../features/fournisseur/fournisseurSlice";
 import {
-  useAddProduitMutation,
-  useFetchProduitsQuery,
-} from "features/produit/productSlice";
-import {
-  ArrivageProduit,
-  useAddArrivageProduitMutation,
-  useGetAllArrivagesProduitQuery,
-} from "features/arrivageProduit/arrivageProduitSlice";
-import { useFetchCategoriesQuery } from "features/category/categorySlice";
+  Fournisseur,
+  useFetchFournisseurQuery,
+} from "../../../features/fournisseur/fournisseurSlice";
 import { useNavigate } from "react-router-dom";
 import CreateArrivageProduit from "../CreateArrivageProduit";
 
 const AddArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
+
+  const [fournisseurState, setFournisseurState] = useState<Fournisseur[]>([]);
+  const [selected, setSelected] = useState<Fournisseur[]>([]);
+  const [fournisseurStateID, setFournisseurStateID] = useState("");
+
+  useEffect(() => {
+    const getFournisseur = async () => {
+      const reqFournisseur = await fetch(
+        "http://localhost:8000/fournisseur/allFournisseur"
+      );
+      const resFournisseur = await reqFournisseur.json();
+      setFournisseurState(resFournisseur);
+    };
+    getFournisseur();
+  }, []);
+
+  const handleFournisseur = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const fournisseurId = e.target.value;
+    if (fournisseurId !== "") {
+      const reqFournisseurData = await fetch(
+        `http://localhost:8000/fournisseur/oneFournisseur/${fournisseurId}`
+      );
+      const resfournisseurdata = await reqFournisseurData.json();
+      setSelected(await resfournisseurdata);
+      setFournisseurStateID(fournisseurId);
+    } else {
+      setSelected([]);
+    }
+  };
+  console.log("Fournisseur State: ", fournisseurState);
+  console.log("Selected: ", selected);
+  console.log("Fournisseur State ID: ", fournisseurStateID);
 
   const [showTasks, setShowTasks] = useState(false);
   const showDone = () => setShowTasks(true);
@@ -50,11 +67,13 @@ const AddArrivageProduit = () => {
     montantTotal,
     dateArrivage,
     raison_sociale,
+    fournisseurID,
   } = arrivageData;
 
   const onChangeArrivage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setArrivageData((prevState) => ({
       ...prevState,
+      fournisseurID: parseInt(fournisseurStateID),
       dateArrivage: new Date().toLocaleDateString("en-GB"),
       [e.target.id]: e.target.value,
     }));
@@ -83,7 +102,14 @@ const AddArrivageProduit = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumb title="Arrivage" pageTitle="Tableau de bord" />
-          <Card>
+          <Card
+            className="mx-auto"
+            style={{
+              width: "46rem",
+              height: "23rem",
+              marginTop: 65,
+            }}
+          >
             <Card.Header>
               <h6 className="card-title mb-0" id="addCategoryLabel">
                 Créer Achats
@@ -96,21 +122,21 @@ const AddArrivageProduit = () => {
                 id="formArrivage"
               >
                 <input type="hidden" id="id-field" />
-                <Row>
-                  <Col lg={3}>
+                <Row style={{ marginBottom: 25 }}>
+                  <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="designation">Designation</Form.Label>
                       <Form.Control
                         type="text"
                         id="designation"
                         onChange={onChangeArrivage}
-                        placeholder="Designation"
+                        placeholder="..."
                         value={arrivageData.designation}
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={3}>
+                  <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="montantTotal">
                         Montant Total
@@ -118,14 +144,16 @@ const AddArrivageProduit = () => {
                       <Form.Control
                         type="text"
                         id="montantTotal"
-                        placeholder="taper le total"
+                        placeholder="00.00"
                         onChange={onChangeArrivage}
                         value={arrivageData.montantTotal}
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={3}>
+                </Row>
+                <Row style={{ marginBottom: 15 }}>
+                  <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="dateArrivage">
                         Date d'arrivage
@@ -133,13 +161,13 @@ const AddArrivageProduit = () => {
                       <Form.Control
                         type="text"
                         id="dateArrivage"
-                        placeholder="Selectionner date"
+                        placeholder="21/06/2023"
                         onChange={onChangeArrivage}
                         value={arrivageData.dateArrivage}
                       />
                     </div>
                   </Col>
-                  <Col lg={3}>
+                  <Col lg={6}>
                     <div className="mb-3">
                       <label htmlFor="statusSelect" className="form-label">
                         Fournisseur
@@ -148,7 +176,7 @@ const AddArrivageProduit = () => {
                         className="form-select"
                         name="choices-single-default"
                         id="statusSelect"
-                        required
+                        onChange={handleFournisseur}
                       >
                         <option value="">Raison Sociale</option>
                         {allfournisseur.map((fournisseur) => (
@@ -162,6 +190,8 @@ const AddArrivageProduit = () => {
                       </select>
                     </div>
                   </Col>
+                </Row>
+                <Row>
                   <Col lg={12}>
                     <div className="hstack gap-2 justify-content-end">
                       <Button
@@ -169,7 +199,6 @@ const AddArrivageProduit = () => {
                         id="add-btn"
                         type="submit"
                         form="formArrivage"
-                        // onClick={() => navigate("/shipment")}
                       >
                         Ajouter
                       </Button>

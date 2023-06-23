@@ -14,12 +14,8 @@ import Breadcrumb from "Common/BreadCrumb";
 import {
   useFetchCategoriesQuery,
   useDeleteCategoryMutation,
-  Category,
 } from "features/category/categorySlice";
-import {
-  SubCategory,
-  useFetchSubCategoriesQuery,
-} from "features/subCategory/subCategorySlice";
+import { useFetchSubCategoriesQuery } from "features/subCategory/subCategorySlice";
 import { useCreateCategoryMutation } from "features/category/categorySlice";
 import Swal from "sweetalert2";
 
@@ -325,15 +321,6 @@ const Categories = () => {
                             key={category.idcategory}
                           >
                             <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
-                            {subdata.map((subcat) => {
-                              if (subcat.parentID === category.idcategory) {
-                                return (
-                                  <li className="flex-grow-1 mb-0">
-                                    {subcat.title}
-                                  </li>
-                                );
-                              }
-                            })}
                             <li>
                               <Link
                                 to="#"
@@ -351,6 +338,15 @@ const Categories = () => {
                           alt=""
                           className="img-fluid category-img object-fit-cover"
                         />
+                        {subdata.map((subcat) => {
+                          if (subcat.parentID === category.idcategory) {
+                            return (
+                              <li className="list-unstyled flex-grow-1 mb-0">
+                                <strong>{subcat.title}</strong>
+                              </li>
+                            );
+                          }
+                        })}
                       </Card.Body>
                     </Card>
                   </Col>
@@ -499,7 +495,6 @@ const Categories = () => {
           </Row>
         </div>
       </Offcanvas>
-      {/* <ToastContainer /> */}
     </React.Fragment>
   );
 };
