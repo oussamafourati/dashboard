@@ -8,7 +8,6 @@ import {
   useFetchFournisseurQuery,
 } from "../../../features/fournisseur/fournisseurSlice";
 import { useNavigate } from "react-router-dom";
-import CreateArrivageProduit from "../CreateArrivageProduit";
 
 const AddArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
@@ -41,18 +40,12 @@ const AddArrivageProduit = () => {
       setSelected([]);
     }
   };
-  console.log("Fournisseur State: ", fournisseurState);
-  console.log("Selected: ", selected);
-  console.log("Fournisseur State ID: ", fournisseurStateID);
-
-  const [showTasks, setShowTasks] = useState(false);
-  const showDone = () => setShowTasks(true);
 
   const navigate = useNavigate();
 
   const [createArrivage] = useAddArrivageMutation();
   const arrivageValue = {
-    idArrivage: 1,
+    idArrivage: Math.floor(100000 + Math.random() * 900000),
     designation: "",
     montantTotal: 0,
     dateArrivage: "",
@@ -61,29 +54,21 @@ const AddArrivageProduit = () => {
   };
   // const today = new Date();
   const [arrivageData, setArrivageData] = useState(arrivageValue);
-  const {
-    idArrivage,
-    designation,
-    montantTotal,
-    dateArrivage,
-    raison_sociale,
-    fournisseurID,
-  } = arrivageData;
 
   const onChangeArrivage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setArrivageData((prevState) => ({
       ...prevState,
-      fournisseurID: parseInt(fournisseurStateID),
       dateArrivage: new Date().toLocaleDateString("en-GB"),
       [e.target.id]: e.target.value,
     }));
   };
 
   const onSubmitArrivage = (e: React.FormEvent<HTMLFormElement>) => {
+    arrivageData["fournisseurID"] = parseInt(fournisseurStateID);
     e.preventDefault();
     createArrivage(arrivageData).then(() => setArrivageData(arrivageData));
     notify();
-    navigate("/shipment");
+    navigate("/shipment", { state: { arrivageData } });
   };
 
   const notify = () => {
@@ -208,7 +193,6 @@ const AddArrivageProduit = () => {
               </form>
             </Card.Body>
           </Card>
-          {showTasks ? <CreateArrivageProduit /> : null}
         </Container>
       </div>
     </React.Fragment>

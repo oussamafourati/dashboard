@@ -71,6 +71,7 @@ import Logout from "pages/Authentication/Logout";
 import Register from "pages/Authentication/Register";
 import ForgotPassword from "pages/Authentication/ForgotPassword";
 import UserProfile from "pages/Authentication/user-profile";
+import ShippingDetails from "pages/Shipping/ShippingList/ShippingDetails";
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <Dashboard /> },
@@ -103,6 +104,7 @@ const authProtectedRoutes = [
   // Shipping
   { path: "/shipping-list", component: <ShippingList /> },
   { path: "/shipments", component: <Shipments /> },
+  { path: "/detail", component: <ShippingDetails /> },
   { path: "/shipment", component: <CreateArrivageProduit /> },
 
   // Coupons

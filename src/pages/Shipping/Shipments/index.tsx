@@ -10,7 +10,6 @@ import {
 } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
-import { shipments } from "Common/data";
 import { Link, useNavigate } from "react-router-dom";
 import Flatpickr from "react-flatpickr";
 import {
@@ -160,17 +159,17 @@ const Shipments = () => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
               <li>
-                <Link to="#" className="badge badge-soft-primary edit-item-btn">
-                  Modifier
+                <Link to="/detail" state={arrivage}>
+                  <i className=" ri-eye-line" />
                 </Link>
               </li>
               <li>
                 <Link
                   to="#"
-                  className="badge badge-soft-danger remove-item-btn"
+                  className="link-danger"
                   onClick={() => AlertDelete(arrivage.idArrivage)}
                 >
-                  Supprimer
+                  <i className="ri-delete-bin-5-line" />
                 </Link>
               </li>
             </ul>

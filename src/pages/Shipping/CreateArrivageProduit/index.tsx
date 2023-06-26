@@ -15,220 +15,26 @@ import {
   useFetchProduitsQuery,
 } from "features/produit/productSlice";
 import Swal from "sweetalert2";
-import { useGetAllArrivagesQuery } from "features/arrivage/arrivageSlice";
+import {
+  Arrivage,
+  useGetAllArrivagesQuery,
+} from "features/arrivage/arrivageSlice";
 import {
   useAddArrivageProduitMutation,
   useDeleteArrivageProduitMutation,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
+import { Link, useLocation } from "react-router-dom";
 
 const CreateArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
-  // const location = useLocation();
-  // console.log(location);
+  const location = useLocation();
+  console.log(location.state.arrivageData);
 
   const { data: allProduit = [] } = useFetchProduitsQuery();
-  const { data: allArrivage = [] } = useGetAllArrivagesQuery();
-
-  const [prixAchatHt, setPrixAchatHT] = useState<string>("");
-  const [prixAchatTtc, setPrixAchatTTc] = useState<string>("");
-  const [prixVente, setPrixVente] = useState<string>("");
-  const [Benifice, setBenifice] = useState<string>("");
-  const [PourcentageBenifice, setPourcentageBenifice] = useState<string>("");
-  const [PrixRemise, setPrixRemise] = useState<string>("");
-  const [PourcentageRemise, setPourcentageRemise] = useState<string>("");
-
-  const onChangePAHT = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrixAchatHT(event.target.value);
-    setPrixAchatTTc((parseInt(event.target.value) * 1.19).toString());
-  };
-  const onChangePATTC = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrixAchatTTc(event.target.value);
-
-    setPrixAchatHT((parseInt(event.target.value) / 1.19).toString());
-  };
-
-  const onChangePV = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrixVente(event.target.value);
-    setBenifice(
-      (parseInt(event.target.value) - parseInt(prixAchatTtc)).toString()
-    );
-    setPourcentageBenifice(
-      (
-        ((parseInt(event.target.value) - parseInt(prixAchatTtc)) * 100) /
-        parseInt(event.target.value)
-      ).toString()
-    );
-  };
-
-  const onChangeBenifice = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBenifice(event.target.value);
-    setPrixVente(
-      (parseInt(event.target.value) + parseInt(prixAchatTtc)).toString()
-    );
-    setPourcentageBenifice(
-      (
-        (parseInt(event.target.value) * 100) /
-        (parseInt(event.target.value) + parseInt(prixAchatTtc))
-      ).toString()
-    );
-  };
-  const onChangePourcentageBenifice = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setPourcentageBenifice(event.target.value);
-    setBenifice(
-      (
-        (parseInt(prixAchatTtc) * parseInt(event.target.value)) /
-        (100 - parseInt(event.target.value))
-      ).toString()
-    );
-    setPrixVente(
-      (
-        (parseInt(prixAchatTtc) * parseInt(event.target.value)) /
-          (100 - parseInt(event.target.value)) +
-        parseInt(prixAchatTtc)
-      ).toString()
-    );
-  };
-
-  const onChangePrixRemise = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrixRemise(event.target.value);
-    setPourcentageRemise(
-      (
-        ((parseInt(prixVente) - parseInt(event.target.value)) * 100) /
-        parseInt(prixVente)
-      ).toString()
-    );
-  };
-  const onChangePourcentagePrixRemise = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setPourcentageRemise(event.target.value);
-    setPrixRemise(
-      (
-        (parseInt(prixVente) * (100 - parseInt(event.target.value))) /
-        100
-      ).toString()
-    );
-  };
-
-  const [createProduit] = useAddProduitMutation();
-  const [CreateArrivageProduit] = useAddArrivageProduitMutation();
-
-  const [arrivageProduitData, setArrivageProduitData] = useState({
-    idArrivageProduit: 1,
-    produitID: 3,
-    arrivageID: 1,
-    quantite: 1,
-    prixAchatHt: "",
-    prixAchatTtc: "",
-    prixVente: "",
-    Benifice: "",
-    PourcentageBenifice: "",
-    PrixRemise: "",
-    PourcentageRemise: "",
-    piecejointes: "",
-    nomProduit: "",
-    designation: "",
-    montantTotal: 1,
-    dateArrivage: "",
-  });
-
-  const onChangeArrivageProduit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setArrivageProduitData((prevState) => ({
-      ...prevState,
-      prixAchatHt,
-      prixAchatTtc,
-      prixVente,
-      Benifice,
-      PourcentageBenifice,
-      PrixRemise,
-      PourcentageRemise,
-      produitID: parseInt(IDproduit),
-      arrivageID: parseInt(IDarrivage),
-      [e.target.id]: e.target.value,
-    }));
-  };
-  const onSubmitArrivageProduit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    CreateArrivageProduit(arrivageProduitData).then(() =>
-      setArrivageProduitData(arrivageProduitData)
-    );
-  };
-
-  const produitValue = {
-    idproduit: 1,
-    nomProduit: "",
-    imageProduit: "",
-    marque: "",
-    remarqueProduit: "",
-    categoryID: 34,
-    sousCategoryID: 86,
-  };
-
-  const [produitData, setProduitData] = useState(produitValue);
-  const {
-    nomProduit,
-    imageProduit,
-    marque,
-    sousCategoryID,
-    remarqueProduit,
-    categoryID,
-  } = produitData;
-
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = (document.getElementById("imageProduit") as HTMLFormElement)
-      .files[0];
-    const base64 = await convertToBase64(file);
-    setProduitData({
-      ...produitData,
-      imageProduit: base64 as string,
-    });
-  };
-
-  function convertToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
-        const base64String = fileReader.result as string;
-        const base64Data = base64String.split(",")[1]; // Extract only the Base64 data
-
-        resolve(base64Data);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-      fileReader.readAsDataURL(file);
-    });
-  }
-  const notifyProduit = () => {
-    Swal.fire({
-      icon: "success",
-      title: "Ajouté",
-      text: "Le Produit a été créer avec succès",
-    });
-  };
-
-  const onChangeProduit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProduitData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  };
-
-  const onSubmitProduit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    createProduit(produitData).then(() => setProduitData(produitData));
-    notifyProduit();
-  };
-
   const [produit, setProduit] = useState<Produit[]>([]);
   const [selected, setSelected] = useState<Produit[]>([]);
   const [IDproduit, setIDProduit] = useState("");
-
   useEffect(() => {
     const getProduit = async () => {
       const reqdata = await fetch(
@@ -239,7 +45,6 @@ const CreateArrivageProduit = () => {
     };
     getProduit();
   }, []);
-
   const handleProduit = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const produitId = e.target.value;
     if (produitId !== "") {
@@ -254,31 +59,134 @@ const CreateArrivageProduit = () => {
     }
   };
 
-  const [arrivage, setArrivage] = useState<Produit[]>([]);
-  const [selectedArrivage, setSelectedArrivage] = useState<Produit[]>([]);
-  const [IDarrivage, setIDArrivage] = useState("");
+  const [prixAchatHT, setPrixAchatHT] = useState<number>(1);
+  const [prixAchatTTC, setPrixAchatTTc] = useState<string>("");
+  const [prixvente, setPrixVente] = useState<string>("");
+  const [benifice, setBenifice] = useState<string>("");
+  const [pourcentageBenifice, setPourcentageBenifice] = useState<string>("");
+  const [prixRemise, setPrixRemise] = useState<string>("");
+  const [pourcentageRemise, setPourcentageRemise] = useState<string>("");
 
-  useEffect(() => {
-    const getArrivage = async () => {
-      const reqdata = await fetch("http://localhost:8000/arrivage/allArrivage");
-      const resdata = await reqdata.json();
-      setArrivage(resdata);
-    };
-    getArrivage();
-  }, []);
+  const onChangePAHT = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixAchatHT(parseInt(event.target.value));
+    setPrixAchatTTc((parseInt(event.target.value) * 1.19).toString());
+  };
+  const onChangePATTC = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixAchatTTc(event.target.value);
 
-  const handleArrivage = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const arrivageId = e.target.value;
-    if (arrivageId !== "") {
-      const reqstatedata = await fetch(
-        `http://localhost:8000/arrivage/oneArrivage/${arrivageId}`
-      );
-      const resstatedata = await reqstatedata.json();
-      setSelectedArrivage(await resstatedata);
-      setIDArrivage(arrivageId);
-    } else {
-      setSelectedArrivage([]);
-    }
+    setPrixAchatHT(parseInt(event.target.value) / 1.19);
+  };
+
+  const onChangePV = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixVente(event.target.value);
+    setBenifice(
+      (parseInt(event.target.value) - parseInt(prixAchatTTC)).toString()
+    );
+    setPourcentageBenifice(
+      (
+        ((parseInt(event.target.value) - parseInt(prixAchatTTC)) * 100) /
+        parseInt(event.target.value)
+      ).toString()
+    );
+  };
+
+  const onChangeBenifice = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setBenifice(event.target.value);
+    setPrixVente(
+      (parseInt(event.target.value) + parseInt(prixAchatTTC)).toString()
+    );
+    setPourcentageBenifice(
+      (
+        (parseInt(event.target.value) * 100) /
+        (parseInt(event.target.value) + parseInt(prixAchatTTC))
+      ).toString()
+    );
+  };
+  const onChangePourcentageBenifice = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPourcentageBenifice(event.target.value);
+    setBenifice(
+      (
+        (parseInt(prixAchatTTC) * parseInt(event.target.value)) /
+        (100 - parseInt(event.target.value))
+      ).toString()
+    );
+    setPrixVente(
+      (
+        (parseInt(prixAchatTTC) * parseInt(event.target.value)) /
+          (100 - parseInt(event.target.value)) +
+        parseInt(prixAchatTTC)
+      ).toString()
+    );
+  };
+
+  const onChangePrixRemise = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrixRemise(event.target.value);
+    setPourcentageRemise(
+      (
+        ((parseInt(prixvente) - parseInt(event.target.value)) * 100) /
+        parseInt(prixvente)
+      ).toString()
+    );
+  };
+  const onChangePourcentagePrixRemise = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPourcentageRemise(event.target.value);
+    setPrixRemise(
+      (
+        (parseInt(prixvente) * (100 - parseInt(event.target.value))) /
+        100
+      ).toString()
+    );
+  };
+
+  const [CreateArrivageProduit] = useAddArrivageProduitMutation();
+
+  const [arrivageProduitData, setArrivageProduitData] = useState({
+    idArrivageProduit: 1,
+    produitID: 34,
+    arrivageID: location.state.arrivageData.idArrivage,
+    quantite: 1,
+    prixAchatHt: 1,
+    prixAchatTtc: 1,
+    prixVente: 1,
+    Benifice: 1,
+    PourcentageBenifice: 1,
+    PrixRemise: 1,
+    PourcentageRemise: 1,
+    MontantTotalProduit: 1,
+    piecejointes: "",
+    nomProduit: "",
+    designation: "",
+    montantTotal: 1,
+    dateArrivage: "",
+  });
+
+  console.log("arrivageID", arrivageProduitData.arrivageID);
+
+  const onChangeArrivageProduit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setArrivageProduitData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+  const onSubmitArrivageProduit = (e: React.FormEvent<HTMLFormElement>) => {
+    arrivageProduitData["produitID"] = parseInt(IDproduit);
+    arrivageProduitData["prixAchatHt"] = prixAchatHT;
+    arrivageProduitData["prixAchatTtc"] = parseInt(prixAchatTTC);
+    arrivageProduitData["prixVente"] = parseInt(prixvente);
+    arrivageProduitData["Benifice"] = parseInt(benifice);
+    arrivageProduitData["PourcentageBenifice"] = parseInt(pourcentageBenifice);
+    arrivageProduitData["PrixRemise"] = parseInt(prixRemise);
+    arrivageProduitData["PourcentageRemise"] = parseInt(pourcentageRemise);
+    arrivageProduitData["MontantTotalProduit"] =
+      parseInt(prixAchatTTC) * arrivageProduitData["quantite"];
+    e.preventDefault();
+    CreateArrivageProduit(arrivageProduitData).then(() =>
+      setArrivageProduitData(arrivageProduitData)
+    );
   };
 
   const [modal_AddProduitModals, setmodal_AddProduitModals] =
@@ -423,7 +331,7 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="text"
-                              value={prixAchatHt!}
+                              value={prixAchatHT!}
                               onChange={onChangePAHT}
                               id="prixAchatHt"
                               placeholder="00.00"
@@ -452,7 +360,7 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="text"
-                              value={prixAchatTtc}
+                              value={prixAchatTTC}
                               onChange={onChangePATTC}
                               id="prixAchatTtc"
                               placeholder="00.00"
@@ -476,7 +384,7 @@ const CreateArrivageProduit = () => {
                             type="text"
                             id="prixVente"
                             placeholder="00.00"
-                            value={prixVente}
+                            value={prixvente}
                             onChange={onChangePV}
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
@@ -494,7 +402,7 @@ const CreateArrivageProduit = () => {
                             type="text"
                             id="Benifice"
                             placeholder="00.00"
-                            value={Benifice}
+                            value={benifice}
                             onChange={onChangeBenifice}
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
@@ -517,7 +425,7 @@ const CreateArrivageProduit = () => {
                               placeholder="0"
                               aria-label="discount"
                               aria-describedby="product-discount-addon"
-                              value={PourcentageBenifice}
+                              value={pourcentageBenifice}
                               onChange={onChangePourcentageBenifice}
                             />
                             <span
@@ -542,7 +450,7 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="text"
-                              value={PrixRemise}
+                              value={prixRemise}
                               onChange={onChangePrixRemise}
                               id="PrixRemise"
                               placeholder="00.00"
@@ -564,7 +472,7 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="text"
-                              value={PourcentageRemise}
+                              value={pourcentageRemise}
                               onChange={onChangePourcentagePrixRemise}
                               id="PourcentageRemise"
                               placeholder="0"
@@ -612,7 +520,6 @@ const CreateArrivageProduit = () => {
                                 <tr>
                                   <th scope="col">#</th>
                                   <th scope="col">Nom Produit</th>
-                                  {/* <th scope="col">prix Achat Ht</th> */}
                                   <th scope="col">prix Achat Ttc</th>
                                   <th scope="col">prix Vente</th>
                                   <th scope="col">Benifice</th>
@@ -626,42 +533,48 @@ const CreateArrivageProduit = () => {
                               </thead>
                               <tbody>
                                 {allArrivageProduit.map((produitArr) => {
-                                  return (
-                                    <tr key={produitArr.idArrivageProduit}>
-                                      <td className="fw-medium">
-                                        {produitArr.idArrivageProduit}
-                                      </td>
-                                      <td>{produitArr.nomProduit}</td>
-                                      <td>{produitArr.prixAchatTtc}</td>
-                                      <td>{produitArr.prixVente}</td>
-                                      <td>{produitArr.Benifice}</td>
-                                      <td>
-                                        {produitArr.PourcentageBenifice} %
-                                      </td>
-                                      <td>{produitArr.PrixRemise}</td>
-                                      <td>{produitArr.PourcentageRemise} %</td>
-                                      <td>{produitArr.quantite}</td>
-                                      <td>
-                                        {/* {produitArr.quantite *
-                                          parseInt(produitArr.prixAchatTtc!)} */}
-                                      </td>
-                                      {/* <td>
-                                        <div className="hstack gap-3 fs-15">
-                                          <Link
-                                            to="#"
-                                            className="link-danger"
-                                            onClick={() =>
-                                              AlertDelete(
-                                                produitArr.idArrivageProduit
-                                              )
-                                            }
-                                          >
-                                            <i className="ri-delete-bin-5-line"></i>
-                                          </Link>
-                                        </div>
-                                      </td> */}
-                                    </tr>
-                                  );
+                                  if (
+                                    produitArr.arrivageID ===
+                                    location.state.arrivageData.idArrivage
+                                  ) {
+                                    return (
+                                      <tr key={produitArr.idArrivageProduit}>
+                                        <td className="fw-medium">
+                                          {produitArr.idArrivageProduit}
+                                        </td>
+                                        <td>{produitArr?.nomProduit!}</td>
+                                        <td>{produitArr?.prixAchatTtc!}</td>
+                                        <td>{produitArr?.prixVente!}</td>
+                                        <td>{produitArr?.Benifice!}</td>
+                                        <td>
+                                          {produitArr?.PourcentageBenifice!} %
+                                        </td>
+                                        <td>{produitArr?.PrixRemise!}</td>
+                                        <td>
+                                          {produitArr?.PourcentageRemise!} %
+                                        </td>
+                                        <td>{produitArr?.quantite!}</td>
+                                        <td>
+                                          {produitArr.MontantTotalProduit}
+                                        </td>
+                                        <td>
+                                          <div className="hstack gap-3 fs-15">
+                                            <Link
+                                              to="#"
+                                              className="link-danger"
+                                              onClick={() =>
+                                                AlertDelete(
+                                                  produitArr.idArrivageProduit
+                                                )
+                                              }
+                                            >
+                                              <i className="ri-delete-bin-5-line"></i>
+                                            </Link>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    );
+                                  }
                                 })}
                               </tbody>
                             </Table>
@@ -676,195 +589,6 @@ const CreateArrivageProduit = () => {
             </Card>
           </div>
         </Container>
-        <Modal
-          id="showModal"
-          className="fade zoomIn"
-          size="lg"
-          show={modal_AddProduitModals}
-          onHide={() => {
-            tog_AddProduitModals();
-          }}
-          centered
-        >
-          <Modal.Header className="px-4 pt-4" closeButton>
-            <h5 className="modal-title fs-18" id="exampleModalLabel">
-              Ajouter Nouveau Produit
-            </h5>
-          </Modal.Header>
-          <Modal.Body className="p-4">
-            <Form className="tablelist-form" onSubmit={onSubmitProduit}>
-              <Row>
-                <div
-                  id="alert-error-msg"
-                  className="d-none alert alert-danger py-2"
-                ></div>
-                <input type="hidden" id="id-field" />
-                <Col lg={12}>
-                  <div className="mb-3">
-                    <Form.Label htmlFor="nomProduit">Désignation</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={produitData.nomProduit}
-                      onChange={onChangeProduit}
-                      id="nomProduit"
-                      placeholder="..."
-                      required
-                    />
-                  </div>
-                </Col>
-                <Col lg={6}>
-                  <div className="mb-3">
-                    <Form.Label htmlFor="marque">Marque</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={produitData.marque}
-                      onChange={onChangeProduit}
-                      id="marque"
-                      placeholder="..."
-                      required
-                    />
-                  </div>
-                </Col>
-                <Col lg={6}>
-                  <div className="mb-3">
-                    <Form.Label htmlFor="remarqueProduit">
-                      Description
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={produitData.remarqueProduit}
-                      onChange={onChangeProduit}
-                      id="remarqueProduit"
-                      placeholder="..."
-                      required
-                      as="textarea"
-                      rows={3}
-                    />
-                  </div>
-                </Col>
-                <Col lg={6}>
-                  <div className="mb-3">
-                    <Form.Label htmlFor="Categorie">Categorie</Form.Label>
-                    <select
-                      className="form-select"
-                      data-choices
-                      data-choices-search-false
-                      id="Categorie"
-                      // required
-                    >
-                      <option value="">Choisir ...</option>
-                      {/* {allCategory.map((category) => (
-                        <option
-                          key={category.idcategory}
-                          value={category.idcategory}
-                        >
-                          {category.nom}
-                        </option>
-                      ))} */}
-                    </select>
-                  </div>
-                </Col>
-                <Col lg={6}>
-                  <div className="mb-3">
-                    <Form.Label htmlFor="Fournisseur">
-                      Sous-Catégorie
-                    </Form.Label>
-                    <select
-                      className="form-select"
-                      data-choices
-                      data-choices-search-false
-                      id="Fournisseur"
-                      // required
-                    >
-                      <option value="">Choisir ...</option>
-                      {/* {allfournisseur.map((fournisseur) => (
-                        <option
-                          key={fournisseur.idfournisseur}
-                          value={fournisseur.idfournisseur}
-                        >
-                          {fournisseur.raison_sociale}
-                        </option>
-                      ))} */}
-                    </select>
-                  </div>
-                </Col>
-                <Col lg={12}>
-                  <div className="mb-3">
-                    <label
-                      htmlFor="imageProduit"
-                      className="form-label d-block"
-                    >
-                      Image <span className="text-danger">*</span>
-                    </label>
-
-                    <div className="position-relative d-inline-block">
-                      <div className="position-absolute top-100 start-100 translate-middle">
-                        <label
-                          htmlFor="imageProduit"
-                          className="mb-0"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="right"
-                          title="Select Client Physique Avatar"
-                        >
-                          <span className="avatar-xs d-inline-block">
-                            <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                              <i className="ri-image-fill"></i>
-                            </span>
-                          </span>
-                        </label>
-                        <input
-                          className="form-control d-none"
-                          type="file"
-                          name="imageProduit"
-                          id="imageProduit"
-                          accept="image/*"
-                          onChange={(e) => handleFileUpload(e)}
-                        />
-                      </div>
-                      <div className="avatar-lg">
-                        <div className="avatar-title bg-light rounded-3">
-                          <img
-                            src={`data:image/jpeg;base64, ${produitData.imageProduit}`}
-                            alt=""
-                            id="imageProduit"
-                            className="avatar-md h-auto rounded-3 object-fit-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="error-msg mt-1">
-                      Please add a category images.
-                    </div>
-                  </div>
-                </Col>
-
-                <Col lg={12} className="modal-footer">
-                  <div className="hstack gap-2 justify-content-end">
-                    <Button
-                      className="btn-ghost-danger"
-                      onClick={() => {
-                        tog_AddProduitModals();
-                      }}
-                    >
-                      <i className="ri-close-line align-bottom me-1"></i> Fermer
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        tog_AddProduitModals();
-                      }}
-                      type="submit"
-                      variant="primary"
-                      id="add-btn"
-                    >
-                      Ajouter
-                    </Button>
-                  </div>
-                </Col>
-              </Row>
-            </Form>
-          </Modal.Body>
-        </Modal>
       </div>
     </React.Fragment>
   );

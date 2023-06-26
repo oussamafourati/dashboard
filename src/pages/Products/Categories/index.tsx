@@ -315,12 +315,12 @@ const Categories = () => {
                   <Col xxl={3} lg={8}>
                     <Card className="categrory-widgets overflow-hidden">
                       <Card.Body className="p-4">
-                        <div className="d-flex align-items-center mb-3">
-                          <ul
-                            className="flex-shrink-0 list-unstyled hstack gap-1 mb-0"
-                            key={category.idcategory}
-                          >
-                            <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
+                        <div
+                          className="d-flex align-items-center mb-3"
+                          key={category.idcategory}
+                        >
+                          <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
+                          <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
                             <li>
                               <Link
                                 to="#"
@@ -333,20 +333,22 @@ const Categories = () => {
                             </li>
                           </ul>
                         </div>
+                        <ul className="list-unstyled vstack gap-2 mb-0">
+                          {subdata.map((subcat) => {
+                            if (subcat.parentID === category.idcategory) {
+                              return (
+                                <li>
+                                  <strong>{subcat.title}</strong>
+                                </li>
+                              );
+                            }
+                          })}
+                        </ul>
                         <img
                           src={`data:image/jpeg;base64,${category.image}`}
                           alt=""
                           className="img-fluid category-img object-fit-cover"
                         />
-                        {subdata.map((subcat) => {
-                          if (subcat.parentID === category.idcategory) {
-                            return (
-                              <li className="list-unstyled flex-grow-1 mb-0">
-                                <strong>{subcat.title}</strong>
-                              </li>
-                            );
-                          }
-                        })}
                       </Card.Body>
                     </Card>
                   </Col>
