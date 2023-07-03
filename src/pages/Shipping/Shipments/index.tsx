@@ -213,7 +213,7 @@ const Shipments = () => {
                 </Col>
               </Row>
             </Card.Header>
-            <Card.Header className="border-bottom-dashed">
+            {/* <Card.Header className="border-bottom-dashed">
               <Row className="g-3">
                 <Col xxl={3} lg={2}></Col>
                 <Col xxl={3} lg={2}></Col>
@@ -229,7 +229,7 @@ const Shipments = () => {
                   />
                 </Col>
               </Row>
-            </Card.Header>
+            </Card.Header> */}
             <Card.Body>
               <div className="table-responsive table-card">
                 <TableContainer

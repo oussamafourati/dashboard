@@ -25,12 +25,14 @@ import {
   useDeleteArrivageProduitMutation,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Category } from "features/category/categorySlice";
+import { SubCategory } from "features/subCategory/subCategorySlice";
 
 const CreateArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
   const location = useLocation();
-  console.log("first: ", location.state);
+  const navigate = useNavigate();
 
   const { data: allProduit = [] } = useFetchProduitsQuery();
   const [produit, setProduit] = useState<Produit[]>([]);
@@ -164,8 +166,6 @@ const CreateArrivageProduit = () => {
     dateArrivage: "",
   });
 
-  console.log("arrivageID", arrivageProduitData.arrivageID);
-
   const onChangeArrivageProduit = (e: React.ChangeEvent<HTMLInputElement>) => {
     setArrivageProduitData((prevState) => ({
       ...prevState,
@@ -233,6 +233,101 @@ const CreateArrivageProduit = () => {
           );
         }
       });
+  };
+
+  // Produit
+
+  const [category, setCategory] = useState<Category[]>([]);
+  const [categoryid, setCategoryid] = useState("");
+  const [sousCategory, setSousCategory] = useState<SubCategory[]>([]);
+  const [sousCategoryid, setSousCategoryid] = useState("");
+  useEffect(() => {
+    const getCategory = async () => {
+      const reqdata = await fetch("http://localhost:8000/category/all");
+      const resdata = await reqdata.json();
+      setCategory(resdata);
+    };
+    getCategory();
+  }, []);
+  const handlecategory = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const categoryId = e.target.value;
+    if (categoryId !== "") {
+      const reqstatedata = await fetch(
+        `http://localhost:8000/subCategory/onesubcategory?idcategory=${categoryId}`
+      );
+      const resstatedata = await reqstatedata.json();
+      setSousCategory(resstatedata);
+      setCategoryid(categoryId);
+    } else {
+      setSousCategory([]);
+    }
+  };
+  const handlesousCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const getstateid = e.target.value;
+    setSousCategoryid(getstateid);
+  };
+
+  const [createProduit] = useAddProduitMutation();
+
+  const [produitData, setProduitData] = useState({
+    idproduit: 1,
+    nomProduit: "",
+    imageProduit: "",
+    marque: "",
+    remarqueProduit: "",
+    sousCategoryID: 1,
+    categoryID: 1,
+  });
+
+  function convertToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        const base64String = fileReader.result as string;
+        const base64Data = base64String.split(",")[1]; // Extract only the Base64 data
+
+        resolve(base64Data);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+      fileReader.readAsDataURL(file);
+    });
+  }
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = (document.getElementById("imageProduit") as HTMLFormElement)
+      .files[0];
+    const base64 = await convertToBase64(file);
+    setProduitData({
+      ...produitData,
+      imageProduit: base64 as string,
+    });
+  };
+  const onChangeProduit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProduitData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const onSubmitProduit = (e: React.FormEvent<HTMLFormElement>) => {
+    produitData["categoryID"] = parseInt(categoryid);
+    produitData["sousCategoryID"] = parseInt(sousCategoryid);
+    e.preventDefault();
+    createProduit(produitData).then(() => setProduitData(produitData));
+    notifyProduit();
+    setmodal_AddProduitModals(!modal_AddProduitModals);
+  };
+
+  const notifyProduit = () => {
+    Swal.fire({
+      icon: "success",
+      title: "Ajouté",
+      text: "Le Produit a été créer avec succès",
+    });
   };
 
   return (
@@ -589,137 +684,214 @@ const CreateArrivageProduit = () => {
             </Card>
           </div>
         </Container>
+        <Modal
+          id="showModal"
+          className="fade zoomIn"
+          size="lg"
+          show={modal_AddProduitModals}
+          onHide={() => {
+            tog_AddProduitModals();
+          }}
+          centered
+        >
+          <Modal.Header className="px-4 pt-4" closeButton>
+            <h5 className="modal-title fs-18" id="exampleModalLabel">
+              Ajouter Nouveau Produit
+            </h5>
+          </Modal.Header>
+          <Modal.Body className="p-4">
+            <form
+              id="createproduct-form"
+              autoComplete="off"
+              className="needs-validation"
+              noValidate
+              onSubmit={onSubmitProduit}
+            >
+              <Row>
+                <Col lg={8}>
+                  <Card>
+                    <Card.Body>
+                      <div className="mb-3">
+                        <Form.Label htmlFor="nomProduit">
+                          Titre du produit
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          id="nomProduit"
+                          placeholder="..."
+                          required
+                          onChange={onChangeProduit}
+                          value={produitData.nomProduit}
+                        />
+
+                        <div className="invalid-feedback">
+                          Veuillez saisir le titre du produit.
+                        </div>
+                      </div>
+                      <Row>
+                        <Col lg={6} style={{ marginBottom: 15 }}>
+                          <div className="mb-3">
+                            <Form.Label htmlFor="marque">Marque</Form.Label>
+                            <Form.Control
+                              type="text"
+                              id="marque"
+                              placeholder="..."
+                              value={produitData.marque}
+                              onChange={onChangeProduit}
+                            />
+                          </div>
+                        </Col>
+                        <Col lg={6}>
+                          <div className="mb-4">
+                            <Form.Label htmlFor="remarqueProduit">
+                              Description
+                            </Form.Label>
+                            <Form.Control
+                              type="text"
+                              id="remarqueProduit"
+                              placeholder="..."
+                              value={produitData.remarqueProduit}
+                              onChange={onChangeProduit}
+                              as="textarea"
+                              rows={3}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg={6}>
+                          {/* ******* Select Category ******* */}
+                          <div>
+                            <div className="d-flex align-items-start">
+                              <div className="flex-grow-1">
+                                <Form.Label>Catégorie</Form.Label>
+                              </div>
+                            </div>
+                            <div className="input-group mb-3">
+                              <select
+                                className="form-select"
+                                id="choices-category-input"
+                                name="choices-category-input"
+                                onChange={handlecategory}
+                              >
+                                <option value="">Choisir ...</option>
+                                {category.map((category) => (
+                                  <option
+                                    key={category.idcategory}
+                                    value={category.idcategory}
+                                  >
+                                    {category.nom}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="error-msg mt-1">
+                              svp selectionner la categorie.
+                            </div>
+                          </div>
+                        </Col>
+                        <Col>
+                          {/* ******* Select SubCategory ******* */}
+                          <div>
+                            <div className="d-flex align-items-start">
+                              <div className="flex-grow-1">
+                                <Form.Label>Sous-Catégorie</Form.Label>
+                              </div>
+                            </div>
+                            <div className="input-group mb-3">
+                              <select
+                                className="form-select"
+                                id="choices-sous-category-input"
+                                name="choices-sous-category-input"
+                                onChange={handlesousCategory}
+                              >
+                                <option value="">Choisir ...</option>
+                                {sousCategory.map((souscategory) => (
+                                  <option
+                                    key={souscategory.idSubCategory}
+                                    value={souscategory.idSubCategory}
+                                  >
+                                    {souscategory.title}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="error-msg mt-1">
+                              svp selectionner la categorie.
+                            </div>
+                          </div>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col lg={4}>
+                  <Card style={{ height: "22.1rem", marginBottom: 0 }}>
+                    <Card.Body
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <div className="text-center mb-3">
+                        <div className="position-relative d-inline-block">
+                          <div className="position-absolute top-100 start-100 translate-middle">
+                            <label
+                              htmlFor="imageProduit"
+                              className="mb-0"
+                              data-bs-toggle="tooltip"
+                              data-bs-placement="right"
+                              title="Select Fournisseur Logo"
+                            >
+                              <span className="avatar-xs d-inline-block">
+                                <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
+                                  <i className="ri-image-fill"></i>
+                                </span>
+                              </span>
+                            </label>
+                            <input
+                              className="d-none"
+                              type="file"
+                              name="imageProduit"
+                              id="imageProduit"
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(e)}
+                            />
+                          </div>
+                          <div className="avatar-xl">
+                            <div className="avatar-title bg-light rounded-4">
+                              <img
+                                src={`data:image/jpeg;base64, ${produitData.imageProduit}`}
+                                alt={produitData.nomProduit}
+                                id="category-img"
+                                className="avatar-xl h-auto rounded-4 object-fit-cover"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="error-msg mt-1">
+                        Please add a product images.
+                      </div>
+                    </Card.Body>
+                  </Card>
+                  <Row>
+                    <div className="text-end mb-3" style={{ marginTop: 13 }}>
+                      <Button variant="primary" type="submit" className="w-sm">
+                        Ajouter
+                      </Button>
+                    </div>
+                  </Row>
+                </Col>
+              </Row>
+            </form>
+          </Modal.Body>
+        </Modal>
       </div>
     </React.Fragment>
   );
 };
 
 export default CreateArrivageProduit;
-
-const top100Films = [
-  { label: "The Shawshank Redemption", year: 1994 },
-  { label: "The Godfather", year: 1972 },
-  { label: "The Godfather: Part II", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-  { label: "12 Angry Men", year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: "Pulp Fiction", year: 1994 },
-  {
-    label: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-  },
-  { label: "The Good, the Bad and the Ugly", year: 1966 },
-  { label: "Fight Club", year: 1999 },
-  {
-    label: "The Lord of the Rings: The Fellowship of the Ring",
-    year: 2001,
-  },
-  {
-    label: "Star Wars: Episode V - The Empire Strikes Back",
-    year: 1980,
-  },
-  { label: "Forrest Gump", year: 1994 },
-  { label: "Inception", year: 2010 },
-  {
-    label: "The Lord of the Rings: The Two Towers",
-    year: 2002,
-  },
-  { label: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { label: "Goodfellas", year: 1990 },
-  { label: "The Matrix", year: 1999 },
-  { label: "Seven Samurai", year: 1954 },
-  {
-    label: "Star Wars: Episode IV - A New Hope",
-    year: 1977,
-  },
-  { label: "City of God", year: 2002 },
-  { label: "Se7en", year: 1995 },
-  { label: "The Silence of the Lambs", year: 1991 },
-  { label: "It's a Wonderful Life", year: 1946 },
-  { label: "Life Is Beautiful", year: 1997 },
-  { label: "The Usual Suspects", year: 1995 },
-  { label: "Léon: The Professional", year: 1994 },
-  { label: "Spirited Away", year: 2001 },
-  { label: "Saving Private Ryan", year: 1998 },
-  { label: "Once Upon a Time in the West", year: 1968 },
-  { label: "American History X", year: 1998 },
-  { label: "Interstellar", year: 2014 },
-  { label: "Casablanca", year: 1942 },
-  { label: "City Lights", year: 1931 },
-  { label: "Psycho", year: 1960 },
-  { label: "The Green Mile", year: 1999 },
-  { label: "The Intouchables", year: 2011 },
-  { label: "Modern Times", year: 1936 },
-  { label: "Raiders of the Lost Ark", year: 1981 },
-  { label: "Rear Window", year: 1954 },
-  { label: "The Pianist", year: 2002 },
-  { label: "The Departed", year: 2006 },
-  { label: "Terminator 2: Judgment Day", year: 1991 },
-  { label: "Back to the Future", year: 1985 },
-  { label: "Whiplash", year: 2014 },
-  { label: "Gladiator", year: 2000 },
-  { label: "Memento", year: 2000 },
-  { label: "The Prestige", year: 2006 },
-  { label: "The Lion King", year: 1994 },
-  { label: "Apocalypse Now", year: 1979 },
-  { label: "Alien", year: 1979 },
-  { label: "Sunset Boulevard", year: 1950 },
-  {
-    label:
-      "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-    year: 1964,
-  },
-  { label: "The Great Dictator", year: 1940 },
-  { label: "Cinema Paradiso", year: 1988 },
-  { label: "The Lives of Others", year: 2006 },
-  { label: "Grave of the Fireflies", year: 1988 },
-  { label: "Paths of Glory", year: 1957 },
-  { label: "Django Unchained", year: 2012 },
-  { label: "The Shining", year: 1980 },
-  { label: "WALL·E", year: 2008 },
-  { label: "American Beauty", year: 1999 },
-  { label: "The Dark Knight Rises", year: 2012 },
-  { label: "Princess Mononoke", year: 1997 },
-  { label: "Aliens", year: 1986 },
-  { label: "Oldboy", year: 2003 },
-  { label: "Once Upon a Time in America", year: 1984 },
-  { label: "Witness for the Prosecution", year: 1957 },
-  { label: "Das Boot", year: 1981 },
-  { label: "Citizen Kane", year: 1941 },
-  { label: "North by Northwest", year: 1959 },
-  { label: "Vertigo", year: 1958 },
-  {
-    label: "Star Wars: Episode VI - Return of the Jedi",
-    year: 1983,
-  },
-  { label: "Reservoir Dogs", year: 1992 },
-  { label: "Braveheart", year: 1995 },
-  { label: "M", year: 1931 },
-  { label: "Requiem for a Dream", year: 2000 },
-  { label: "Amélie", year: 2001 },
-  { label: "A Clockwork Orange", year: 1971 },
-  { label: "Like Stars on Earth", year: 2007 },
-  { label: "Taxi Driver", year: 1976 },
-  { label: "Lawrence of Arabia", year: 1962 },
-  { label: "Double Indemnity", year: 1944 },
-  {
-    label: "Eternal Sunshine of the Spotless Mind",
-    year: 2004,
-  },
-  { label: "Amadeus", year: 1984 },
-  { label: "To Kill a Mockingbird", year: 1962 },
-  { label: "Toy Story 3", year: 2010 },
-  { label: "Logan", year: 2017 },
-  { label: "Full Metal Jacket", year: 1987 },
-  { label: "Dangal", year: 2016 },
-  { label: "The Sting", year: 1973 },
-  { label: "2001: A Space Odyssey", year: 1968 },
-  { label: "Singin' in the Rain", year: 1952 },
-  { label: "Toy Story", year: 1995 },
-  { label: "Bicycle Thieves", year: 1948 },
-  { label: "The Kid", year: 1921 },
-  { label: "Inglourious Basterds", year: 2009 },
-  { label: "Snatch", year: 2000 },
-  { label: "3 Idiots", year: 2009 },
-  { label: "Monty Python and the Holy Grail", year: 1975 },
-];

@@ -18,7 +18,6 @@ const InvoiceList = () => {
     };
     getCharges();
   }, []);
-  console.log(monthCharges.slice(1));
   return (
     <React.Fragment>
       <div className="page-content">
@@ -184,6 +183,8 @@ const InvoiceList = () => {
                   </div>
                 </Card.Body>
               </Card>
+            </Col>
+            <Col xl={3} md={6}>
               <Card className="card-animate bg-info-subtle border-0 overflow-hidden">
                 <div className="position-absolute end-0 start-0 top-0 z-0">
                   <svg
@@ -331,7 +332,7 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        {/* <CountUp end={parseInt(monthCharges)} decimals={2} /> */}
+                        <CountUp end={chargeTotal} decimals={2} />
                       </h4>
                     </div>
                     <div className="avatar-sm flex-shrink-0">

@@ -269,33 +269,28 @@ const BrandsTable = () => {
       <Row>
         <Col lg={12}>
           <Card id="invoiceList">
-            <Card.Header className="border-0">
-              <div className="d-flex align-items-center">
-                <h5 className="card-title mb-0 flex-grow-1">Charges</h5>
-                <div className="flex-shrink-0">
-                  <div className="d-flex gap-2 flex-wrap">
-                    {isMultiDeleteButton && (
-                      <Button variant="danger" className="btn-icon">
-                        <i className="ri-delete-bin-2-line"></i>
-                      </Button>
-                    )}
-                    <Link
-                      to="#"
-                      className="btn btn-primary"
-                      onClick={tog_AddUserModals}
-                    >
-                      <i className="ri-add-line align-bottom me-1"></i> Ajouter
-                      Charge
-                    </Link>
-                  </div>
+            <Card.Body className="bg-soft-light border-end-0">
+              <div className="flex-shrink-0">
+                <div className="d-flex gap-2 flex-row-reverse">
+                  {isMultiDeleteButton && (
+                    <Button variant="danger" className="btn-icon">
+                      <i className="ri-delete-bin-2-line"></i>
+                    </Button>
+                  )}
+                  <Link
+                    to="#"
+                    className="btn btn-primary"
+                    onClick={tog_AddUserModals}
+                  >
+                    <i className="ri-add-line align-bottom me-1"></i> Ajouter
+                    Charge
+                  </Link>
                 </div>
               </div>
-            </Card.Header>
-            <Card.Body className="bg-soft-light border border-dashed border-start-0 border-end-0">
               <form>
                 <Row className="g-3">
-                  <Col xxl={3} sm={4}>
-                    {/* <input type="text" className="form-control bg-light border-light" id="datepicker-range" placeholder="Select date" /> */}
+                  {/* <Col xxl={3} sm={4}>
+                    <input type="text" className="form-control bg-light border-light" id="datepicker-range" placeholder="Select date" /> 
                     <Flatpickr
                       className="form-control bg-light border-light"
                       placeholder="Selectionner Date"
@@ -304,7 +299,7 @@ const BrandsTable = () => {
                         dateFormat: "d M, Y",
                       }}
                     />
-                  </Col>
+                  </Col> */}
 
                   {/* <Col xxl={3} sm={4}>
                     <div className="input-light">

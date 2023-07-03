@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Row,
-  Modal,
-} from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import { useNavigate } from "react-router-dom";
 import { useAddProduitMutation } from "features/produit/productSlice";

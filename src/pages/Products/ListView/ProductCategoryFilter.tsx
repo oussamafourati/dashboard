@@ -46,7 +46,7 @@ const ProductCategoryFilter = () => {
           </div>
         </Card.Body>
 
-        <Card.Body className="border-bottom">
+        {/* <Card.Body className="border-bottom">
           <p className="text-muted text-uppercase fs-12 fw-medium mb-4">Prix</p>
 
           <Nouislider
@@ -74,7 +74,7 @@ const ProductCategoryFilter = () => {
               onChange={(e: any) => setMaxcost(e.target.value)}
             />
           </div>
-        </Card.Body>
+        </Card.Body> */}
 
         {/* ProductSelectColor */}
         {/* <Accordion.Item eventKey="0">
@@ -85,7 +85,7 @@ const ProductCategoryFilter = () => {
         {/* <ProductSize /> */}
 
         {/* ProductDiscount */}
-        <ProductDiscount />
+        {/* <ProductDiscount /> */}
 
         {/* ProductRating */}
         {/* <ProductRating /> */}
