@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Button,
   Card,
@@ -155,21 +155,30 @@ const Shipments = () => {
         Header: "Action",
         disableFilters: true,
         filterable: true,
-        accessor: (arrivage: Arrivage) => {
+        accessor: (arrivageProd: Arrivage) => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
               <li>
-                <Link to="/detail" state={arrivage}>
-                  <i className=" ri-eye-line" />
+                <Link to="/shipment" state={arrivageProd}>
+                  <i className="ri-folder-add-line ri-xl" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="link-success"
+                  to="/detail"
+                  state={arrivageProd}
+                >
+                  <i className="ri-eye-line ri-xl" />
                 </Link>
               </li>
               <li>
                 <Link
                   to="#"
                   className="link-danger"
-                  onClick={() => AlertDelete(arrivage.idArrivage)}
+                  onClick={() => AlertDelete(arrivageProd.idArrivage)}
                 >
-                  <i className="ri-delete-bin-5-line" />
+                  <i className="ri-delete-bin-5-line ri-xl" />
                 </Link>
               </li>
             </ul>

@@ -9,7 +9,6 @@ import {
   Table,
   Modal,
 } from "react-bootstrap";
-import Breadcrumb from "Common/BreadCrumb";
 import Flatpickr from "react-flatpickr";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
@@ -192,8 +191,6 @@ const ProInvoice = () => {
 
   return (
     <Container fluid={true}>
-      <Breadcrumb title="Créer Facture Pro" pageTitle="Factures" />
-
       <Row className="justify-content-center">
         <Col xxl={9}>
           <Card>
@@ -247,7 +244,9 @@ const ProInvoice = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col lg={4}></Col>
+                  <Col lg={4} className="text-center">
+                    <h4>Facture</h4>
+                  </Col>
                   <Col lg={4}>
                     <div className="mb-2">
                       <div className="profile-user mx-auto mb-3">

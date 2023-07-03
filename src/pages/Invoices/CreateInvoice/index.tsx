@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import Breadcrumb from "Common/BreadCrumb";
 import { Switch } from "antd";
 
 import PassagerInvoice from "./PassagerInvoice";
@@ -16,6 +16,7 @@ const CreateInvoice = () => {
   return (
     <React.Fragment>
       <div className="page-content">
+        <Breadcrumb title="Créer Facture" pageTitle="Factures" />
         <Switch
           checkedChildren="Pro"
           unCheckedChildren="Passager"

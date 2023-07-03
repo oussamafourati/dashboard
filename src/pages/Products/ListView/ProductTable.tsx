@@ -8,9 +8,11 @@ import {
   Produit,
 } from "features/produit/productSlice";
 import Swal from "sweetalert2";
+import { ArrivageProduit } from "features/arrivageProduit/arrivageProduitSlice";
 
 const ProductTable = () => {
   const { data = [] } = useFetchProduitsQuery();
+  const [arrProd, setArrProd] = useState<ArrivageProduit>();
 
   const [deleteProduit] = useDeleteProduitMutation();
 
@@ -103,11 +105,18 @@ const ProductTable = () => {
           return (
             <React.Fragment>
               <Link
+                className="link-success"
+                to="/product-overview"
+                state={produit}
+              >
+                <i className="ri-eye-line ri-xl" />
+              </Link>
+              <Link
                 to="#"
                 className="link-danger"
                 onClick={() => AlertDelete(produit.idproduit)}
               >
-                <i className="ri-delete-bin-5-line" />
+                <i className="ri-delete-bin-5-line ri-xl" />
               </Link>
             </React.Fragment>
           );

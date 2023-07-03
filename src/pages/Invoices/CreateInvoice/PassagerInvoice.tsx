@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Card,
@@ -8,7 +8,6 @@ import {
   Row,
   Modal,
 } from "react-bootstrap";
-import Breadcrumb from "Common/BreadCrumb";
 import Flatpickr from "react-flatpickr";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
@@ -27,6 +26,8 @@ import {
 import { Produit, useFetchProduitsQuery } from "features/produit/productSlice";
 import { useAddFactureMutation } from "features/facture/factureSlice";
 import NewComponent from "./NewComponent";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const PassagerInvoice = () => {
   document.title = "Créer Facture | Radhouani";
@@ -219,14 +220,8 @@ const PassagerInvoice = () => {
     addFacture(factureData).then(() => setFactureData(factureValue));
     // notify();
   };
-
-  function precise(x: number) {
-    return x.toPrecision(4);
-  }
-
   return (
     <Container fluid={true}>
-      <Breadcrumb title="Créer Facture Passager" pageTitle="Factures" />
       <Row className="justify-content-center">
         <Col xxl={9}>
           <Card>
@@ -293,9 +288,16 @@ const PassagerInvoice = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col lg={4}>
-                    <h4>Facture Pro Format</h4>
-                  </Col>
+                  {clientPhyId === "18" ? (
+                    <Col lg={4} className="text-center">
+                      <h4>Facture Pro Format</h4>
+                    </Col>
+                  ) : (
+                    <Col lg={4} className="text-center">
+                      <h4>Facture</h4>
+                    </Col>
+                  )}
+
                   <Col lg={4}>
                     <div className="profile-user mx-auto mb-3">
                       <input

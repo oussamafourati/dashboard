@@ -14,8 +14,12 @@ import Breadcrumb from "Common/BreadCrumb";
 import {
   useFetchCategoriesQuery,
   useDeleteCategoryMutation,
+  Category,
 } from "features/category/categorySlice";
-import { useFetchSubCategoriesQuery } from "features/subCategory/subCategorySlice";
+import {
+  SubCategory,
+  useFetchSubCategoriesQuery,
+} from "features/subCategory/subCategorySlice";
 import { useCreateCategoryMutation } from "features/category/categorySlice";
 import Swal from "sweetalert2";
 
@@ -35,6 +39,9 @@ const Categories = () => {
   const [createCategory] = useCreateCategoryMutation();
   const { data: subdata = [] } = useFetchSubCategoriesQuery();
   const [deleteCategory] = useDeleteCategoryMutation();
+
+  const [expanded, setExpanded] = useState(false);
+  const dataForDisplay = expanded ? subdata : subdata.slice(0, 4);
 
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -311,42 +318,41 @@ const Categories = () => {
                 </Col>
               </Row>
               <Row id="categories-list">
-                {data.map((category) => (
-                  <Col xxl={3} lg={8}>
+                {(currentpages || data).map((item: Category, key: number) => (
+                  <Col xxl={4} md={6} key={key}>
                     <Card className="categrory-widgets overflow-hidden">
                       <Card.Body className="p-4">
-                        <div
-                          className="d-flex align-items-center mb-3"
-                          key={category.idcategory}
-                        >
-                          <h5 className="flex-grow-1 mb-0">{category.nom}</h5>
+                        <div className="d-flex align-items-center mb-3">
+                          <h5 className="flex-grow-1 mb-0">{item.nom}</h5>
                           <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
                             <li>
                               <Link
                                 to="#"
                                 data-bs-toggle="modal"
                                 className="badge badge-soft-danger"
-                                onClick={() => AlertDelete(category.idcategory)}
+                                onClick={() => AlertDelete(item.idcategory)}
                               >
                                 Supprimer
                               </Link>
                             </li>
                           </ul>
                         </div>
-                        <ul className="list-unstyled vstack gap-2 mb-0">
-                          {subdata.map((subcat) => {
-                            if (subcat.parentID === category.idcategory) {
-                              return (
-                                <li>
-                                  <strong>{subcat.title}</strong>
-                                </li>
-                              );
-                            }
-                          })}
-                        </ul>
+                        <div className="mt-3">
+                          <Link
+                            to="#"
+                            className="fw-medium link-effect"
+                            onClick={() => {
+                              setShow(true);
+                              setInfo(item);
+                            }}
+                          >
+                            Détails
+                            <i className="ri-arrow-right-line align-bottom ms-1"></i>
+                          </Link>
+                        </div>
                         <img
-                          src={`data:image/jpeg;base64,${category.image}`}
-                          alt=""
+                          src={`data:image/jpeg;base64,${item.image}`}
+                          alt={item.nom}
                           className="img-fluid category-img object-fit-cover"
                         />
                       </Card.Body>
@@ -424,46 +430,46 @@ const Categories = () => {
 
       <Offcanvas show={show} onHide={() => setShow(false)} placement="end">
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>#TB12</Offcanvas.Title>
+          <Offcanvas.Title>#{info.idcategory}</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <div className="avatar-lg mx-auto">
             <div className="avatar-title bg-light rounded">
               <img
-                src={info.categoryImg}
+                src={`data:image/jpeg;base64,${info.image}`}
                 alt=""
                 className="avatar-sm overview-img"
               />
             </div>
           </div>
           <div className="text-center mt-3">
-            <h5 className="overview-title">{info.categoryTitle}</h5>
-            <p className="text-muted">
+            <h5 className="overview-title">{info.nom}</h5>
+            {/* <p className="text-muted">
               by{" "}
               <Link to="#" className="text-reset">
                 Admin
               </Link>
-            </p>
+            </p> */}
           </div>
 
-          <h6 className="fs-14">Description</h6>
-          <p className="text-muted overview-desc">{info.description}</p>
+          {/* <h6 className="fs-14">Description</h6>
+          <p className="text-muted overview-desc">{info.description}</p> */}
 
-          <h6 className="fs-14 mb-3">Sub Categories</h6>
+          <h6 className="fs-14 mb-3">Sous Catégories</h6>
           <ul
             className="vstack gap-2 mb-0 subCategory"
             style={{ listStyleType: "circle" }}
           >
-            {(info.subCategory || []).map(
-              (item: any, key: number) =>
-                key < 4 && (
-                  <li key={key}>
-                    <Link to="#" className="text-reset">
-                      {item}
+            {subdata.map((subcat: SubCategory, key: number) => {
+              if (subcat.parentID === info.idcategory)
+                return (
+                  <li key={subcat.idSubCategory}>
+                    <Link to="#" className="text-muted">
+                      {subcat.title}
                     </Link>
                   </li>
-                )
-            )}
+                );
+            })}
           </ul>
         </Offcanvas.Body>
         <div className="p-3 border-top">
@@ -477,9 +483,10 @@ const Categories = () => {
                   data-bs-toggle="modal"
                   data-bs-target="#delteModal"
                   data-remove-id="12"
+                  onClick={() => AlertDelete(info.idcategory)}
                 >
                   <i className="ri-delete-bin-line me-1 align-bottom"></i>{" "}
-                  Delete
+                  Supprimer
                 </Button>
               </div>
             </Col>
@@ -491,7 +498,7 @@ const Categories = () => {
                 data-bs-dismiss="offcanvas"
                 data-edit-id="12"
               >
-                <i className="ri-pencil-line me-1 align-bottom"></i> Edit
+                <i className="ri-pencil-line me-1 align-bottom"></i> Modifier
               </Button>
             </Col>
           </Row>

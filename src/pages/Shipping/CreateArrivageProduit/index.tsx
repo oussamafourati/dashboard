@@ -20,6 +20,7 @@ import {
   useGetAllArrivagesQuery,
 } from "features/arrivage/arrivageSlice";
 import {
+  ArrivageProduit,
   useAddArrivageProduitMutation,
   useDeleteArrivageProduitMutation,
   useGetAllArrivagesProduitQuery,
@@ -29,7 +30,7 @@ import { Link, useLocation } from "react-router-dom";
 const CreateArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
   const location = useLocation();
-  console.log(location.state.arrivageData);
+  console.log("first: ", location.state);
 
   const { data: allProduit = [] } = useFetchProduitsQuery();
   const [produit, setProduit] = useState<Produit[]>([]);
@@ -73,7 +74,6 @@ const CreateArrivageProduit = () => {
   };
   const onChangePATTC = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrixAchatTTc(event.target.value);
-
     setPrixAchatHT(parseInt(event.target.value) / 1.19);
   };
 
@@ -147,7 +147,7 @@ const CreateArrivageProduit = () => {
   const [arrivageProduitData, setArrivageProduitData] = useState({
     idArrivageProduit: 1,
     produitID: 34,
-    arrivageID: location.state.arrivageData.idArrivage,
+    arrivageID: location.state.idArrivage,
     quantite: 1,
     prixAchatHt: 1,
     prixAchatTtc: 1,
@@ -330,7 +330,7 @@ const CreateArrivageProduit = () => {
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
-                              type="text"
+                              type="number"
                               value={prixAchatHT!}
                               onChange={onChangePAHT}
                               id="prixAchatHt"
@@ -359,8 +359,8 @@ const CreateArrivageProduit = () => {
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
-                              type="text"
-                              value={prixAchatTTC}
+                              type="number"
+                              value={parseInt(prixAchatTTC)}
                               onChange={onChangePATTC}
                               id="prixAchatTtc"
                               placeholder="00.00"
@@ -381,7 +381,7 @@ const CreateArrivageProduit = () => {
                             Prix de Vente
                           </Form.Label>
                           <Form.Control
-                            type="text"
+                            type="number"
                             id="prixVente"
                             placeholder="00.00"
                             value={prixvente}
@@ -399,10 +399,10 @@ const CreateArrivageProduit = () => {
                         <div className="mb-3">
                           <Form.Label htmlFor="Benifice">Benifice</Form.Label>
                           <Form.Control
-                            type="text"
+                            type="number"
                             id="Benifice"
                             placeholder="00.00"
-                            value={benifice}
+                            value={parseInt(benifice)}
                             onChange={onChangeBenifice}
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
@@ -420,7 +420,7 @@ const CreateArrivageProduit = () => {
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
-                              type="text"
+                              type="number"
                               id="PourcentageBenifice"
                               placeholder="0"
                               aria-label="discount"
@@ -449,7 +449,7 @@ const CreateArrivageProduit = () => {
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
-                              type="text"
+                              type="number"
                               value={prixRemise}
                               onChange={onChangePrixRemise}
                               id="PrixRemise"
@@ -471,7 +471,7 @@ const CreateArrivageProduit = () => {
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
-                              type="text"
+                              type="number"
                               value={pourcentageRemise}
                               onChange={onChangePourcentagePrixRemise}
                               id="PourcentageRemise"
@@ -535,7 +535,7 @@ const CreateArrivageProduit = () => {
                                 {allArrivageProduit.map((produitArr) => {
                                   if (
                                     produitArr.arrivageID ===
-                                    location.state.arrivageData.idArrivage
+                                    location.state.idArrivage
                                   ) {
                                     return (
                                       <tr key={produitArr.idArrivageProduit}>

@@ -15,7 +15,6 @@ const AddArrivageProduit = () => {
   const [fournisseurState, setFournisseurState] = useState<Fournisseur[]>([]);
   const [selected, setSelected] = useState<Fournisseur[]>([]);
   const [fournisseurStateID, setFournisseurStateID] = useState("");
-
   useEffect(() => {
     const getFournisseur = async () => {
       const reqFournisseur = await fetch(
