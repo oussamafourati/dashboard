@@ -37,15 +37,28 @@ const ProInvoice = () => {
   };
 
   const [inputFields, setInputFields] = useState<string[]>([""]);
+
   const handleAddFields = () => {
     const newInputFields = [...inputFields];
     newInputFields.push("");
     setInputFields(newInputFields);
   };
+
   const handleRemoveFields = (index: number) => {
     const newInputFields = [...inputFields];
     newInputFields.splice(index, 1);
     setInputFields(newInputFields);
+  };
+
+  const [value, setValue] = useState<string>("");
+  const handleChange = (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newInputFields = [...inputFields];
+    newInputFields[index] = event.target.value;
+    setInputFields(newInputFields);
+    setValue(event.target.value);
   };
 
   const [clientMorale, setClientMorale] = useState<ClientMorale[]>([]);
@@ -188,6 +201,14 @@ const ProInvoice = () => {
   function tog_AddClientMoraleModals() {
     setmodal_AddClientMoraleModals(!modal_AddClientMoraleModals);
   }
+
+  // The selected drink
+  const [selectedDrink, setSelectedDrink] = useState<String>();
+
+  // This function will be triggered when a radio button is selected
+  const radioHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDrink(event.target.value);
+  };
 
   return (
     <Container fluid={true}>
@@ -368,64 +389,67 @@ const ProInvoice = () => {
                       </tr>
                     </thead>
                     <tbody id="newlink">
-                      <tr id="1" className="product">
-                        <th scope="row" className="product-id">
-                          1
-                        </th>
-                        <td className="text-start">
-                          <div className="mb-2">
+                      {inputFields.map((inputField, index) => (
+                        <tr id="1" className="product">
+                          <th scope="row" className="product-id">
+                            {index + 1}
+                          </th>
+                          <td className="text-start">
+                            <div className="mb-2">
+                              <input
+                                type="text"
+                                id="productName-1"
+                                placeholder="Ref. Art"
+                                required
+                                onChange={(e) => handleChange(index, e)}
+                              />
+                              <div className="invalid-feedback">
+                                Please enter a product name
+                              </div>
+                            </div>
+                          </td>
+                          <td>
                             <Form.Control
-                              type="text"
-                              id="productName-1"
-                              placeholder="Ref. Art"
+                              type="number"
+                              className="product-price"
+                              id="productRate-1"
+                              step="0.01"
+                              placeholder="0.00"
                               required
                             />
                             <div className="invalid-feedback">
-                              Please enter a product name
+                              Please enter a rate
                             </div>
-                          </div>
-                        </td>
-                        <td>
-                          <Form.Control
-                            type="number"
-                            className="product-price"
-                            id="productRate-1"
-                            step="0.01"
-                            placeholder="0.00"
-                            required
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a rate
-                          </div>
-                        </td>
-                        <td>
-                          <div className="input-step">
-                            <Button className="minus">–</Button>
-                            <input
-                              type="number"
-                              className="product-quantity"
-                              id="product-qty-1"
-                              defaultValue="0"
-                            />
-                            <Button className="plus">+</Button>
-                          </div>
-                        </td>
-                        <td className="text-end">
-                          <div>
-                            <Form.Control
-                              type="number"
-                              className="product-line-price"
-                              id="productPrice-1"
-                              placeholder="$0.00"
-                            />
-                          </div>
-                        </td>
-                        <td className="product-removal">
-                          <Link to="#" className="btn btn-danger">
-                            Supprimer
-                          </Link>
-                        </td>
-                      </tr>
+                          </td>
+                          <td>
+                            <div className="input-step">
+                              <Button className="minus">–</Button>
+                              <input
+                                type="number"
+                                className="product-quantity"
+                                id="product-qty-1"
+                                defaultValue="0"
+                              />
+                              <Button className="plus">+</Button>
+                            </div>
+                          </td>
+                          <td className="text-end">
+                            <div>
+                              <Form.Control
+                                type="number"
+                                className="product-line-price"
+                                id="productPrice-1"
+                                placeholder="$0.00"
+                              />
+                            </div>
+                          </td>
+                          <td className="product-removal">
+                            <Link to="#" className="btn btn-danger">
+                              Supprimer
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                     <tbody>
                       <tr id="newForm" style={{ display: "none" }}>
@@ -439,6 +463,7 @@ const ProInvoice = () => {
                             to="#"
                             id="add-item"
                             className="btn btn-soft-secondary fw-medium"
+                            onClick={handleAddFields}
                           >
                             <i className="ri-add-fill me-1 align-bottom"></i>{" "}
                             Ajouter élement
@@ -500,64 +525,100 @@ const ProInvoice = () => {
                 <Row className="mt-3">
                   <Col lg={9}>
                     <div className="mb-2">
-                      <Form.Label
-                        htmlFor="choices-payment-type"
-                        className="text-muted text-uppercase fw-semibold"
-                      >
-                        Reglement
-                      </Form.Label>
-                      <select
-                        className="form-select"
-                        data-choices
-                        data-choices-search-false
-                        id="choices-payment-type"
-                        value={selectedd}
-                        onChange={(e) => handleChangeselect(e)}
-                      >
-                        <option value="Paiement total en espèces">
-                          Paiement total en espèces
-                        </option>
-                        <option value="Paiement partiel espèces">
-                          Paiement partiel espèces
-                        </option>
-                        <option value="Paiement partiel chèque">
-                          Paiement partiel chèque
-                        </option>
-                      </select>
-                      {selectedd === "Paiement total en espèces" ? (
+                      <fieldset>
+                        <legend>Reglement</legend>
+                        <p>
+                          <input
+                            type="radio"
+                            name="reglement"
+                            value="Paiement total en espèces"
+                            id="Paiement total en espèces"
+                            onChange={radioHandler}
+                          />
+                          <label htmlFor="Paiement total en espèces">
+                            Paiement total en espèces
+                          </label>
+                        </p>
+                        <p>
+                          <input
+                            type="radio"
+                            name="reglement"
+                            value="Paiement partiel espèces"
+                            id="Paiement partiel espèces"
+                            onChange={radioHandler}
+                          />
+                          <label htmlFor="Paiement partiel espèces">
+                            Paiement partiel espèces
+                          </label>
+                        </p>
+                        <p>
+                          <input
+                            type="radio"
+                            name="reglement"
+                            value="Paiement partiel chèque"
+                            id="Paiement partiel chèque"
+                            onChange={radioHandler}
+                          />
+                          <label htmlFor="Paiement partiel chèque">
+                            Paiement partiel chèque
+                          </label>
+                        </p>
+                      </fieldset>
+                      {selectedDrink === "Paiement total en espèces" ? (
                         <PaiementTotal />
                       ) : (
                         ""
                       )}
-
-                      {selectedd === "Paiement partiel espèces" ? (
+                      {selectedDrink === "Paiement partiel espèces" ? (
                         <PaiementEspece />
                       ) : (
                         ""
                       )}
-                      {selectedd === "Paiement partiel chèque" ? (
+                      {selectedDrink === "Paiement partiel chèque" ? (
                         <PaiementCheque />
                       ) : (
                         ""
                       )}
                     </div>
                   </Col>
-                  <Col lg={3} sm={6}>
-                    <Form.Label htmlFor="choices-payment-status">
-                      Status de Payement
-                    </Form.Label>
-                    <select
-                      className="form-select"
-                      data-choices
-                      data-choices-search-false
-                      id="choices-payment-status"
-                    >
-                      <option value="">Selectionner Status</option>
-                      <option value="Paid">Payé</option>
-                      <option value="Paid">impayé</option>
-                      <option value="Paid">Semi Payé</option>
-                    </select>
-                  </Col>
+                  {selectedDrink === "Paiement total en espèces" ? (
+                    <Col lg={3} sm={6}>
+                      <Form.Label htmlFor="choices-payment-status">
+                        Status de Payement
+                      </Form.Label>
+                      <div>
+                        <p className="fs-15 badge badge-soft-success">Payé</p>
+                      </div>
+                    </Col>
+                  ) : (
+                    ""
+                  )}
+                  {selectedDrink === "Paiement partiel espèces" ? (
+                    <Col lg={3} sm={6}>
+                      <Form.Label htmlFor="choices-payment-status">
+                        Status de Payement
+                      </Form.Label>
+                      <div>
+                        <p className="fs-15 badge badge-soft-danger">Impayé</p>
+                      </div>
+                    </Col>
+                  ) : (
+                    ""
+                  )}
+                  {selectedDrink === "Paiement partiel chèque" ? (
+                    <Col lg={3} sm={6}>
+                      <Form.Label htmlFor="choices-payment-status">
+                        Status de Payement
+                      </Form.Label>
+                      <div>
+                        <p className="fs-15 badge badge-soft-warning">
+                          Semi-Payé
+                        </p>
+                      </div>
+                    </Col>
+                  ) : (
+                    ""
+                  )}
                 </Row>
                 <div className="hstack gap-2 justify-content-end d-print-none mt-4">
                   <Button variant="success" type="submit">

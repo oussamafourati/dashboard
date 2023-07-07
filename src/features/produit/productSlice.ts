@@ -32,6 +32,9 @@ export const produitSlice = createApi({
           { type: "Produit", idproduit },
         ],
       }),
+      getProductByName: builder.query<Produit, string>({
+        query: (nomProduit) => `getnomProduct/${nomProduit}`,
+      }),
       addProduit: builder.mutation<void, Produit>({
         query(payload) {
           return {
@@ -88,6 +91,7 @@ export const produitSlice = createApi({
 export const {
   useGetProduitQuery,
   useFetchProduitsQuery,
+  useGetProductByNameQuery,
   useAddProduitMutation,
   useDeleteProduitMutation,
   useUpdateProduitMutation,

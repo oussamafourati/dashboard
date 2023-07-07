@@ -13,6 +13,7 @@ import {
   Produit,
   useAddProduitMutation,
   useFetchProduitsQuery,
+  useGetProductByNameQuery,
 } from "features/produit/productSlice";
 import Swal from "sweetalert2";
 import {
@@ -28,11 +29,13 @@ import {
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Category } from "features/category/categorySlice";
 import { SubCategory } from "features/subCategory/subCategorySlice";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const CreateArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
   const location = useLocation();
-  const navigate = useNavigate();
 
   const { data: allProduit = [] } = useFetchProduitsQuery();
   const [produit, setProduit] = useState<Produit[]>([]);
@@ -63,85 +66,65 @@ const CreateArrivageProduit = () => {
   };
 
   const [prixAchatHT, setPrixAchatHT] = useState<number>(1);
-  const [prixAchatTTC, setPrixAchatTTc] = useState<string>("");
-  const [prixvente, setPrixVente] = useState<string>("");
-  const [benifice, setBenifice] = useState<string>("");
-  const [pourcentageBenifice, setPourcentageBenifice] = useState<string>("");
-  const [prixRemise, setPrixRemise] = useState<string>("");
-  const [pourcentageRemise, setPourcentageRemise] = useState<string>("");
+  const [prixAchatTTC, setPrixAchatTTc] = useState<number>(1);
+  const [prixvente, setPrixVente] = useState<number>(1);
+  const [benifice, setBenifice] = useState<number>(1);
+  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>(1);
+  const [prixRemise, setPrixRemise] = useState<number>(1);
+  const [pourcentageRemise, setPourcentageRemise] = useState<number>(1);
 
   const onChangePAHT = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrixAchatHT(parseInt(event.target.value));
-    setPrixAchatTTc((parseInt(event.target.value) * 1.19).toString());
+    setPrixAchatTTc(parseInt(event.target.value) * 1.19);
   };
   const onChangePATTC = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrixAchatTTc(event.target.value);
+    setPrixAchatTTc(parseInt(event.target.value));
     setPrixAchatHT(parseInt(event.target.value) / 1.19);
   };
 
   const onChangePV = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrixVente(event.target.value);
-    setBenifice(
-      (parseInt(event.target.value) - parseInt(prixAchatTTC)).toString()
-    );
+    setPrixVente(parseInt(event.target.value));
+    setBenifice(parseInt(event.target.value) - prixAchatTTC);
     setPourcentageBenifice(
-      (
-        ((parseInt(event.target.value) - parseInt(prixAchatTTC)) * 100) /
+      ((parseInt(event.target.value) - prixAchatTTC) * 100) /
         parseInt(event.target.value)
-      ).toString()
     );
   };
 
   const onChangeBenifice = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBenifice(event.target.value);
-    setPrixVente(
-      (parseInt(event.target.value) + parseInt(prixAchatTTC)).toString()
-    );
+    setBenifice(parseInt(event.target.value));
+    setPrixVente(parseInt(event.target.value) + prixAchatTTC);
     setPourcentageBenifice(
-      (
-        (parseInt(event.target.value) * 100) /
-        (parseInt(event.target.value) + parseInt(prixAchatTTC))
-      ).toString()
+      (parseInt(event.target.value) * 100) /
+        (parseInt(event.target.value) + prixAchatTTC)
     );
   };
   const onChangePourcentageBenifice = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setPourcentageBenifice(event.target.value);
+    setPourcentageBenifice(parseInt(event.target.value));
     setBenifice(
-      (
-        (parseInt(prixAchatTTC) * parseInt(event.target.value)) /
+      (prixAchatTTC * parseInt(event.target.value)) /
         (100 - parseInt(event.target.value))
-      ).toString()
     );
     setPrixVente(
-      (
-        (parseInt(prixAchatTTC) * parseInt(event.target.value)) /
-          (100 - parseInt(event.target.value)) +
-        parseInt(prixAchatTTC)
-      ).toString()
+      (prixAchatTTC * parseInt(event.target.value)) /
+        (100 - parseInt(event.target.value)) +
+        prixAchatTTC
     );
   };
 
   const onChangePrixRemise = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrixRemise(event.target.value);
+    setPrixRemise(parseInt(event.target.value));
     setPourcentageRemise(
-      (
-        ((parseInt(prixvente) - parseInt(event.target.value)) * 100) /
-        parseInt(prixvente)
-      ).toString()
+      ((prixvente - parseInt(event.target.value)) * 100) / prixvente
     );
   };
   const onChangePourcentagePrixRemise = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setPourcentageRemise(event.target.value);
-    setPrixRemise(
-      (
-        (parseInt(prixvente) * (100 - parseInt(event.target.value))) /
-        100
-      ).toString()
-    );
+    setPourcentageRemise(parseInt(event.target.value));
+    setPrixRemise((prixvente * (100 - parseInt(event.target.value))) / 100);
   };
 
   const [CreateArrivageProduit] = useAddArrivageProduitMutation();
@@ -166,6 +149,41 @@ const CreateArrivageProduit = () => {
     dateArrivage: "",
   });
 
+  const [text, setText] = useState<string>("");
+  const [products, setProducts] = useState<Produit[]>([]);
+  const [productsName, setProductsName] = useState<Produit[]>([]);
+  const [nameProducts, setNameProducts] = useState("");
+  const [suggestions, setSuggestions] = useState<Produit[]>([]);
+  useEffect(() => {
+    const loadProduct = async () => {
+      const response = await fetch(
+        "http://localhost:8000/product/getAllProducts"
+      );
+      const resData = await response.json();
+      setProducts(resData);
+    };
+    loadProduct();
+  }, []);
+
+  const onSuggestHandler = (text: string) => {
+    setText(text);
+    setSuggestions([]);
+  };
+
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text: string = e.target.value;
+    let matches: Produit[] = [];
+    if (text.length > 0) {
+      matches = products.filter((prd) => {
+        const regex = new RegExp(`${text}`, "gi");
+        return prd?.nomProduit!.match(regex);
+      });
+    }
+    setSuggestions(matches);
+    setText(text);
+  };
+  const { data } = useGetProductByNameQuery(text);
+  const [acValue, setACValue] = useState<Produit | null>(allProduit[0]);
   const onChangeArrivageProduit = (e: React.ChangeEvent<HTMLInputElement>) => {
     setArrivageProduitData((prevState) => ({
       ...prevState,
@@ -173,16 +191,17 @@ const CreateArrivageProduit = () => {
     }));
   };
   const onSubmitArrivageProduit = (e: React.FormEvent<HTMLFormElement>) => {
-    arrivageProduitData["produitID"] = parseInt(IDproduit);
+    arrivageProduitData["produitID"] = acValue?.idproduit!;
     arrivageProduitData["prixAchatHt"] = prixAchatHT;
-    arrivageProduitData["prixAchatTtc"] = parseInt(prixAchatTTC);
-    arrivageProduitData["prixVente"] = parseInt(prixvente);
-    arrivageProduitData["Benifice"] = parseInt(benifice);
-    arrivageProduitData["PourcentageBenifice"] = parseInt(pourcentageBenifice);
-    arrivageProduitData["PrixRemise"] = parseInt(prixRemise);
-    arrivageProduitData["PourcentageRemise"] = parseInt(pourcentageRemise);
+    arrivageProduitData["prixAchatTtc"] = prixAchatTTC;
+    arrivageProduitData["prixVente"] = prixvente;
+    arrivageProduitData["Benifice"] = benifice;
+    arrivageProduitData["PourcentageBenifice"] = pourcentageBenifice;
+    arrivageProduitData["PrixRemise"] = prixRemise;
+    arrivageProduitData["PourcentageRemise"] = pourcentageRemise;
     arrivageProduitData["MontantTotalProduit"] =
-      parseInt(prixAchatTTC) * arrivageProduitData["quantite"];
+      prixAchatTTC * arrivageProduitData["quantite"];
+
     e.preventDefault();
     CreateArrivageProduit(arrivageProduitData).then(() =>
       setArrivageProduitData(arrivageProduitData)
@@ -338,34 +357,47 @@ const CreateArrivageProduit = () => {
             <Card
               id="shipmentsList"
               style={{
-                width: 950,
+                width: 1150,
               }}
               className="mx-auto"
             >
               <Card.Body className="mx-auto">
                 <Row>
                   <Row>
-                    <Col lg={4}>
-                      <label htmlFor="statusSelect" className="form-label">
+                    <Col lg={8}>
+                      <label htmlFor="productdetail" className="form-label">
                         Produit
                       </label>
-                      <div className="input-group mb-3">
-                        <select
-                          className="form-select"
-                          name="choices-single-default"
-                          id="statusSelect"
-                          onChange={handleProduit}
-                        >
-                          <option value="">Nom Produit</option>
-                          {allProduit.map((produit) => (
-                            <option
-                              key={produit.idproduit}
-                              value={produit.idproduit}
+                      <div className="input-group mb-4">
+                        <Autocomplete
+                          id="country-select-demo"
+                          sx={{ width: 300 }}
+                          options={allProduit}
+                          autoHighlight
+                          onChange={(event, value) => setACValue(value)}
+                          getOptionLabel={(option) => option.nomProduit}
+                          renderOption={(props, option) => (
+                            <Box
+                              component="li"
+                              sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                              {...props}
                             >
-                              {produit.nomProduit}
-                            </option>
-                          ))}
-                        </select>
+                              {option.nomProduit}
+                            </Box>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Choisir Produit"
+                              inputProps={{
+                                ...params.inputProps,
+                                autoComplete: "new-password",
+                              }}
+                              size="small"
+                            />
+                          )}
+                        />
+
                         <div className="hstack gap-2 justify-content-end">
                           <Button
                             variant="success"
@@ -377,20 +409,22 @@ const CreateArrivageProduit = () => {
                           </Button>
                         </div>
                       </div>
-                      {/* <div className="input-group mb-3">
-                        <Autocomplete
-                          disablePortal
-                          id="combo-box-demo"
-                          options={produit}
-                          sx={{ width: 300, height: 80 }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="standard"
-                              label="Produit"
-                            />
-                          )}
-                        /> */}
+                      {/* {suggestions &&
+                        suggestions.map((product) => (
+                          <div>
+                            <ul>
+                              <li
+                                key={product.idproduit}
+                                style={{ cursor: "pointer" }}
+                                onClick={() =>
+                                  onSuggestHandler(product?.nomProduit!)
+                                }
+                              >
+                                {product.nomProduit}
+                              </li>
+                            </ul>
+                          </div>
+                        ))} */}
                     </Col>
                   </Row>
                   <form
@@ -430,9 +464,10 @@ const CreateArrivageProduit = () => {
                               onChange={onChangePAHT}
                               id="prixAchatHt"
                               placeholder="00.00"
-                              aria-label="Price"
+                              aria-label="prixAchatHt"
                               aria-describedby="product-price-addon"
                               autoComplete="off"
+                              required
                             />
                             <span
                               className="input-group-text"
@@ -455,7 +490,7 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
-                              value={parseInt(prixAchatTTC)}
+                              value={prixAchatTTC}
                               onChange={onChangePATTC}
                               id="prixAchatTtc"
                               placeholder="00.00"
@@ -480,31 +515,12 @@ const CreateArrivageProduit = () => {
                             id="prixVente"
                             placeholder="00.00"
                             value={prixvente}
+                            min={prixAchatTTC}
+                            max="9999"
                             onChange={onChangePV}
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
                           />
-                          <div className="invalid-feedback">
-                            Please enter a product orders.
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg={1}></Col>
-                      <Col lg={3} sm={6}>
-                        <div className="mb-3">
-                          <Form.Label htmlFor="Benifice">Benifice</Form.Label>
-                          <Form.Control
-                            type="number"
-                            id="Benifice"
-                            placeholder="00.00"
-                            value={parseInt(benifice)}
-                            onChange={onChangeBenifice}
-                            aria-label="discount"
-                            aria-describedby="product-discount-addon"
-                          />
-                          <div className="invalid-feedback">
-                            Please enter a product orders.
-                          </div>
                         </div>
                       </Col>
                       <Col lg={1}></Col>
@@ -535,17 +551,37 @@ const CreateArrivageProduit = () => {
                           </div>
                         </div>
                       </Col>
+                      <Col lg={1}></Col>
+                      <Col lg={3} sm={6}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="Benifice">Benifice</Form.Label>
+                          <Form.Control
+                            type="number"
+                            id="Benifice"
+                            placeholder="00.00"
+                            value={benifice}
+                            onChange={onChangeBenifice}
+                            aria-label="discount"
+                            aria-describedby="product-discount-addon"
+                          />
+                          <div className="invalid-feedback">
+                            Please enter a product orders.
+                          </div>
+                        </div>
+                      </Col>
                     </Row>
                     <Row>
                       <Col lg={3} sm={6}>
                         <div className="mb-3">
                           <Form.Label htmlFor="PrixRemise">
-                            Prix en Remise
+                            Remise Plafond
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
                               value={prixRemise}
+                              min={prixAchatTTC}
+                              max={prixvente}
                               onChange={onChangePrixRemise}
                               id="PrixRemise"
                               placeholder="00.00"
@@ -562,7 +598,7 @@ const CreateArrivageProduit = () => {
                       <Col lg={3} sm={6}>
                         <div className="mb-3">
                           <Form.Label htmlFor="PourcentageRemise">
-                            Prix en Remise %
+                            Remise Plafond %
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
@@ -646,7 +682,7 @@ const CreateArrivageProduit = () => {
                                         </td>
                                         <td>{produitArr?.PrixRemise!}</td>
                                         <td>
-                                          {produitArr?.PourcentageRemise!} %
+                                          {produitArr.PourcentageRemise!}%
                                         </td>
                                         <td>{produitArr?.quantite!}</td>
                                         <td>

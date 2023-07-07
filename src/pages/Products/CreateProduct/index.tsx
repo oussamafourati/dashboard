@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Row,
+  Modal,
+} from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import { useNavigate } from "react-router-dom";
 import { useAddProduitMutation } from "features/produit/productSlice";
@@ -434,7 +442,7 @@ const CreateProduct = () => {
             </Row>
           </form>
           {/* ******Modal For Category****** */}
-          {/* <Modal
+          <Modal
             id="showModal"
             className="fade zoomIn"
             size="sm"
@@ -539,10 +547,10 @@ const CreateProduct = () => {
                 </Row>
               </Form>
             </Modal.Body>
-          </Modal> */}
+          </Modal>
 
           {/* ******Modal For Sub Category****** */}
-          {/* <Modal
+          <Modal
             id="showModal"
             className="fade zoomIn"
             size="lg"
@@ -639,7 +647,7 @@ const CreateProduct = () => {
                 </Row>
               </Form>
             </Modal.Body>
-          </Modal> */}
+          </Modal>
         </Container>
       </div>
     </React.Fragment>

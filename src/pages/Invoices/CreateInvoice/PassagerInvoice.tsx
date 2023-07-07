@@ -25,9 +25,16 @@ import {
 } from "features/clientPhysique/clientPhysiqueSlice";
 import { Produit, useFetchProduitsQuery } from "features/produit/productSlice";
 import { useAddFactureMutation } from "features/facture/factureSlice";
+import {
+  ArrivageProduit,
+  useGetAllArrivagesProduitQuery,
+} from "features/arrivageProduit/arrivageProduitSlice";
 import NewComponent from "./NewComponent";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const PassagerInvoice = () => {
   document.title = "Créer Facture | Radhouani";
@@ -36,6 +43,8 @@ const PassagerInvoice = () => {
   const handleChangeselect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedd(e.target.value);
   };
+
+  const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
 
   const [clientPhysique, setClientPhysique] = useState<ClientPhysique[]>([]);
   const [selected, setSelected] = useState<ClientPhysique[]>([]);
@@ -220,12 +229,87 @@ const PassagerInvoice = () => {
     addFacture(factureData).then(() => setFactureData(factureValue));
     // notify();
   };
+
+  // The selected drink
+  const [selectedDrink, setSelectedDrink] = useState<String>();
+
+  // This function will be triggered when a radio button is selected
+  const radioHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDrink(event.target.value);
+  };
+  const [inputFields, setInputFields] = useState<string[]>([""]);
+  const handleAddFields = () => {
+    const newInputFields = [...inputFields];
+    newInputFields.push("");
+    setInputFields(newInputFields);
+  };
+  const [value, setValue] = useState<string>("");
+
+  const [text, setText] = useState("");
+  const [products, setProducts] = useState<ArrivageProduit[]>([]);
+  const [suggestions, setSuggestions] = useState<ArrivageProduit[]>([]);
+  useEffect(() => {
+    const loadProduct = async () => {
+      const response = await fetch(
+        "http://localhost:8000/arrivageProduit/allArrivageProduit"
+      );
+      const resData = await response.json();
+      setProducts(resData);
+    };
+    loadProduct();
+  }, []);
+
+  const onSuggestHandler = (text: string) => {
+    setText(text);
+    setSuggestions([]);
+  };
+  const handleChange = (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newInputFields = [...inputFields];
+    newInputFields[index] = event.target.value;
+    setInputFields(newInputFields);
+    setValue(event.target.value);
+  };
+  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text: string = e.target.value;
+    let matches: ArrivageProduit[] = [];
+    if (text.length > 0) {
+      matches = products.filter((prd) => {
+        const regex = new RegExp(`${text}`, "gi");
+        return prd?.nomProduit!.match(regex);
+      });
+    }
+    setSuggestions(matches);
+    setText(text);
+  };
+
+  const handleRemoveFields = (index: number) => {
+    const newInputFields = [...inputFields];
+    newInputFields.splice(index, 1);
+    setInputFields(newInputFields);
+  };
+  const [acValue, setACValue] = useState<ArrivageProduit | null>(
+    allArrivageProduit[0]
+  );
+  const handleSubmit = (
+    event: React.FormEvent<HTMLFormElement>,
+    stateVal: ArrivageProduit | null
+  ) => {
+    event.preventDefault();
+  };
+
   return (
     <Container fluid={true}>
       <Row className="justify-content-center">
         <Col xxl={9}>
           <Card>
-            <Form className="needs-validation" id="invoice_form">
+            <Form
+              className="needs-validation"
+              id="invoice_form"
+              onSubmit={(event) => handleSubmit(event, acValue)}
+            >
               <Card.Body className="border-bottom border-bottom-dashed p-4">
                 <Row>
                   <Col lg={4}>
@@ -389,7 +473,144 @@ const PassagerInvoice = () => {
                 </Row>
               </Card.Body>
               <Card.Body className="p-4">
-                <NewComponent />
+                <div>
+                  <Card.Body className="p-4">
+                    <Row>
+                      {/* <Col lg={1}>
+            <Form.Label htmlFor="invoicenoInput">#</Form.Label>
+          </Col> */}
+                      <Col lg={5}>
+                        <Form.Label htmlFor="productdetail">
+                          Détail Produit
+                        </Form.Label>
+                      </Col>
+                      <Col lg={2}>
+                        <Form.Label htmlFor="PrixUnitaire">
+                          Prix Unitaire
+                        </Form.Label>
+                      </Col>
+                      <Col lg={2}>
+                        <Form.Label htmlFor="Quantite">Quantité</Form.Label>
+                      </Col>
+                      <Col lg={2}>
+                        <Form.Label htmlFor="Montant">Montant</Form.Label>
+                      </Col>
+                      <Col lg={1}></Col>
+                    </Row>
+                    {inputFields.map((inputField, index) => (
+                      <Row style={{ marginBottom: 20 }}>
+                        {/* <Col lg={1}>{index + 1}</Col> */}
+                        <Col lg={5}>
+                          {/* <div>
+                <Form.Control
+                  className="product-price"
+                  id="productdetail"
+                  type="text"
+                  value={text}
+                  onChange={onChangeHandler}
+                  placeholder="Détail Produit"
+                />
+              </div>
+              {suggestions &&
+                suggestions.map((product) => (
+                  <div>
+                    <ul>
+                      <li
+                        key={product.idArrivageProduit}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => onSuggestHandler(product?.nomProduit!)}
+                      >
+                        {product.nomProduit}__{product.designation}
+                      </li>
+                    </ul>
+                  </div>
+                ))} */}
+
+                          <Autocomplete
+                            id="nomProduit"
+                            sx={{ width: 300 }}
+                            options={allArrivageProduit}
+                            autoHighlight
+                            onChange={(event, value) => setACValue(value)}
+                            getOptionLabel={(option) => option.nomProduit!}
+                            renderOption={(props, option) => (
+                              <Box
+                                component="li"
+                                // sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                                {...props}
+                              >
+                                {option.nomProduit}___{option.dateArrivage}
+                              </Box>
+                            )}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Choisir Produit"
+                                inputProps={{
+                                  ...params.inputProps,
+                                }}
+                                size="small"
+                              />
+                            )}
+                          />
+                        </Col>
+                        <Col lg={2}>
+                          <TextField
+                            type="text"
+                            id="PrixUnitaire"
+                            placeholder="0.0"
+                            size="small"
+                          />
+                        </Col>
+                        <Col lg={2}>
+                          <TextField
+                            type="text"
+                            id="Quantite"
+                            placeholder="0.0"
+                            size="small"
+                          />
+                        </Col>
+                        <Col lg={2}>
+                          <TextField
+                            type="text"
+                            id="Montant"
+                            placeholder="0.0 "
+                            defaultValue=""
+                            size="small"
+                          />
+                        </Col>
+                        <Col lg={1} style={{ marginTop: 13 }}>
+                          <Link
+                            to="#"
+                            className="link-danger"
+                            onClick={() => handleRemoveFields(index)}
+                          >
+                            <i className="ri-delete-bin-5-line ri-xl" />
+                          </Link>
+                        </Col>
+                      </Row>
+                    ))}
+                  </Card.Body>
+                  <Row>
+                    <Col id="newForm" style={{ display: "none" }}>
+                      <div className="d-none">
+                        <p>Add New Form</p>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div>
+                        <Link
+                          to="#"
+                          id="add-item"
+                          className="btn btn-soft-secondary fw-medium"
+                          onClick={handleAddFields}
+                        >
+                          <i className="ri-add-fill me-1 align-bottom"></i>
+                        </Link>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
                 <Row className="border-top border-top-dashed mt-2">
                   <Col lg={8}></Col>
                   <Col>
@@ -436,115 +657,128 @@ const PassagerInvoice = () => {
                 </Row>
                 {clientPhyId === "18" ? (
                   <Row className="mt-3">
-                    <Col lg={9}>
+                    <Col lg={8}>
                       <div className="mb-2">
-                        <Form.Label
-                          htmlFor="choices-payment-type"
-                          className="text-muted text-uppercase fw-semibold"
-                        >
-                          Reglement
-                        </Form.Label>
-                        <select
-                          className="form-select"
-                          data-choices
-                          data-choices-search-false
-                          id="choices-payment-type"
-                          value={selectedd}
-                          onChange={(e) => handleChangeselect(e)}
-                        >
-                          <option value="Paiement total en espèces">
-                            Paiement total en espèces
-                          </option>
-                        </select>
-                        {selectedd === "Paiement total en espèces" ? (
+                        <fieldset>
+                          <legend>Reglement</legend>
                           <PaiementTotal />
-                        ) : (
-                          ""
-                        )}
+                        </fieldset>
                       </div>
                     </Col>
                     <Col lg={3} sm={6}>
                       <Form.Label htmlFor="choices-payment-status">
                         Status de Payement
                       </Form.Label>
-                      <select
-                        className="form-select"
-                        data-choices
-                        data-choices-search-false
-                        id="choices-payment-status"
-                      >
-                        <option value="">Selectionner Status</option>
-                        <option value="Paid">Payé</option>
-                        <option value="Paid">impayé</option>
-                        <option value="Paid">Semi Payé</option>
-                      </select>
+                      <div>
+                        <p className="fs-15 badge badge-soft-success">Payé</p>
+                      </div>
                     </Col>
                   </Row>
                 ) : (
                   <Row className="mt-3">
                     <Col lg={9}>
                       <div className="mb-2">
-                        <Form.Label
-                          htmlFor="choices-payment-type"
-                          className="text-muted text-uppercase fw-semibold"
-                        >
-                          Reglement
-                        </Form.Label>
-                        <select
-                          className="form-select"
-                          data-choices
-                          data-choices-search-false
-                          id="choices-payment-type"
-                          value={selectedd}
-                          onChange={(e) => handleChangeselect(e)}
-                        >
-                          <option value="Paiement total en espèces">
-                            Paiement total en espèces
-                          </option>
-                          <option value="Paiement partiel espèces">
-                            Paiement partiel espèces
-                          </option>
-                          <option value="Paiement partiel chèque">
-                            Paiement partiel chèque
-                          </option>
-                        </select>
-                        {selectedd === "Paiement total en espèces" ? (
+                        <fieldset>
+                          <legend>Reglement</legend>
+                          <p>
+                            <input
+                              type="radio"
+                              name="reglement"
+                              value="Paiement total en espèces"
+                              id="Paiement total en espèces"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement total en espèces">
+                              Paiement total en espèces
+                            </label>
+                          </p>
+                          <p>
+                            <input
+                              type="radio"
+                              name="reglement"
+                              value="Paiement partiel espèces"
+                              id="Paiement partiel espèces"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement partiel espèces">
+                              Paiement partiel espèces
+                            </label>
+                          </p>
+                          <p>
+                            <input
+                              type="radio"
+                              name="reglement"
+                              value="Paiement partiel chèque"
+                              id="Paiement partiel chèque"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement partiel chèque">
+                              Paiement partiel chèque
+                            </label>
+                          </p>
+                        </fieldset>
+                        {/* Display the selected drink */}
+                        {selectedDrink === "Paiement total en espèces" ? (
                           <PaiementTotal />
                         ) : (
                           ""
                         )}
 
-                        {selectedd === "Paiement partiel espèces" ? (
+                        {selectedDrink === "Paiement partiel espèces" ? (
                           <PaiementEspece />
                         ) : (
                           ""
                         )}
-                        {selectedd === "Paiement partiel chèque" ? (
+
+                        {selectedDrink === "Paiement partiel chèque" ? (
                           <PaiementCheque />
                         ) : (
                           ""
                         )}
                       </div>
                     </Col>
-                    <Col lg={3} sm={6}>
-                      <Form.Label htmlFor="choices-payment-status">
-                        Status de Payement
-                      </Form.Label>
-                      <select
-                        className="form-select"
-                        data-choices
-                        data-choices-search-false
-                        id="choices-payment-status"
-                      >
-                        <option value="">Selectionner Status</option>
-                        <option value="Paid">Payé</option>
-                        <option value="Paid">impayé</option>
-                        <option value="Paid">Semi Payé</option>
-                      </select>
-                    </Col>
+                    {selectedDrink === "Paiement total en espèces" ? (
+                      <Col lg={3} sm={6}>
+                        <Form.Label htmlFor="choices-payment-status">
+                          Status de Payement
+                        </Form.Label>
+                        <div>
+                          <p className="fs-15 badge badge-soft-success">Payé</p>
+                        </div>
+                      </Col>
+                    ) : (
+                      ""
+                    )}
+                    {selectedDrink === "Paiement partiel espèces" ? (
+                      <Col lg={3} sm={6}>
+                        <Form.Label htmlFor="choices-payment-status">
+                          Status de Payement
+                        </Form.Label>
+                        <div>
+                          <p className="fs-15 badge badge-soft-danger">
+                            Impayé
+                          </p>
+                        </div>
+                      </Col>
+                    ) : (
+                      ""
+                    )}
+                    {selectedDrink === "Paiement partiel chèque" ? (
+                      <Col lg={3} sm={6}>
+                        <Form.Label htmlFor="choices-payment-status">
+                          Status de Payement
+                        </Form.Label>
+                        <div>
+                          <p className="fs-15 badge badge-soft-warning">
+                            Semi-Payé
+                          </p>
+                        </div>
+                      </Col>
+                    ) : (
+                      ""
+                    )}
                   </Row>
                 )}
-
                 <div className="hstack gap-2 justify-content-end d-print-none mt-4">
                   <Button variant="success" type="submit">
                     <i className="ri-printer-line align-bottom me-1"></i>{" "}

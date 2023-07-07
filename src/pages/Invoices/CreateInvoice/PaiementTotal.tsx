@@ -8,6 +8,9 @@ const PaiementTotal = () => {
       <br />
       <Row>
         <Col lg={4}>
+          <Form.Label htmlFor="amountTotalPay">
+            Montant Total Encaissé
+          </Form.Label>
           <Form.Control type="number" id="amountTotalPay" placeholder="0.00" />
         </Col>
       </Row>

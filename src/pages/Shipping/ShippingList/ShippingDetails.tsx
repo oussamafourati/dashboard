@@ -77,12 +77,10 @@ const ShippingDetails = () => {
                     <div className="flex-grow-1">
                       <h6 className="fs-18 mb-3">Détail Produit</h6>
                       <p className="mb-1">
-                        Quantité Total:
-                        <span className="fw-medium">{arrivageTotal}</span>
-                      </p>
-                      <p className="mb-1">
-                        Catégorie:
-                        {/* <span className="fw-medium">{arrivageTotal}</span> */}
+                        Quantité Total :{" "}
+                        <span className="fw-medium">
+                          <strong>{arrivageTotal}</strong>
+                        </span>
                       </p>
                     </div>
                     <div className="avatar-sm flex-shrink-0">
@@ -98,28 +96,38 @@ const ShippingDetails = () => {
               <Card className="bg-success bg-opacity-10 border-0">
                 <Card.Body>
                   <div className="d-flex gap-3">
-                    <h6 className="fs-18 mb-3">Détail Fournisseur</h6>
-                    {fournisseurDetail.map((fournisseur) => (
-                      <>
-                        <div
-                          style={{ paddingRight: 80 }}
-                          className="flex-grow-1"
-                          key={fournisseur.idfournisseur}
-                        >
-                          <p className="mb-0 fw-medium">
-                            {fournisseur.raison_sociale}
-                          </p>
-                          <p className="mb-0">{fournisseur.adresse}</p>
-                        </div>
-                        <div className="avatar-sm flex-shrink-0">
+                    <div className="flex-grow-1">
+                      <h6 className="fs-18 mb-3">Détail Fournisseur</h6>
+                      <p className="mb-1">
+                        Nom :
+                        {fournisseurDetail.map((fournisseur) => (
+                          <span className="fw-medium">
+                            {" "}
+                            <strong>{fournisseur.raison_sociale}</strong>
+                          </span>
+                        ))}
+                      </p>
+                      <p className="mb-1">
+                        Adresse :
+                        {fournisseurDetail.map((fournisseur) => (
+                          <span className="fw-medium">
+                            {" "}
+                            <strong>{fournisseur.adresse}</strong>
+                          </span>
+                        ))}
+                      </p>
+                    </div>
+                    <div className="avatar-sm flex-shrink-0">
+                      <div className="avatar-title bg-warning-subtle text-warning rounded fs-3">
+                        {fournisseurDetail.map((fournisseur) => (
                           <img
                             src={`data:image/jpeg;base64,${fournisseur.logo}`}
                             alt={fournisseur.raison_sociale}
                             className="avatar-sm rounded"
                           />
-                        </div>
-                      </>
-                    ))}
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </Card.Body>
               </Card>
@@ -132,13 +140,13 @@ const ShippingDetails = () => {
             <Table>
               <thead>
                 <tr>
-                  <td>Nom Produit</td>
-                  <td>Quantité</td>
-                  <td>PrixHT</td>
-                  <td>PrixTTC</td>
-                  <td>Prix Vente</td>
-                  <td>Bénificie</td>
-                  <td>Prix Remise</td>
+                  <th>Nom Produit</th>
+                  <th>Quantité</th>
+                  <th>PrixHT</th>
+                  <th>PrixTTC</th>
+                  <th>Prix Vente</th>
+                  <th>Bénificie</th>
+                  <th>Prix Remise</th>
                 </tr>
               </thead>
               <tbody>
