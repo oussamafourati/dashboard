@@ -20,18 +20,23 @@ import logoLight from "assets/images/logo-light.png";
 import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
 import {
   ClientMorale,
   useAddClientMoraleMutation,
   useFetchClientMoralesQuery,
 } from "features/clientMoral/clientMoralSlice";
-
+import {
+  ArrivageProduit,
+  useGetAllArrivagesProduitQuery,
+} from "features/arrivageProduit/arrivageProduitSlice";
 const ProInvoice = () => {
   document.title = "Créer Facture | Radhouani";
 
   const [selectedd, setSelectedd] = useState("Paiement total en espèces");
-
+  const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
   const handleChangeselect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedd(e.target.value);
   };
@@ -210,6 +215,16 @@ const ProInvoice = () => {
     setSelectedDrink(event.target.value);
   };
 
+  const [acValue, setACValue] = useState<ArrivageProduit | null>(
+    allArrivageProduit[0]
+  );
+  const handleSubmit = (
+    event: React.FormEvent<HTMLFormElement>,
+    stateVal: ArrivageProduit | null
+  ) => {
+    event.preventDefault();
+  };
+  let transactionId = `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`;
   return (
     <Container fluid={true}>
       <Row className="justify-content-center">
@@ -395,18 +410,29 @@ const ProInvoice = () => {
                             {index + 1}
                           </th>
                           <td className="text-start">
-                            <div className="mb-2">
-                              <input
-                                type="text"
-                                id="productName-1"
-                                placeholder="Ref. Art"
-                                required
-                                onChange={(e) => handleChange(index, e)}
-                              />
-                              <div className="invalid-feedback">
-                                Please enter a product name
-                              </div>
-                            </div>
+                            <Autocomplete
+                              id="nomProduit"
+                              sx={{ width: 300 }}
+                              options={allArrivageProduit}
+                              autoHighlight
+                              onChange={(event, value) => setACValue(value)}
+                              getOptionLabel={(option) => option.nomProduit!}
+                              renderOption={(props, option) => (
+                                <li {...props} key={transactionId}>
+                                  {option.nomProduit}__{option.dateArrivage}
+                                </li>
+                              )}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Choisir Produit"
+                                  inputProps={{
+                                    ...params.inputProps,
+                                  }}
+                                  size="small"
+                                />
+                              )}
+                            />
                           </td>
                           <td>
                             <Form.Control
@@ -416,6 +442,7 @@ const ProInvoice = () => {
                               step="0.01"
                               placeholder="0.00"
                               required
+                              value={acValue?.prixVente!}
                             />
                             <div className="invalid-feedback">
                               Please enter a rate

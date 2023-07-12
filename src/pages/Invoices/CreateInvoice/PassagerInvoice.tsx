@@ -12,7 +12,6 @@ import Flatpickr from "react-flatpickr";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
 import PaiementCheque from "./PaiementCheque";
-// Import Images
 import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
 import { Link } from "react-router-dom";
@@ -29,14 +28,22 @@ import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
-import NewComponent from "./NewComponent";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
-const PassagerInvoice = () => {
+interface FormFields {
+  nomproduit: string;
+  prixunitaire: string;
+  qty: string;
+  montanttotal: string;
+  subTotal: string;
+  [key: string]: string;
+}
+
+const PassagerInvoice: React.FC = () => {
   document.title = "Créer Facture | Radhouani";
   const [selectedd, setSelectedd] = useState("Paiement total en espèces");
 
@@ -72,19 +79,11 @@ const PassagerInvoice = () => {
     } else {
       setSelected([]);
     }
-    console.log(clientPhysiqueId);
   };
-
   //Query to Fetch All Client Physique
   const { data: allProduit = [] } = useFetchProduitsQuery();
-  // const mTotalHT = allProduit.reduce(
-  //   (sum, i) => (sum += i.MontantTotalProduit),
-  //   0
-  // );
-  // const mTotal = mTotalHT * 1.19;
   // Mutation to create a new Client
   const [createClientPhysique] = useAddClientPhysiqueMutation();
-
   //Toast Notification For Client Physique
   const notifyClientphysique = () => {
     toast.success("Le client physique a été créé avec succès", {
@@ -300,10 +299,55 @@ const PassagerInvoice = () => {
     event.preventDefault();
   };
 
+  let transactionId = `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`;
+
+  const [formFields, setFormFields] = useState<FormFields[]>([
+    {
+      nomproduit: "",
+      prixunitaire: "",
+      qty: "",
+      montanttotal: "",
+      subTotal: "",
+    },
+  ]);
+
+  const handleFormChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index][event.target.name] = event.target.value;
+    setFormFields(data);
+  };
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(formFields);
+  };
+  const montantTotal =
+    formFields.reduce((sum, i) => (sum += parseInt(i.montanttotal!)), 0) ||
+    (0).toString();
+
+  const addFields = () => {
+    let object: FormFields = {
+      nomproduit: "",
+      prixunitaire: "",
+      qty: "",
+      montanttotal: "",
+      subTotal: "",
+    };
+    setFormFields([...formFields, object]);
+  };
+
+  const removeFields = (index: number) => {
+    let data = [...formFields];
+    data.splice(index, 1);
+    setFormFields(data);
+  };
+
   return (
     <Container fluid={true}>
       <Row className="justify-content-center">
-        <Col xxl={9}>
+        <Col xxl={12}>
           <Card>
             <Form
               className="needs-validation"
@@ -472,125 +516,117 @@ const PassagerInvoice = () => {
                   </Col>
                 </Row>
               </Card.Body>
-              <Card.Body className="p-4">
+              <Card.Body className="p-3">
                 <div>
-                  <Card.Body className="p-4">
-                    <Row>
-                      {/* <Col lg={1}>
-            <Form.Label htmlFor="invoicenoInput">#</Form.Label>
-          </Col> */}
-                      <Col lg={5}>
-                        <Form.Label htmlFor="productdetail">
-                          Détail Produit
-                        </Form.Label>
+                  <Row>
+                    <Col lg={4}>
+                      <Form.Label htmlFor="nomProduit">
+                        Détail Produit
+                      </Form.Label>
+                    </Col>
+                    <Col lg={2}>
+                      <Form.Label htmlFor="PrixUnitaire">
+                        Prix Unitaire
+                      </Form.Label>
+                    </Col>
+                    <Col lg={1}>
+                      <Form.Label htmlFor="Quantite">Quantité</Form.Label>
+                    </Col>
+                    <Col lg={2}>
+                      <Form.Label htmlFor="Montant">Montant</Form.Label>
+                    </Col>
+                    <Col lg={2}>
+                      <Form.Label htmlFor="MontantAR">
+                        Montant après Remise
+                      </Form.Label>
+                    </Col>
+                    <Col lg={1}></Col>
+                  </Row>
+                  {formFields.map((form, index) => (
+                    <Row style={{ marginBottom: 20 }} key={index}>
+                      <Col lg={4}>
+                        <Autocomplete
+                          id="nomProduit"
+                          sx={{ width: 300 }}
+                          options={allArrivageProduit}
+                          autoHighlight
+                          onChange={(event, value) => setACValue(value)}
+                          getOptionLabel={(option) => option.nomProduit!}
+                          renderOption={(props, option) => (
+                            <li {...props} key={transactionId}>
+                              {option.nomProduit}__{option.dateArrivage}
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Choisir Produit"
+                              inputProps={{
+                                ...params.inputProps,
+                              }}
+                              size="small"
+                            />
+                          )}
+                        />
                       </Col>
                       <Col lg={2}>
-                        <Form.Label htmlFor="PrixUnitaire">
-                          Prix Unitaire
-                        </Form.Label>
+                        <TextField
+                          id="PrixUnitaire"
+                          type="number"
+                          size="small"
+                          name="prixunitaire"
+                          placeholder="prixunitaire"
+                          onChange={(event) => handleFormChange(event, index)}
+                          value={form.prixunitaire}
+                        />
+                      </Col>
+                      <Col lg={1}>
+                        <TextField
+                          id="Quantite"
+                          type="number"
+                          size="small"
+                          name="qty"
+                          placeholder="0.0"
+                          onChange={(event) => handleFormChange(event, index)}
+                          value={form.qty}
+                        />
                       </Col>
                       <Col lg={2}>
-                        <Form.Label htmlFor="Quantite">Quantité</Form.Label>
+                        <TextField
+                          id="Montant"
+                          size="small"
+                          type="number"
+                          name="montanttotal"
+                          placeholder="0.0"
+                          onChange={(event) => handleFormChange(event, index)}
+                          value={
+                            (form.montanttotal = (
+                              parseInt(form.prixunitaire) * parseInt(form.qty)
+                            ).toString())
+                          }
+                        />
                       </Col>
                       <Col lg={2}>
-                        <Form.Label htmlFor="Montant">Montant</Form.Label>
+                        <TextField
+                          id="MontantAR"
+                          size="small"
+                          type="number"
+                          name="montanttotalAR"
+                          placeholder="0.0"
+                          onChange={(event) => handleFormChange(event, index)}
+                        />
                       </Col>
-                      <Col lg={1}></Col>
+                      <Col lg={1} style={{ marginTop: 13 }}>
+                        <Link
+                          to="#"
+                          className="link-danger"
+                          onClick={() => removeFields(index)}
+                        >
+                          <i className="ri-delete-bin-5-line ri-xl" />
+                        </Link>
+                      </Col>
                     </Row>
-                    {inputFields.map((inputField, index) => (
-                      <Row style={{ marginBottom: 20 }}>
-                        {/* <Col lg={1}>{index + 1}</Col> */}
-                        <Col lg={5}>
-                          {/* <div>
-                <Form.Control
-                  className="product-price"
-                  id="productdetail"
-                  type="text"
-                  value={text}
-                  onChange={onChangeHandler}
-                  placeholder="Détail Produit"
-                />
-              </div>
-              {suggestions &&
-                suggestions.map((product) => (
-                  <div>
-                    <ul>
-                      <li
-                        key={product.idArrivageProduit}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => onSuggestHandler(product?.nomProduit!)}
-                      >
-                        {product.nomProduit}__{product.designation}
-                      </li>
-                    </ul>
-                  </div>
-                ))} */}
-
-                          <Autocomplete
-                            id="nomProduit"
-                            sx={{ width: 300 }}
-                            options={allArrivageProduit}
-                            autoHighlight
-                            onChange={(event, value) => setACValue(value)}
-                            getOptionLabel={(option) => option.nomProduit!}
-                            renderOption={(props, option) => (
-                              <Box
-                                component="li"
-                                // sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                                {...props}
-                              >
-                                {option.nomProduit}___{option.dateArrivage}
-                              </Box>
-                            )}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Choisir Produit"
-                                inputProps={{
-                                  ...params.inputProps,
-                                }}
-                                size="small"
-                              />
-                            )}
-                          />
-                        </Col>
-                        <Col lg={2}>
-                          <TextField
-                            type="text"
-                            id="PrixUnitaire"
-                            placeholder="0.0"
-                            size="small"
-                          />
-                        </Col>
-                        <Col lg={2}>
-                          <TextField
-                            type="text"
-                            id="Quantite"
-                            placeholder="0.0"
-                            size="small"
-                          />
-                        </Col>
-                        <Col lg={2}>
-                          <TextField
-                            type="text"
-                            id="Montant"
-                            placeholder="0.0 "
-                            defaultValue=""
-                            size="small"
-                          />
-                        </Col>
-                        <Col lg={1} style={{ marginTop: 13 }}>
-                          <Link
-                            to="#"
-                            className="link-danger"
-                            onClick={() => handleRemoveFields(index)}
-                          >
-                            <i className="ri-delete-bin-5-line ri-xl" />
-                          </Link>
-                        </Col>
-                      </Row>
-                    ))}
-                  </Card.Body>
+                  ))}
                   <Row>
                     <Col id="newForm" style={{ display: "none" }}>
                       <div className="d-none">
@@ -603,7 +639,7 @@ const PassagerInvoice = () => {
                           to="#"
                           id="add-item"
                           className="btn btn-soft-secondary fw-medium"
-                          onClick={handleAddFields}
+                          onClick={addFields}
                         >
                           <i className="ri-add-fill me-1 align-bottom"></i>
                         </Link>
@@ -612,173 +648,158 @@ const PassagerInvoice = () => {
                   </Row>
                 </div>
                 <Row className="border-top border-top-dashed mt-2">
-                  <Col lg={8}></Col>
-                  <Col>
-                    <div className="p-0">
-                      <Col className="table-borderless table-sm table-nowrap align-middle mb-0">
-                        <tbody>
-                          <tr>
-                            <th scope="row">Total</th>
-                            <td style={{ width: "150px" }}>
-                              <Form.Control
-                                type="number"
-                                // value={mTotalHT}
-                                id="cart-subtotal"
-                                placeholder="0.00"
+                  <Col lg={9}>
+                    {clientPhyId === "18" ? (
+                      <Row className="mt-3">
+                        <Col lg={8}>
+                          <div className="mb-2">
+                            <fieldset>
+                              <legend>Reglement</legend>
+                              <PaiementTotal />
+                            </fieldset>
+                          </div>
+                        </Col>
+                        <Col lg={3} sm={6}>
+                          <Form.Label htmlFor="choices-payment-status">
+                            Status de Payement
+                          </Form.Label>
+                          <div>
+                            <p className="fs-15 badge badge-soft-success">
+                              Payé
+                            </p>
+                          </div>
+                        </Col>
+                      </Row>
+                    ) : (
+                      <Row className="mt-3">
+                        <Col lg={7}>
+                          <div className="mb-2">
+                            <Form.Label htmlFor="choices-payment-status">
+                              Reglement
+                            </Form.Label>
+                            <p>
+                              <input
+                                className="m-2"
+                                type="radio"
+                                name="reglement"
+                                value="Paiement total en espèces"
+                                id="Paiement total en espèces"
+                                onChange={radioHandler}
                               />
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">Taxe (19%)</th>
-                            <td>
-                              <Form.Control
-                                type="number"
-                                // value={precise(mTotal - mTotalHT)}
-                                id="cart-tax"
-                                placeholder="$0.00"
+                              <label htmlFor="Paiement total en espèces">
+                                Total en espèces
+                              </label>
+                              <input
+                                className="m-2"
+                                type="radio"
+                                name="reglement"
+                                value="Paiement partiel espèces"
+                                id="Paiement partiel espèces"
+                                onChange={radioHandler}
                               />
-                            </td>
-                          </tr>
-                          <tr className="border-top border-top-dashed">
-                            <th scope="row">Montant Total</th>
-                            <td>
-                              <Form.Control
-                                // value={precise(mTotal)}
-                                type="number"
-                                id="cart-total"
-                                placeholder="0.00"
+                              <label htmlFor="Paiement partiel espèces">
+                                Partiel espèces
+                              </label>
+                              <input
+                                className="m-2"
+                                type="radio"
+                                name="reglement"
+                                value="Paiement partiel chèque"
+                                id="Paiement partiel chèque"
+                                onChange={radioHandler}
                               />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </Col>
-                    </div>
+                              <label htmlFor="Paiement partiel chèque">
+                                Partiel chèque
+                              </label>
+                            </p>
+                            {selectedDrink === "Paiement total en espèces" ? (
+                              <PaiementTotal />
+                            ) : (
+                              ""
+                            )}
+
+                            {selectedDrink === "Paiement partiel espèces" ? (
+                              <PaiementEspece />
+                            ) : (
+                              ""
+                            )}
+
+                            {selectedDrink === "Paiement partiel chèque" ? (
+                              <PaiementCheque />
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        </Col>
+                        {selectedDrink === "Paiement total en espèces" ? (
+                          <Col lg={3} sm={6}>
+                            <Form.Label htmlFor="choices-payment-status">
+                              Status de Payement
+                            </Form.Label>
+                            <div>
+                              <p className="fs-15 badge badge-soft-success">
+                                Payé
+                              </p>
+                            </div>
+                          </Col>
+                        ) : (
+                          ""
+                        )}
+                        {selectedDrink === "Paiement partiel espèces" ? (
+                          <Col lg={3} sm={6}>
+                            <Form.Label htmlFor="choices-payment-status">
+                              Status de Payement
+                            </Form.Label>
+                            <div>
+                              <p className="fs-15 badge badge-soft-danger">
+                                Impayé
+                              </p>
+                            </div>
+                          </Col>
+                        ) : (
+                          ""
+                        )}
+                        {selectedDrink === "Paiement partiel chèque" ? (
+                          <Col lg={3} sm={6}>
+                            <Form.Label htmlFor="choices-payment-status">
+                              Status de Payement
+                            </Form.Label>
+                            <div>
+                              <p className="fs-15 badge badge-soft-warning">
+                                Semi-Payé
+                              </p>
+                            </div>
+                          </Col>
+                        ) : (
+                          ""
+                        )}
+                      </Row>
+                    )}
+                  </Col>
+                  <Col lg={3} className="mt-3">
+                    <TextField
+                      label="Total"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      size="small"
+                      type="number"
+                      name="subTotal"
+                      value={
+                        formFields.reduce(
+                          (sum, i) => (sum += parseInt(i.montanttotal!)),
+                          0
+                        ) || (0).toString()
+                      }
+                      id="cart-subtotal"
+                      placeholder="0.00"
+                    />
                   </Col>
                 </Row>
-                {clientPhyId === "18" ? (
-                  <Row className="mt-3">
-                    <Col lg={8}>
-                      <div className="mb-2">
-                        <fieldset>
-                          <legend>Reglement</legend>
-                          <PaiementTotal />
-                        </fieldset>
-                      </div>
-                    </Col>
-                    <Col lg={3} sm={6}>
-                      <Form.Label htmlFor="choices-payment-status">
-                        Status de Payement
-                      </Form.Label>
-                      <div>
-                        <p className="fs-15 badge badge-soft-success">Payé</p>
-                      </div>
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="mt-3">
-                    <Col lg={9}>
-                      <div className="mb-2">
-                        <fieldset>
-                          <legend>Reglement</legend>
-                          <p>
-                            <input
-                              type="radio"
-                              name="reglement"
-                              value="Paiement total en espèces"
-                              id="Paiement total en espèces"
-                              onChange={radioHandler}
-                            />
-                            <label htmlFor="Paiement total en espèces">
-                              Paiement total en espèces
-                            </label>
-                          </p>
-                          <p>
-                            <input
-                              type="radio"
-                              name="reglement"
-                              value="Paiement partiel espèces"
-                              id="Paiement partiel espèces"
-                              onChange={radioHandler}
-                            />
-                            <label htmlFor="Paiement partiel espèces">
-                              Paiement partiel espèces
-                            </label>
-                          </p>
-                          <p>
-                            <input
-                              type="radio"
-                              name="reglement"
-                              value="Paiement partiel chèque"
-                              id="Paiement partiel chèque"
-                              onChange={radioHandler}
-                            />
-                            <label htmlFor="Paiement partiel chèque">
-                              Paiement partiel chèque
-                            </label>
-                          </p>
-                        </fieldset>
-                        {/* Display the selected drink */}
-                        {selectedDrink === "Paiement total en espèces" ? (
-                          <PaiementTotal />
-                        ) : (
-                          ""
-                        )}
 
-                        {selectedDrink === "Paiement partiel espèces" ? (
-                          <PaiementEspece />
-                        ) : (
-                          ""
-                        )}
-
-                        {selectedDrink === "Paiement partiel chèque" ? (
-                          <PaiementCheque />
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </Col>
-                    {selectedDrink === "Paiement total en espèces" ? (
-                      <Col lg={3} sm={6}>
-                        <Form.Label htmlFor="choices-payment-status">
-                          Status de Payement
-                        </Form.Label>
-                        <div>
-                          <p className="fs-15 badge badge-soft-success">Payé</p>
-                        </div>
-                      </Col>
-                    ) : (
-                      ""
-                    )}
-                    {selectedDrink === "Paiement partiel espèces" ? (
-                      <Col lg={3} sm={6}>
-                        <Form.Label htmlFor="choices-payment-status">
-                          Status de Payement
-                        </Form.Label>
-                        <div>
-                          <p className="fs-15 badge badge-soft-danger">
-                            Impayé
-                          </p>
-                        </div>
-                      </Col>
-                    ) : (
-                      ""
-                    )}
-                    {selectedDrink === "Paiement partiel chèque" ? (
-                      <Col lg={3} sm={6}>
-                        <Form.Label htmlFor="choices-payment-status">
-                          Status de Payement
-                        </Form.Label>
-                        <div>
-                          <p className="fs-15 badge badge-soft-warning">
-                            Semi-Payé
-                          </p>
-                        </div>
-                      </Col>
-                    ) : (
-                      ""
-                    )}
-                  </Row>
-                )}
                 <div className="hstack gap-2 justify-content-end d-print-none mt-4">
                   <Button variant="success" type="submit">
                     <i className="ri-printer-line align-bottom me-1"></i>{" "}
