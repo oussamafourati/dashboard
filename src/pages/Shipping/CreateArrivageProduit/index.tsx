@@ -409,22 +409,6 @@ const CreateArrivageProduit = () => {
                           </Button>
                         </div>
                       </div>
-                      {/* {suggestions &&
-                        suggestions.map((product) => (
-                          <div>
-                            <ul>
-                              <li
-                                key={product.idproduit}
-                                style={{ cursor: "pointer" }}
-                                onClick={() =>
-                                  onSuggestHandler(product?.nomProduit!)
-                                }
-                              >
-                                {product.nomProduit}
-                              </li>
-                            </ul>
-                          </div>
-                        ))} */}
                     </Col>
                   </Row>
                   <form

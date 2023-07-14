@@ -225,6 +225,7 @@ const ProInvoice = () => {
     event.preventDefault();
   };
   let transactionId = `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`;
+  const [count, setCount] = useState<number | undefined>();
   return (
     <Container fluid={true}>
       <Row className="justify-content-center">
@@ -592,7 +593,7 @@ const ProInvoice = () => {
                         </p>
                       </fieldset>
                       {selectedDrink === "Paiement total en espèces" ? (
-                        <PaiementTotal />
+                        <PaiementTotal setCount={setCount} />
                       ) : (
                         ""
                       )}
