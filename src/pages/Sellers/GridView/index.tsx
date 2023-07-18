@@ -119,13 +119,13 @@ const SellersGridView = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
-      type: parseInt(selectedOption),
-      etat: parseInt(selectedEtat),
       [e.target.id]: e.target.value,
     }));
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    formData["type"] = parseInt(selectedOption);
+    formData["etat"] = parseInt(selectedEtat);
     e.preventDefault();
     createFournisseur(formData).then(() => setFormData(formData));
     notify();
@@ -177,7 +177,7 @@ const SellersGridView = () => {
     });
   }
 
-  document.title = "Fournisseur | Toner eCommerce + Admin React Template";
+  document.title = "Fournisseur | Radhouani";
 
   // Pagination
   const [pagination, setPagination] = useState<boolean>(true);
@@ -999,7 +999,7 @@ const SellersGridView = () => {
                       </div>
                     </div>
                     <div className="text-center mt-3">
-                      <Link to="/seller-overview">
+                      <Link to="/seller-overview" state={fournisseur}>
                         <h5 className="mb-1">{fournisseur.raison_sociale}</h5>
                       </Link>
                       {fournisseur.etat === 0 ? (

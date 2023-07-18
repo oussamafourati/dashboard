@@ -35,7 +35,7 @@ const Categories = () => {
     });
   };
   // Fetch Category
-  const { data = [] } = useFetchCategoriesQuery();
+  const { data: allCategory = [] } = useFetchCategoriesQuery();
   const [createCategory] = useCreateCategoryMutation();
   const { data: subdata = [] } = useFetchSubCategoriesQuery();
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -80,20 +80,18 @@ const Categories = () => {
       });
   };
 
-  const initialValue = {
+  const [categoryData, setCategoryData] = useState({
     idcategory: 1,
     nom: "",
     image: "",
     id_parent: 1,
     final_level: 1,
     title: "",
-  };
-
-  const [formData, setFormData] = useState(initialValue);
-  const { nom, image } = formData;
+  });
+  const { nom, image } = categoryData;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prevState) => ({
+    setCategoryData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
@@ -101,7 +99,7 @@ const Categories = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createCategory(formData).then(() => setFormData(initialValue));
+    createCategory(categoryData).then(() => setCategoryData(categoryData));
     notify();
   };
 
@@ -114,8 +112,8 @@ const Categories = () => {
 
     const base64PJ = await convertToBase64(file);
 
-    setFormData({
-      ...formData,
+    setCategoryData({
+      ...categoryData,
       image: base64PJ as string,
     });
   };
@@ -136,7 +134,7 @@ const Categories = () => {
     });
   }
 
-  document.title = "Categories | Toner eCommerce + Admin React Template";
+  document.title = "Categories | Radhouani";
 
   const [show, setShow] = useState<boolean>(false);
   const [info, setInfo] = useState<any>([]);
@@ -155,7 +153,7 @@ const Categories = () => {
   const indexOfFirst = indexOfLast - perPageData;
 
   const currentdata = useMemo(
-    () => data.slice(indexOfFirst, indexOfLast),
+    () => allCategory.slice(indexOfFirst, indexOfLast),
     [indexOfFirst, indexOfLast]
   );
 
@@ -168,7 +166,7 @@ const Categories = () => {
     if (search) {
       search = search.toLowerCase();
       setCurrentpages(
-        data.filter((data: any) =>
+        allCategory.filter((data: any) =>
           data.categoryTitle.toLowerCase().includes(search)
         )
       );
@@ -180,7 +178,7 @@ const Categories = () => {
   };
 
   const pageNumbers: any = [];
-  for (let i = 1; i <= Math.ceil(data.length / perPageData); i++) {
+  for (let i = 1; i <= Math.ceil(allCategory.length / perPageData); i++) {
     pageNumbers.push(i);
   }
 
@@ -237,7 +235,7 @@ const Categories = () => {
                             id="nom"
                             placeholder="Taper Nom Catégorie"
                             onChange={onChange}
-                            value={formData.nom}
+                            value={categoryData.nom}
                             required
                           />
                           <div className="invalid-feedback">
@@ -277,7 +275,7 @@ const Categories = () => {
                             <div className="avatar-lg">
                               <div className="avatar-title bg-light rounded-3">
                                 <img
-                                  src={`data:image/jpeg;base64,${formData.image}`}
+                                  src={`data:image/jpeg;base64,${categoryData.image}`}
                                   alt=""
                                   id="image"
                                   className="avatar-md h-auto rounded-3 object-fit-cover"
@@ -318,47 +316,49 @@ const Categories = () => {
                 </Col>
               </Row>
               <Row id="categories-list">
-                {(currentpages || data).map((item: Category, key: number) => (
-                  <Col xxl={4} md={6} key={key}>
-                    <Card className="categrory-widgets overflow-hidden">
-                      <Card.Body className="p-4">
-                        <div className="d-flex align-items-center mb-3">
-                          <h5 className="flex-grow-1 mb-0">{item.nom}</h5>
-                          <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
-                            <li>
-                              <Link
-                                to="#"
-                                data-bs-toggle="modal"
-                                className="badge badge-soft-danger"
-                                onClick={() => AlertDelete(item.idcategory)}
-                              >
-                                Supprimer
-                              </Link>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="mt-3">
-                          <Link
-                            to="#"
-                            className="fw-medium link-effect"
-                            onClick={() => {
-                              setShow(true);
-                              setInfo(item);
-                            }}
-                          >
-                            Détails
-                            <i className="ri-arrow-right-line align-bottom ms-1"></i>
-                          </Link>
-                        </div>
-                        <img
-                          src={`data:image/jpeg;base64,${item.image}`}
-                          alt={item.nom}
-                          className="img-fluid category-img object-fit-cover"
-                        />
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ))}
+                {(currentpages || allCategory).map(
+                  (item: Category, key: number) => (
+                    <Col xxl={4} md={6} key={key}>
+                      <Card className="categrory-widgets overflow-hidden">
+                        <Card.Body className="p-4">
+                          <div className="d-flex align-items-center mb-3">
+                            <h5 className="flex-grow-1 mb-0">{item.nom}</h5>
+                            <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
+                              <li>
+                                <Link
+                                  to="#"
+                                  data-bs-toggle="modal"
+                                  className="badge badge-soft-danger"
+                                  onClick={() => AlertDelete(item.idcategory)}
+                                >
+                                  Supprimer
+                                </Link>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="mt-3">
+                            <Link
+                              to="#"
+                              className="fw-medium link-effect"
+                              onClick={() => {
+                                setShow(true);
+                                setInfo(item);
+                              }}
+                            >
+                              Détails
+                              <i className="ri-arrow-right-line align-bottom ms-1"></i>
+                            </Link>
+                          </div>
+                          <img
+                            src={`data:image/jpeg;base64,${item.image}`}
+                            alt={item.nom}
+                            className="img-fluid category-img object-fit-cover"
+                          />
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  )
+                )}
               </Row>
               {pagination && (
                 <Row id="pagination-element" className="mb-4">

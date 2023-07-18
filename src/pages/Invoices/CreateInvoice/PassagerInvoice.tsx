@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -13,35 +13,27 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/de";
 import dayjs from "dayjs";
-import Flatpickr from "react-flatpickr";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
 import PaiementCheque from "./PaiementCheque";
-import logoDark from "assets/images/logo-dark.png";
-import logoLight from "assets/images/logo-light.png";
 import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import {
   ClientPhysique,
   useAddClientPhysiqueMutation,
-  useFetchClientPhysiquesQuery,
 } from "features/clientPhysique/clientPhysiqueSlice";
-import { Produit, useFetchProduitsQuery } from "features/produit/productSlice";
 import { useAddFactureMutation } from "features/facture/factureSlice";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import {
-  useFetchAllUsersQuery,
-  useFetchOneUserQuery,
-} from "features/compte/compteSlice";
+import { useFetchOneUserQuery } from "features/compte/compteSlice";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import InputBase from "@mui/material/InputBase";
 
 interface FormFields {
   nomproduit: string;
@@ -54,12 +46,6 @@ interface FormFields {
 
 const PassagerInvoice: React.FC = () => {
   document.title = "Créer Facture | Radhouani";
-  const [selectedd, setSelectedd] = useState("Paiement total en espèces");
-  const { data: AllUsers } = useFetchAllUsersQuery();
-
-  const handleChangeselect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedd(e.target.value);
-  };
 
   const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
 
@@ -84,14 +70,12 @@ const PassagerInvoice: React.FC = () => {
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
-      console.log(reqstatedata);
       setClientPhyId(clientPhysiqueId);
     } else {
       setSelected([]);
     }
   };
-  //Query to Fetch All Client Physique
-  const { data: allProduit = [] } = useFetchProduitsQuery();
+
   // Mutation to create a new Client
   const [createClientPhysique] = useAddClientPhysiqueMutation();
   //Toast Notification For Client Physique
@@ -191,7 +175,7 @@ const PassagerInvoice: React.FC = () => {
   function tog_AddClientPhyModals() {
     setmodal_AddClientPhyModals(!modal_AddClientPhyModals);
   }
-  // Modal to create a new client physique
+  // Modal to add code user
   const [modal_AddCodeUser, setmodal_AddCodeUser] = useState<boolean>(false);
   function tog_AddCodeUser() {
     setmodal_AddCodeUser(!modal_AddCodeUser);
@@ -248,8 +232,6 @@ const PassagerInvoice: React.FC = () => {
   const radioHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedReglement(event.target.value);
   };
-
-  const { data: allClientPhysique } = useFetchClientPhysiquesQuery();
 
   const [clientValue, setClientValue] = useState<ClientPhysique | null>(
     clientPhysique[0]
@@ -319,10 +301,9 @@ const PassagerInvoice: React.FC = () => {
   const onChangeCodeClient = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCodeClient(e.target.value);
   };
-  console.log(codeClient);
+
   const { data: OneUser } = useFetchOneUserQuery(codeClient);
-  console.log(OneUser);
-  console.log(OneUser?.idCompte!);
+
   const handleSubmitCodeClient = (e: React.FormEvent) => {
     e.preventDefault();
     setDisplayText(codeClient);
@@ -344,7 +325,7 @@ const PassagerInvoice: React.FC = () => {
                     <div>
                       <div className="input-group d-flex gap-2 mb-2">
                         <Autocomplete
-                          id="nomProduit"
+                          id="ClientPhysique"
                           sx={{ width: 300 }}
                           options={clientPhysique!}
                           defaultValue={{
@@ -459,21 +440,22 @@ const PassagerInvoice: React.FC = () => {
                         Détail Produit
                       </Form.Label>
                     </Col>
-                    <Col lg={2}>
+                    <Col lg={3}>
                       <Form.Label htmlFor="PrixUnitaire">
                         Prix Unitaire
                       </Form.Label>
                     </Col>
-                    <Col lg={1}>
-                      <Form.Label htmlFor="Quantite">Quantité</Form.Label>
-                    </Col>
                     <Col lg={2}>
-                      <Form.Label htmlFor="Montant">Montant</Form.Label>
-                    </Col>
-                    <Col lg={2}>
-                      <Form.Label htmlFor="MontantAR">
+                      <Form.Label htmlFor="Quantite">
+                        {" "}
                         Montant après Remise
                       </Form.Label>
+                    </Col>
+                    <Col lg={1}>
+                      <Form.Label htmlFor="Montant">Quantité</Form.Label>
+                    </Col>
+                    <Col lg={1}>
+                      <Form.Label htmlFor="MontantAR">Montant </Form.Label>
                     </Col>
                     <Col lg={1}></Col>
                   </Row>
@@ -482,7 +464,7 @@ const PassagerInvoice: React.FC = () => {
                       <Col lg={4}>
                         <Autocomplete
                           id="nomProduit"
-                          sx={{ width: 300 }}
+                          sx={{ width: 380 }}
                           options={allArrivageProduit}
                           autoHighlight
                           onChange={(event, value) => setACValue(value)}
@@ -504,7 +486,33 @@ const PassagerInvoice: React.FC = () => {
                           )}
                         />
                       </Col>
-                      <Col lg={2}>
+                      <Col lg={3}>
+                        {/* <div className="input-group has-validation mb-3">
+                          <Form.Control
+                            type="number"
+                            value={form.prixunitaire}
+                            // onChange={(event) => handleFormChange(event, index)}
+                            id="PrixUnitaire"
+                            placeholder="00.00"
+                            aria-label="PrixUnitaire"
+                            aria-describedby="product-price-addon"
+                            autoComplete="off"
+                            required
+                          />
+                          <Form.Control
+                            type="number"
+                            value={parseInt(form.prixunitaire!) * rem}
+                            id="prixAchatHt"
+                            placeholder="00.00"
+                            aria-label="prixAchatHt"
+                            aria-describedby="product-price-addon"
+                            autoComplete="off"
+                            required
+                          />
+                          <div className="invalid-feedback">
+                            Please enter a product price.
+                          </div>
+                        </div> */}
                         <TextField
                           id="PrixUnitaire"
                           type="number"
@@ -512,11 +520,32 @@ const PassagerInvoice: React.FC = () => {
                           name="prixunitaire"
                           placeholder="prixunitaire"
                           onChange={(event) => handleFormChange(event, index)}
+                          sx={{ width: 280 }}
                           value={form.prixunitaire}
                         />
                       </Col>
-                      <Col lg={1}>
+                      {montantTotal !== count ? (
+                        <Col lg={2}>
+                          <TextField
+                            sx={{ width: 190 }}
+                            id="MontantAR"
+                            size="small"
+                            type="number"
+                            name="montanttotalAR"
+                            placeholder="0.0"
+                            value={(
+                              parseInt(form.prixunitaire) -
+                              (parseInt(form.prixunitaire) * rem) / 100
+                            ).toFixed(3)}
+                            onChange={(event) => handleFormChange(event, index)}
+                          />
+                        </Col>
+                      ) : (
+                        ""
+                      )}
+                      <Col lg={1} sm={6}>
                         <TextField
+                          sx={{ width: 50 }}
                           id="Quantite"
                           type="number"
                           size="small"
@@ -526,8 +555,9 @@ const PassagerInvoice: React.FC = () => {
                           value={form.qty}
                         />
                       </Col>
-                      <Col lg={2}>
+                      <Col lg={1} sm={6}>
                         <TextField
+                          sx={{ width: 95 }}
                           id="Montant"
                           size="small"
                           type="number"
@@ -541,24 +571,6 @@ const PassagerInvoice: React.FC = () => {
                           }
                         />
                       </Col>
-                      {montantTotal !== count ? (
-                        <Col lg={2}>
-                          <TextField
-                            id="MontantAR"
-                            size="small"
-                            type="number"
-                            name="montanttotalAR"
-                            placeholder="0.0"
-                            value={(
-                              parseInt(form.montanttotal) -
-                              (parseInt(form.montanttotal) * rem) / 100
-                            ).toFixed(3)}
-                            onChange={(event) => handleFormChange(event, index)}
-                          />
-                        </Col>
-                      ) : (
-                        ""
-                      )}
                       <Col lg={1} style={{ marginTop: 13 }}>
                         <Link
                           to="#"
@@ -617,7 +629,7 @@ const PassagerInvoice: React.FC = () => {
                       <Row className="mt-3">
                         <Col lg={7}>
                           <div className="mb-2">
-                            <Form.Label htmlFor="choices-payment-status">
+                            <Form.Label htmlFor="Paiement partiel espèces">
                               Reglement
                             </Form.Label>
                             <p>
@@ -747,19 +759,6 @@ const PassagerInvoice: React.FC = () => {
                     />
                   </Col>
                 </Row>
-                {displayText && (
-                  <Row>
-                    <Col lg={9}></Col>
-                    <Col lg={3}>
-                      <div>
-                        <span>
-                          <strong>Nom Employée: </strong>
-                        </span>
-                        {OneUser?.username!}
-                      </div>
-                    </Col>
-                  </Row>
-                )}
                 <div className="hstack gap-2 justify-content-end d-print-none mt-3">
                   <Button
                     variant="success"
@@ -808,7 +807,7 @@ const PassagerInvoice: React.FC = () => {
               ></div>
               <input type="hidden" id="id-field" />
               <Col lg={12}>
-                <div className="mb-3">
+                <div className=" text-center mb-3">
                   <div className="position-relative d-inline-block">
                     <div className="position-absolute top-100 start-100 translate-middle">
                       <label
@@ -850,7 +849,7 @@ const PassagerInvoice: React.FC = () => {
                   </div>
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={4}>
                 <div className="mb-3">
                   <Form.Label htmlFor="raison_sociale">Nom Client</Form.Label>
                   <Form.Control
@@ -863,7 +862,7 @@ const PassagerInvoice: React.FC = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={3}>
                 <div className="mb-3">
                   <Form.Label htmlFor="cin">C.I.N</Form.Label>
                   <Form.Control
@@ -876,7 +875,7 @@ const PassagerInvoice: React.FC = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={5}>
                 <div className="mb-3">
                   <Form.Label htmlFor="tel">Telephone</Form.Label>
                   <Form.Control
@@ -902,7 +901,6 @@ const PassagerInvoice: React.FC = () => {
                   />
                 </div>
               </Col>
-
               <Col lg={6}>
                 <div className="mb-3">
                   <Form.Label htmlFor="rib">RIB</Form.Label>
@@ -916,7 +914,7 @@ const PassagerInvoice: React.FC = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              {/* <Col lg={6}>
                 <div className="mb-3">
                   <Form.Label htmlFor="mail">E-mail</Form.Label>
                   <Form.Control
@@ -928,8 +926,8 @@ const PassagerInvoice: React.FC = () => {
                     required
                   />
                 </div>
-              </Col>
-              <Col lg={6}>
+              </Col> */}
+              {/* <Col lg={6}>
                 <div className="mb-3">
                   <Form.Label htmlFor="statusSelect">Statut</Form.Label>
                   <select
@@ -941,6 +939,19 @@ const PassagerInvoice: React.FC = () => {
                     <option value="Active">Actif</option>
                     <option value="Expired">Inactif</option>
                   </select>
+                </div>
+              </Col> */}
+              <Col lg={6}>
+                <div className="mb-3">
+                  <Form.Label htmlFor="credit">Credit</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={formData.credit}
+                    onChange={onChange}
+                    id="credit"
+                    placeholder="Taper crédit"
+                    required
+                  />
                 </div>
               </Col>
               <Col lg={6}>
@@ -956,20 +967,8 @@ const PassagerInvoice: React.FC = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="credit">Credit</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={formData.credit}
-                    onChange={onChange}
-                    id="credit"
-                    placeholder="Taper crédit"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={6}>
+
+              {/* <Col lg={6}>
                 <div className="mb-3">
                   <label htmlFor="avatar" className="form-label d-block">
                     Piece-Jointe <span className="text-danger">*</span>
@@ -1015,7 +1014,7 @@ const PassagerInvoice: React.FC = () => {
                     Please add a category images.
                   </div>
                 </div>
-              </Col>
+              </Col> */}
               <Col lg={12} className="modal-footer">
                 <div className="hstack gap-2 justify-content-end">
                   <Button
@@ -1084,11 +1083,11 @@ const PassagerInvoice: React.FC = () => {
                 <div className="gap-2">
                   <Button
                     type={"submit"}
-                    variant="primary"
+                    variant="outline-primary"
                     id="add-btn"
                     onClick={handleSubmitCodeClient}
                   >
-                    <i className="ri-add-box-line"></i>
+                    <i className="ri-add-box-line ri-xl"></i>
                   </Button>
                 </div>
               </Col>

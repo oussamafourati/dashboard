@@ -6,34 +6,51 @@ import {
   Container,
   Form,
   Row,
-  Table,
   Modal,
 } from "react-bootstrap";
-import Flatpickr from "react-flatpickr";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import "dayjs/locale/de";
+import dayjs from "dayjs";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
 import PaiementCheque from "./PaiementCheque";
-
-// Import Images
-import logoDark from "assets/images/logo-dark.png";
-import logoLight from "assets/images/logo-light.png";
 import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
+import {
+  ArrivageProduit,
+  useGetAllArrivagesProduitQuery,
+} from "features/arrivageProduit/arrivageProduitSlice";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-
+import { useFetchOneUserQuery } from "features/compte/compteSlice";
 import {
   ClientMorale,
   useAddClientMoraleMutation,
   useFetchClientMoralesQuery,
 } from "features/clientMoral/clientMoralSlice";
-import {
-  ArrivageProduit,
-  useGetAllArrivagesProduitQuery,
-} from "features/arrivageProduit/arrivageProduitSlice";
-const ProInvoice = () => {
+
+interface FormFields {
+  nomproduit: string;
+  prixunitaire: string;
+  qty: string;
+  benifice: string;
+  montanttotal: string;
+  subTotal: string;
+  [key: string]: string;
+}
+
+const ProInvoice: React.FC = () => {
   document.title = "Créer Facture | Radhouani";
+
+  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>();
+  const onChangePourcentageBenifice = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPourcentageBenifice(parseInt(event.target.value));
+  };
 
   const [selectedd, setSelectedd] = useState("Paiement total en espèces");
   const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
@@ -133,7 +150,6 @@ const ProInvoice = () => {
     credit: 123,
     piecejointes: "",
   });
-
   const {
     raison_sociale,
     adresse,
@@ -208,11 +224,11 @@ const ProInvoice = () => {
   }
 
   // The selected drink
-  const [selectedDrink, setSelectedDrink] = useState<String>();
+  const [selectedReglement, setSelectedReglement] = useState<String>();
 
   // This function will be triggered when a radio button is selected
   const radioHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDrink(event.target.value);
+    setSelectedReglement(event.target.value);
   };
 
   const [acValue, setACValue] = useState<ArrivageProduit | null>(
@@ -226,429 +242,484 @@ const ProInvoice = () => {
   };
   let transactionId = `${new Date().getDate()}${new Date().getHours()}${new Date().getSeconds()}${new Date().getMilliseconds()}`;
   const [count, setCount] = useState<number | undefined>();
+
+  const [clientValue, setClientValue] = useState<ClientMorale | null>(
+    clientMorale[0]
+  );
+
+  let now = dayjs();
+
+  const [formFields, setFormFields] = useState<FormFields[]>([
+    {
+      nomproduit: "",
+      prixunitaire: "",
+      qty: "",
+      benifice: "",
+      montanttotal: "",
+      subTotal: "",
+    },
+  ]);
+
+  const handleFormChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index][event.target.name] = event.target.value;
+    setFormFields(data);
+  };
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(formFields);
+  };
+  const montantTotal =
+    formFields.reduce((sum, i) => (sum += parseInt(i.montanttotal!)), 0) || 0;
+
+  const addFields = () => {
+    let object: FormFields = {
+      nomproduit: "",
+      prixunitaire: "",
+      qty: "",
+      benifice: "",
+      montanttotal: "",
+      subTotal: "",
+    };
+    setFormFields([...formFields, object]);
+  };
+
+  const removeFields = (index: number) => {
+    let data = [...formFields];
+    data.splice(index, 1);
+    setFormFields(data);
+  };
+
+  // Modal to create a new client physique
+  const [modal_AddCodeUser, setmodal_AddCodeUser] = useState<boolean>(false);
+  function tog_AddCodeUser() {
+    setmodal_AddCodeUser(!modal_AddCodeUser);
+  }
+
+  const rem = 100 - (count! * 100) / montantTotal;
+
+  const [displayText, setDisplayText] = useState<string>("");
+
+  const [codeClient, setCodeClient] = useState<string>("");
+  const onChangeCodeClient = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCodeClient(e.target.value);
+  };
+
+  const { data: OneUser } = useFetchOneUserQuery(codeClient);
+
+  const handleSubmitCodeClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    setDisplayText(codeClient);
+    tog_AddCodeUser();
+  };
+
   return (
     <Container fluid={true}>
       <Row className="justify-content-center">
-        <Col xxl={9}>
+        <Col xxl={12}>
           <Card>
-            <Form className="needs-validation" id="invoice_form">
+            <Form
+              className="needs-validation"
+              id="invoice_form"
+              onSubmit={(event) => handleSubmit(event, acValue)}
+            >
               <Card.Body className="border-bottom border-bottom-dashed p-4">
                 <Row>
                   <Col lg={4}>
                     <div>
-                      <div className="mb-3">
-                        <select
-                          className="form-select"
-                          id="choices-category-input"
-                          name="choices-category-input"
-                          onChange={handleClient}
+                      <div className="input-group d-flex gap-2 mb-2">
+                        <Autocomplete
+                          id="nomClient"
+                          sx={{ width: 300 }}
+                          options={clientMorale!}
+                          autoHighlight
+                          onChange={(event, value) => setClientValue(value)}
+                          getOptionLabel={(option) => option.raison_sociale!}
+                          renderOption={(props, option) => (
+                            <li {...props} key={option.idclient_m}>
+                              {option.raison_sociale}
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Nom Client"
+                              inputProps={{
+                                ...params.inputProps,
+                              }}
+                              size="small"
+                            />
+                          )}
+                        />
+                        <Button
+                          onClick={() => tog_AddClientMoraleModals()}
+                          variant="info"
+                          size="sm"
+                          className="rounded"
                         >
-                          <option value="">Selectionner Client</option>
-                          {clientMorale.map((clientm) => (
-                            <option
-                              key={clientm.idclient_m}
-                              value={clientm.idclient_m}
-                            >
-                              {clientm.raison_sociale}
-                            </option>
-                          ))}
-                        </select>
-                        {selected.map((s) => {
-                          return (
+                          <i className="ri-user-add-line ri-xl"></i>
+                        </Button>
+                      </div>
+                      {selected.map((s) => {
+                        return (
+                          <div className="mb-2">
+                            <strong>Raison Sociale: </strong>
+                            <span>{s.raison_sociale}</span>
+
+                            <div>
+                              <strong>Matricule Fiscale: </strong>
+                              <span>{s.mat}</span>
+                            </div>
+                            <div>
+                              <strong>Numéro Téléphone: </strong>
+                              <span>{s.tel}</span>
+                            </div>
                             <div className="mb-2">
-                              <strong>Raison Sociale: </strong>
-                              <span>{s.raison_sociale}</span>
-
-                              <div>
-                                <strong>Matricule Fiscale: </strong>
-                                <span>{s.mat}</span>
-                              </div>
-                              <div>
-                                <strong>Numéro Téléphone: </strong>
-                                <span>{s.tel}</span>
-                              </div>
-                              <div className="mb-2">
-                                <strong>Adresse: </strong>
-                                <span>{s.adresse}</span>
-                              </div>
-                              <div className="mb-2 mb-lg-0"></div>
-
+                              <strong>Adresse: </strong>
+                              <span>{s.adresse}</span>
+                            </div>
+                            <div className="mb-2 mb-lg-0">
                               <strong>Email: </strong>
                               <span>{s.mail}</span>
                             </div>
-                          );
-                        })}
-                      </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </Col>
-                  <Col lg={4} className="text-center">
-                    <h4>Facture</h4>
-                  </Col>
-                  <Col lg={4}>
-                    <div className="mb-2">
-                      <div className="profile-user mx-auto mb-3">
-                        <input
-                          id="profile-img-file-input"
-                          type="file"
-                          className="profile-img-file-input"
-                        />
-                        <label
-                          htmlFor="profile-img-file-input"
-                          className="d-block"
-                        >
-                          <span
-                            className="overflow-hidden border border-dashed d-flex align-items-center justify-content-center rounded"
-                            style={{ height: "60px", width: "256px" }}
-                          >
-                            <img
-                              src={logoDark}
-                              className="card-logo card-logo-dark user-profile-image img-fluid"
-                              alt="logo dark"
-                            />
-                            <img
-                              src={logoLight}
-                              className="card-logo card-logo-light user-profile-image img-fluid"
-                              alt="logo light"
-                            />
-                          </span>
-                        </label>
-                      </div>
-                      <span>
-                        <strong>Matricule Fiscale:</strong>{" "}
-                        <span>147852369</span>
-                      </span>
-                      <div className="mb-2">
-                        <span>
-                          <strong>Adresse:</strong>{" "}
-                          <span>Cite Ennour, Gafsa</span>
-                          <br />
-                          <span> </span>
-                          <span>2123, Gafsa</span>
-                        </span>
-                      </div>
-                      <div className="mb-2 mb-lg-0">
-                        <span>
-                          <strong>Tél:</strong> <span>76001002</span>
-                        </span>
-                      </div>
-                      <div className="mb-2">
-                        <span>
-                          <strong>Email:</strong>{" "}
-                          <span>radhouani@gmail.com</span>
-                        </span>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={4}>
-                    <Button onClick={() => tog_AddClientMoraleModals()}>
-                      Ajouter Nouveau Client
-                    </Button>
-                  </Col>
-                </Row>
-              </Card.Body>
-              <Card.Body className="p-4">
-                <Row className="g-3">
                   <Col lg={3} sm={6}>
-                    <Form.Label htmlFor="invoicenoInput">
-                      Numero Facture
-                    </Form.Label>
-                    <Form.Control
+                    <TextField
+                      label=" Numero Facture"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      size="small"
                       type="text"
                       id="invoicenoInput"
-                      placeholder="Numero Facture"
-                      defaultValue="#VL25000355"
+                      placeholder="#VL25000355"
                     />
                   </Col>
                   <Col lg={3} sm={6}>
-                    <div>
-                      <Form.Label htmlFor="date-field">Date</Form.Label>
-                      <Flatpickr
-                        className="form-control flatpickr-input"
-                        placeholder="Selectionner Date"
-                        options={{
-                          dateFormat: "d M, Y",
+                    <LocalizationProvider
+                      dateAdapter={AdapterDayjs}
+                      adapterLocale="de"
+                    >
+                      <DatePicker
+                        defaultValue={now}
+                        slotProps={{
+                          textField: {
+                            size: "small",
+                            inputProps: { ["placeholder"]: "JJ.MM.AAAA" },
+                          },
                         }}
                       />
-                    </div>
+                    </LocalizationProvider>
                   </Col>
                 </Row>
               </Card.Body>
               <Card.Body className="p-4">
-                <div className="table-responsive">
-                  <Table className="invoice-table table-borderless table-nowrap mb-0">
-                    <thead className="align-middle">
-                      <tr className="table-active">
-                        <th scope="col" style={{ width: "50px" }}>
-                          #
-                        </th>
-                        <th scope="col">Details Produit</th>
-                        <th scope="col" style={{ width: "120px" }}>
-                          <div className="d-flex currency-select input-light align-items-center">
-                            Prix unitaire
-                          </div>
-                        </th>
-                        <th scope="col" style={{ width: "120px" }}>
-                          Quantité
-                        </th>
-                        <th
-                          scope="col"
-                          className="text-end"
-                          style={{ width: "180px" }}
+                <div>
+                  <Row>
+                    <Col lg={5}>
+                      <Form.Label htmlFor="nomProduit">
+                        Détail Produit
+                      </Form.Label>
+                    </Col>
+                    <Col lg={2}>
+                      <Form.Label htmlFor="PrixUnitaire">
+                        Prix Unitaire
+                      </Form.Label>
+                    </Col>
+                    <Col lg={1}>
+                      <Form.Label htmlFor="Benifice">Benifice</Form.Label>
+                    </Col>
+                    <Col lg={1}>
+                      <Form.Label htmlFor="Quantite">Quantité</Form.Label>
+                    </Col>
+                    <Col lg={2}>
+                      <Form.Label htmlFor="Montant">Montant</Form.Label>
+                    </Col>
+
+                    <Col lg={1}></Col>
+                  </Row>
+                  {formFields.map((form, index) => (
+                    <Row style={{ marginBottom: 20 }} key={index}>
+                      <Col lg={5}>
+                        <Autocomplete
+                          id="nomProduit"
+                          sx={{ width: 440 }}
+                          options={allArrivageProduit}
+                          autoHighlight
+                          onChange={(event, value) => setACValue(value)}
+                          getOptionLabel={(option) => option.nomProduit!}
+                          renderOption={(props, option) => (
+                            <li {...props} key={option.idArrivageProduit}>
+                              {option.nomProduit}__{option.dateArrivage}
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Référence"
+                              inputProps={{
+                                ...params.inputProps,
+                              }}
+                              size="small"
+                              fullWidth
+                            />
+                          )}
+                        />
+                      </Col>
+                      <Col lg={2}>
+                        <TextField
+                          id="PrixUnitaire"
+                          type="number"
+                          size="small"
+                          name="prixunitaire"
+                          placeholder="prixunitaire"
+                          onChange={(event) => handleFormChange(event, index)}
+                          value={form.prixunitaire}
+                        />
+                      </Col>
+                      <Col lg={1}>
+                        <TextField
+                          id="benifice"
+                          type="number"
+                          size="small"
+                          name="benifice"
+                          defaultValue={form.benifice}
+                          placeholder="0.0"
+                          onChange={(event) => {
+                            handleFormChange(event, index),
+                              onChangePourcentageBenifice;
+                          }}
+                          value={pourcentageBenifice}
+                        />
+                      </Col>
+                      <Col lg={1}>
+                        <TextField
+                          id="Quantite"
+                          type="number"
+                          size="small"
+                          name="qty"
+                          placeholder="0.0"
+                          onChange={(event) => handleFormChange(event, index)}
+                          value={form.qty}
+                        />
+                      </Col>
+                      <Col lg={2}>
+                        <TextField
+                          id="Montant"
+                          size="small"
+                          type="number"
+                          name="montanttotal"
+                          placeholder="0.0"
+                          onChange={(event) => handleFormChange(event, index)}
+                          value={
+                            (form.montanttotal = (
+                              (parseInt(form.prixunitaire) +
+                                parseInt(form.prixunitaire) *
+                                  (pourcentageBenifice! / 100)) *
+                              parseInt(form.qty)
+                            ).toString())
+                          }
+                        />
+                      </Col>
+                      <Col lg={1} style={{ marginTop: 13 }}>
+                        <Link
+                          to="#"
+                          className="link-danger"
+                          onClick={() => removeFields(index)}
                         >
-                          Montant
-                        </th>
-                        <th
-                          scope="col"
-                          className="text-end"
-                          style={{ width: "105px" }}
-                        ></th>
-                      </tr>
-                    </thead>
-                    <tbody id="newlink">
-                      {inputFields.map((inputField, index) => (
-                        <tr id="1" className="product">
-                          <th scope="row" className="product-id">
-                            {index + 1}
-                          </th>
-                          <td className="text-start">
-                            <Autocomplete
-                              id="nomProduit"
-                              sx={{ width: 300 }}
-                              options={allArrivageProduit}
-                              autoHighlight
-                              onChange={(event, value) => setACValue(value)}
-                              getOptionLabel={(option) => option.nomProduit!}
-                              renderOption={(props, option) => (
-                                <li {...props} key={transactionId}>
-                                  {option.nomProduit}__{option.dateArrivage}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  label="Choisir Produit"
-                                  inputProps={{
-                                    ...params.inputProps,
-                                  }}
-                                  size="small"
-                                />
-                              )}
-                            />
-                          </td>
-                          <td>
-                            <Form.Control
-                              type="number"
-                              className="product-price"
-                              id="productRate-1"
-                              step="0.01"
-                              placeholder="0.00"
-                              required
-                              value={acValue?.prixVente!}
-                            />
-                            <div className="invalid-feedback">
-                              Please enter a rate
-                            </div>
-                          </td>
-                          <td>
-                            <div className="input-step">
-                              <Button className="minus">–</Button>
-                              <input
-                                type="number"
-                                className="product-quantity"
-                                id="product-qty-1"
-                                defaultValue="0"
-                              />
-                              <Button className="plus">+</Button>
-                            </div>
-                          </td>
-                          <td className="text-end">
-                            <div>
-                              <Form.Control
-                                type="number"
-                                className="product-line-price"
-                                id="productPrice-1"
-                                placeholder="$0.00"
-                              />
-                            </div>
-                          </td>
-                          <td className="product-removal">
-                            <Link to="#" className="btn btn-danger">
-                              Supprimer
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tbody>
-                      <tr id="newForm" style={{ display: "none" }}>
-                        <td className="d-none">
-                          <p>Add New Form</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <Link
-                            to="#"
-                            id="add-item"
-                            className="btn btn-soft-secondary fw-medium"
-                            onClick={handleAddFields}
-                          >
-                            <i className="ri-add-fill me-1 align-bottom"></i>{" "}
-                            Ajouter élement
-                          </Link>
-                        </td>
-                      </tr>
-                      <tr className="border-top border-top-dashed mt-2">
-                        <td colSpan={3}></td>
-                        <td className="p-0" colSpan={2}>
-                          <Table className="table-borderless table-sm table-nowrap align-middle mb-0">
-                            <tbody>
-                              <tr>
-                                <th scope="row">Total</th>
-                                <td style={{ width: "150px" }}>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-subtotal"
-                                    placeholder="0.00"
-                                  />
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Taxe (19%)</th>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-tax"
-                                    placeholder="$0.00"
-                                  />
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">Reduction </th>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-discount"
-                                    placeholder="$0.00"
-                                  />
-                                </td>
-                              </tr>
-                              <tr className="border-top border-top-dashed">
-                                <th scope="row">Montant Total</th>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    id="cart-total"
-                                    placeholder="0.00"
-                                  />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
+                          <i className="ri-delete-bin-5-line ri-xl" />
+                        </Link>
+                      </Col>
+                    </Row>
+                  ))}
+                  <Row>
+                    <Col id="newForm" style={{ display: "none" }}>
+                      <div className="d-none">
+                        <p>Add New Form</p>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div>
+                        <Link
+                          to="#"
+                          id="add-item"
+                          className="btn btn-soft-secondary fw-medium"
+                          onClick={addFields}
+                        >
+                          <i className="ri-add-fill me-1 align-bottom"></i>
+                        </Link>
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
-                <Row className="mt-3">
-                  <Col lg={9}>
-                    <div className="mb-2">
-                      <fieldset>
-                        <legend>Reglement</legend>
-                        <p>
-                          <input
-                            type="radio"
-                            name="reglement"
-                            value="Paiement total en espèces"
-                            id="Paiement total en espèces"
-                            onChange={radioHandler}
-                          />
-                          <label htmlFor="Paiement total en espèces">
-                            Paiement total en espèces
-                          </label>
-                        </p>
-                        <p>
-                          <input
-                            type="radio"
-                            name="reglement"
-                            value="Paiement partiel espèces"
-                            id="Paiement partiel espèces"
-                            onChange={radioHandler}
-                          />
-                          <label htmlFor="Paiement partiel espèces">
-                            Paiement partiel espèces
-                          </label>
-                        </p>
-                        <p>
-                          <input
-                            type="radio"
-                            name="reglement"
-                            value="Paiement partiel chèque"
-                            id="Paiement partiel chèque"
-                            onChange={radioHandler}
-                          />
-                          <label htmlFor="Paiement partiel chèque">
-                            Paiement partiel chèque
-                          </label>
-                        </p>
-                      </fieldset>
-                      {selectedDrink === "Paiement total en espèces" ? (
-                        <PaiementTotal setCount={setCount} />
-                      ) : (
-                        ""
-                      )}
-                      {selectedDrink === "Paiement partiel espèces" ? (
-                        <PaiementEspece />
-                      ) : (
-                        ""
-                      )}
-                      {selectedDrink === "Paiement partiel chèque" ? (
-                        <PaiementCheque />
-                      ) : (
-                        ""
-                      )}
-                    </div>
+                <Row className="border-top border-top-dashed mt-2">
+                  <Col lg={9}></Col>
+                  <Col lg={3} className="mt-3">
+                    <TextField
+                      label="Total"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      size="small"
+                      type="number"
+                      name="subTotal"
+                      value={
+                        formFields.reduce(
+                          (sum, i) => (sum += parseInt(i.montanttotal!)),
+                          0
+                        ) || (0).toString()
+                      }
+                      id="cart-subtotal"
+                      placeholder="0.00"
+                    />
                   </Col>
-                  {selectedDrink === "Paiement total en espèces" ? (
-                    <Col lg={3} sm={6}>
-                      <Form.Label htmlFor="choices-payment-status">
-                        Status de Payement
-                      </Form.Label>
-                      <div>
-                        <p className="fs-15 badge badge-soft-success">Payé</p>
-                      </div>
-                    </Col>
-                  ) : (
-                    ""
-                  )}
-                  {selectedDrink === "Paiement partiel espèces" ? (
-                    <Col lg={3} sm={6}>
-                      <Form.Label htmlFor="choices-payment-status">
-                        Status de Payement
-                      </Form.Label>
-                      <div>
-                        <p className="fs-15 badge badge-soft-danger">Impayé</p>
-                      </div>
-                    </Col>
-                  ) : (
-                    ""
-                  )}
-                  {selectedDrink === "Paiement partiel chèque" ? (
-                    <Col lg={3} sm={6}>
-                      <Form.Label htmlFor="choices-payment-status">
-                        Status de Payement
-                      </Form.Label>
-                      <div>
-                        <p className="fs-15 badge badge-soft-warning">
-                          Semi-Payé
-                        </p>
-                      </div>
-                    </Col>
-                  ) : (
-                    ""
-                  )}
                 </Row>
-                <div className="hstack gap-2 justify-content-end d-print-none mt-4">
+                <Row>
+                  <Col lg={9}>
+                    <Row className="mt-3">
+                      <Col lg={7}>
+                        <div className="mb-2">
+                          <Form.Label htmlFor="choices-payment-status">
+                            Reglement
+                          </Form.Label>
+                          <p>
+                            <input
+                              className="m-2"
+                              type="radio"
+                              name="reglement"
+                              value="Paiement total en espèces"
+                              id="Paiement total en espèces"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement total en espèces">
+                              Total en espèces
+                            </label>
+                            <input
+                              className="m-2"
+                              type="radio"
+                              name="reglement"
+                              value="Paiement partiel espèces"
+                              id="Paiement partiel espèces"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement partiel espèces">
+                              Partiel espèces
+                            </label>
+                            <input
+                              className="m-2"
+                              type="radio"
+                              name="reglement"
+                              value="Paiement partiel chèque"
+                              id="Paiement partiel chèque"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement partiel chèque">
+                              Partiel chèque
+                            </label>
+                          </p>
+                          {selectedReglement === "Paiement total en espèces" ? (
+                            <>
+                              <PaiementTotal setCount={setCount} />
+                            </>
+                          ) : (
+                            ""
+                          )}
+
+                          {selectedReglement === "Paiement partiel espèces" ? (
+                            <PaiementEspece />
+                          ) : (
+                            ""
+                          )}
+
+                          {selectedReglement === "Paiement partiel chèque" ? (
+                            <PaiementCheque />
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                      </Col>
+                      {selectedReglement === "Paiement total en espèces" ? (
+                        <Col lg={3} sm={6}>
+                          <Form.Label htmlFor="choices-payment-status">
+                            Status de Payement
+                          </Form.Label>
+                          <div>
+                            <p className="fs-15 badge badge-soft-success">
+                              Payé
+                            </p>
+                          </div>
+                        </Col>
+                      ) : (
+                        ""
+                      )}
+                      {selectedReglement === "Paiement partiel espèces" ? (
+                        <Col lg={3} sm={6}>
+                          <Form.Label htmlFor="choices-payment-status">
+                            Status de Payement
+                          </Form.Label>
+                          <div>
+                            <p className="fs-15 badge badge-soft-danger">
+                              Impayé
+                            </p>
+                          </div>
+                        </Col>
+                      ) : (
+                        ""
+                      )}
+                      {selectedReglement === "Paiement partiel chèque" ? (
+                        <Col lg={3} sm={6}>
+                          <Form.Label htmlFor="choices-payment-status">
+                            Status de Payement
+                          </Form.Label>
+                          <div>
+                            <p className="fs-15 badge badge-soft-warning">
+                              Semi-Payé
+                            </p>
+                          </div>
+                        </Col>
+                      ) : (
+                        ""
+                      )}
+                    </Row>
+                  </Col>
+                  <Col lg={2} className="mt-3">
+                    <TextField
+                      label="% Bénifice"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      size="small"
+                      type="number"
+                      name="benifice"
+                      onChange={onChangePourcentageBenifice}
+                      value={pourcentageBenifice}
+                      id="benifice"
+                      placeholder="0.00"
+                    />
+                  </Col>
+                </Row>
+                <div className="hstack gap-2 justify-content-end d-print-none mt-3">
+                  <Button
+                    variant="success"
+                    type="submit"
+                    onClick={() => tog_AddCodeUser()}
+                  >
+                    <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
+                    Paiement
+                  </Button>
                   <Button variant="success" type="submit">
                     <i className="ri-printer-line align-bottom me-1"></i>{" "}
                     Enregister
@@ -663,7 +734,7 @@ const ProInvoice = () => {
           </Card>
         </Col>
       </Row>
-      {/* ******Modal For Client Morale****** */}
+      {/* ******Modal For Client Physique****** */}
       <Modal
         id="showModal"
         className="fade zoomIn"
@@ -681,11 +752,6 @@ const ProInvoice = () => {
         </Modal.Header>
         <Modal.Body className="p-4">
           <Form className="tablelist-form">
-            {!state.loading ? (
-              "Join Now!"
-            ) : (
-              <span className="spinner-grow spinner-grow-sm"></span>
-            )}
             <Row>
               <div
                 id="alert-error-msg"
@@ -693,7 +759,7 @@ const ProInvoice = () => {
               ></div>
               <input type="hidden" id="id-field" />
               <Col lg={12}>
-                <div className="mb-3">
+                <div className="text-center mb-3">
                   <div className="position-relative d-inline-block">
                     <div className="position-absolute top-100 start-100 translate-middle">
                       <label
@@ -735,7 +801,7 @@ const ProInvoice = () => {
                   </div>
                 </div>
               </Col>
-              <Col lg={12}>
+              <Col lg={6} className="mt-2">
                 <div className="mb-3">
                   <Form.Label htmlFor="raison_sociale">
                     Raison Sociale
@@ -750,7 +816,7 @@ const ProInvoice = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={6} className="mt-2">
                 <div className="mb-3">
                   <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
                   <Form.Control
@@ -763,7 +829,7 @@ const ProInvoice = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={4}>
                 <div className="mb-3">
                   <Form.Label htmlFor="rib">RIB</Form.Label>
                   <Form.Control
@@ -776,7 +842,7 @@ const ProInvoice = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={3}>
                 <div className="mb-3">
                   <Form.Label htmlFor="tel">Telephone</Form.Label>
                   <Form.Control
@@ -789,7 +855,7 @@ const ProInvoice = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={5}>
                 <div className="mb-3">
                   <Form.Label htmlFor="adresse">Adresse</Form.Label>
                   <Form.Control
@@ -802,7 +868,7 @@ const ProInvoice = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={5}>
                 <div className="mb-3">
                   <Form.Label htmlFor="mail">E-mail</Form.Label>
                   <Form.Control
@@ -815,7 +881,7 @@ const ProInvoice = () => {
                   />
                 </div>
               </Col>
-              <Col lg={6}>
+              <Col lg={3}>
                 <div className="mb-3">
                   <Form.Label htmlFor="etat">Etat</Form.Label>
                   <select
@@ -831,20 +897,7 @@ const ProInvoice = () => {
                   </select>
                 </div>
               </Col>
-              <Col lg={6}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="remarque">Remarque</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.remarque}
-                    onChange={onClientMoraleChange}
-                    id="remarque"
-                    placeholder="Taper remarque"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={6}>
+              <Col lg={4}>
                 <div className="mb-3">
                   <Form.Label htmlFor="credit">Credit</Form.Label>
                   <Form.Control
@@ -857,51 +910,17 @@ const ProInvoice = () => {
                   />
                 </div>
               </Col>
-              <Col lg={12}>
+              <Col lg={6}>
                 <div className="mb-3">
-                  <label htmlFor="avatar" className="form-label d-block">
-                    Piece Jointes <span className="text-danger">*</span>
-                  </label>
-
-                  <div className="position-relative d-inline-block">
-                    <div className="position-absolute top-100 start-100 translate-middle">
-                      <label
-                        htmlFor="piecejointes"
-                        className="mb-0"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="Select Client Physique Avatar"
-                      >
-                        <span className="avatar-xs d-inline-block">
-                          <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                            <i className="ri-image-fill"></i>
-                          </span>
-                        </span>
-                      </label>
-                      <input
-                        className="form-control d-none"
-                        type="file"
-                        name="piecejointes"
-                        id="piecejointes"
-                        accept="image/*"
-                        onChange={(e) => handleClientMoraleFileUpload(e)}
-                      />
-                    </div>
-                    <div className="avatar-lg">
-                      <div className="avatar-title bg-light rounded-3">
-                        <img
-                          src={`data:image/jpeg;base64, ${clientMData.piecejointes}`}
-                          alt=""
-                          id="category-img"
-                          className="avatar-md h-auto rounded-3 object-fit-cover"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="error-msg mt-1">
-                    Please add a category images.
-                  </div>
+                  <Form.Label htmlFor="remarque">Remarque</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={clientMData.remarque}
+                    onChange={onClientMoraleChange}
+                    id="remarque"
+                    placeholder="Taper remarque"
+                    required
+                  />
                 </div>
               </Col>
               {/* <Col lg={6}>
@@ -965,6 +984,60 @@ const ProInvoice = () => {
                     id="add-btn"
                   >
                     Ajouter
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      {/* ******Modal For User****** */}
+      <Modal
+        id="showModal"
+        className="fade zoomIn"
+        size="sm"
+        show={modal_AddCodeUser}
+        onHide={() => {
+          tog_AddCodeUser();
+        }}
+        centered
+      >
+        <Modal.Header className="px-4 pt-4" closeButton>
+          <h5 className="modal-title fs-18" id="exampleModalLabel">
+            Ajouter Code
+          </h5>
+        </Modal.Header>
+        <Modal.Body className="text-center p-4">
+          <Form className="tablelist-form">
+            <Row>
+              <div
+                id="alert-error-msg"
+                className="d-none alert alert-danger py-2"
+              ></div>
+              <input type="hidden" id="id-field" />
+              <Col lg={6}>
+                <TextField
+                  label="Code"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  inputProps={{ maxLength: 3 }}
+                  size="small"
+                  type="text"
+                  id="codeInput"
+                  placeholder="185"
+                  onChange={onChangeCodeClient}
+                />
+              </Col>
+              <Col lg={6}>
+                <div className="gap-2">
+                  <Button
+                    type={"submit"}
+                    variant="primary"
+                    id="add-btn"
+                    onClick={handleSubmitCodeClient}
+                  >
+                    <i className="ri-add-box-line"></i>
                   </Button>
                 </div>
               </Col>
