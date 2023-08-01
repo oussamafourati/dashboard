@@ -52,22 +52,17 @@ const SubCategoriesTable = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "Id",
-        accessor: "idSubCategory",
-        Filter: true,
-      },
-      {
-        Header: "Subcategory",
+        Header: "Titre",
         accessor: "title",
         Filter: true,
       },
       {
-        Header: "Category",
+        Header: "Catégorie",
         accessor: "nom",
         Filter: true,
       },
       {
-        Header: "subDescription",
+        Header: "Description",
         accessor: "subDescription",
         Filter: true,
       },
@@ -80,11 +75,11 @@ const SubCategoriesTable = () => {
               <ul className="hstack gap-2 list-unstyled mb-0">
                 <li>
                   <Link
-                    to="/sub-categories"
+                    to="#"
+                    className="link-danger"
                     onClick={() => AlertDelete(subCat.idSubCategory)}
-                    className="badge badge-soft-danger"
                   >
-                    Supprimer
+                    <i className="ri-delete-bin-5-line ri-xl" />
                   </Link>
                 </li>
               </ul>

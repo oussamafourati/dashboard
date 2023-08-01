@@ -18,6 +18,7 @@ export interface ArrivageProduit {
   designation?: string;
   montantTotal?: number;
   dateArrivage?: string;
+  fournisseurID?: number;
 }
 
 export const arrivageProduitSlice = createApi({
@@ -38,6 +39,14 @@ export const arrivageProduitSlice = createApi({
         query(idArrivageProduit) {
           return `/oneArrivage/${idArrivageProduit}`;
         },
+        providesTags: ["ArrivageProduit"],
+      }),
+      getOneArrivProduit: builder.query<ArrivageProduit, number | void>({
+        query: (produitID) => `/ArrProduit/${produitID}`,
+        providesTags: ["ArrivageProduit"],
+      }),
+      getFournisseurProduit: builder.query<ArrivageProduit[], number | void>({
+        query: (fournisseurID) => `/fournisseurProduit/${fournisseurID}`,
         providesTags: ["ArrivageProduit"],
       }),
       addArrivageProduit: builder.mutation<void, ArrivageProduit>({
@@ -70,6 +79,8 @@ export const arrivageProduitSlice = createApi({
 });
 
 export const {
+  useGetFournisseurProduitQuery,
+  useGetOneArrivProduitQuery,
   useGetAllArrivagesProduitQuery,
   useGetOneArrivageProduitQuery,
   useAddArrivageProduitMutation,

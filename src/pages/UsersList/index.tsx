@@ -85,23 +85,25 @@ const UserList = () => {
   const [createClientMorale] = useAddClientMoraleMutation();
   const [deleteClientMorale] = useDeleteClientMoraleMutation();
 
-  const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
-  const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
+  const etatActive = data.filter((clienmorale) => clienmorale.etat === 1);
+  const etatNonActive = data.filter((clienmorale) => clienmorale.etat === 0);
 
-  const [formData, setFormData] = useState({
+  const clienMoraleInitialValue = {
     idclient_m: 99,
     raison_sociale: "",
     adresse: "",
-    tel: 14785236,
+    tel: "",
     mail: "",
-    mat: 1,
+    mat: "",
     logo: "",
-    rib: 1142250,
+    rib: "",
     etat: 1,
     remarque: "",
     credit: 123,
     piecejointes: "",
-  });
+  };
+
+  const [formData, setFormData] = useState(clienMoraleInitialValue);
 
   const {
     raison_sociale,
@@ -127,7 +129,9 @@ const UserList = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createClientMorale(formData).then(() => setFormData(formData));
+    createClientMorale(formData).then(() =>
+      setFormData(clienMoraleInitialValue)
+    );
     notify();
   };
 
@@ -137,18 +141,12 @@ const UserList = () => {
     const fileLogo = (
       document.getElementById("logo") as HTMLInputElement
     ).files?.item(0) as File;
-    const filePJ = (
-      document.getElementById("piecejointes") as HTMLInputElement
-    ).files?.item(0) as File;
 
     const base64 = await convertToBase64(fileLogo);
-    const base64PJ = await convertToBase64(filePJ);
-    console.log(base64);
 
     setFormData({
       ...formData,
       logo: base64 as string,
-      piecejointes: base64PJ as string,
     });
   };
 
@@ -157,11 +155,10 @@ const UserList = () => {
       const fileReader = new FileReader();
 
       fileReader.onload = () => {
-        // const base64String = fileReader.result as string;
-        // const base64Data = base64String.split(",")[1];
+        const base64String = fileReader.result as string;
+        const base64Data = base64String.split(",")[1];
 
-        // resolve(base64Data);
-        resolve(fileReader.result as string);
+        resolve(base64Data);
       };
       fileReader.readAsDataURL(file);
       fileReader.onerror = (error) => {
@@ -170,19 +167,13 @@ const UserList = () => {
     });
   }
 
-  document.title = "Client Morale | Toner eCommerce + Admin React Template";
+  document.title = "Client Morale | Radhouani";
 
   const [showCoupons, setShowCoupons] = useState<boolean>(false);
   const [showCouponDetails, setShowCouponsDetails] = useState<any>({});
 
   const columns = useMemo(
     () => [
-      {
-        Header: "ID",
-        disableFilters: true,
-        filterable: true,
-        accessor: "idclient_m",
-      },
       {
         Header: "Logo",
         disableFilters: true,
@@ -214,6 +205,12 @@ const UserList = () => {
         filterable: true,
       },
       {
+        Header: "RIB",
+        accessor: "rib",
+        disableFilters: true,
+        filterable: true,
+      },
+      {
         Header: "Adresse",
         accessor: "adresse",
         disableFilters: true,
@@ -232,34 +229,28 @@ const UserList = () => {
         filterable: true,
       },
       {
-        Header: "RIB",
-        accessor: "rib",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
         Header: "Etat",
         disableFilters: true,
         filterable: true,
         accessor: (clientMorale: ClientMorale) => {
           switch (clientMorale.etat) {
-            case 0:
-              return (
-                <span className="badge badge-soft-success text-uppercase">
-                  {" "}
-                  inactif
-                </span>
-              );
             case 1:
               return (
-                <span className="badge badge-soft-danger text-uppercase">
+                <span className="badge badge-soft-success text-uppercase">
                   {" "}
                   actif
                 </span>
               );
+            case 0:
+              return (
+                <span className="badge badge-soft-danger text-uppercase">
+                  {" "}
+                  inactif
+                </span>
+              );
             default:
               return (
-                <span className="badge badge-soft-success text-uppercase">
+                <span className="badge badge-soft-danger text-uppercase">
                   {" "}
                   inactif
                 </span>
@@ -273,12 +264,12 @@ const UserList = () => {
         disableFilters: true,
         filterable: true,
       },
-      {
-        Header: "Credit",
-        accessor: "credit",
-        disableFilters: true,
-        filterable: true,
-      },
+      // {
+      //   Header: "Credit",
+      //   accessor: "credit",
+      //   disableFilters: true,
+      //   filterable: true,
+      // },
       {
         Header: "Action",
         disableFilters: true,
@@ -286,23 +277,23 @@ const UserList = () => {
         accessor: (clientMorale: ClientMorale) => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
-              <li>
+              {/* <li>
                 <Link
                   to="#showModal"
-                  className="badge badge-soft-primary edit-item-btn"
+                  className="link-primary"
                   data-bs-toggle="modal"
                 >
-                  Modifier
+                  <i className="ri-edit-line ri-xl" />
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
-                  to="/users-list"
+                  to="/client-morale"
                   onClick={() => AlertDelete(clientMorale.idclient_m)}
                   data-bs-toggle="modal"
-                  className="badge badge-soft-danger remove-item-btn"
+                  className="link-danger"
                 >
-                  Supprimer
+                  <i className="ri-delete-bin-5-line ri-xl" />
                 </Link>
               </li>
             </ul>
@@ -402,7 +393,7 @@ const UserList = () => {
                     className="d-none alert alert-danger py-2"
                   ></div>
                   <input type="hidden" id="id-field" />
-                  <Col lg={12}>
+                  <Col lg={12} className="text-center">
                     <div className="mb-3">
                       <div className="position-relative d-inline-block">
                         <div className="position-absolute top-100 start-100 translate-middle">
@@ -445,74 +436,79 @@ const UserList = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col lg={12}>
+                  <Col lg={6} className="mt-3">
                     <div className="mb-3">
                       <Form.Label htmlFor="raison_sociale">
-                        Raison Sociale
+                        Raison Sociale <span className="text-danger">*</span>
                       </Form.Label>
                       <Form.Control
                         type="text"
                         value={formData.raison_sociale}
                         onChange={onChange}
                         id="raison_sociale"
-                        placeholder="Taper Raison sociale"
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={6} className="mt-3">
                     <div className="mb-3">
-                      <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
+                      <Form.Label htmlFor="mat">
+                        Matricule Fiscale <span className="text-danger">*</span>
+                      </Form.Label>
                       <Form.Control
-                        type="text"
+                        type="number"
                         value={formData.mat}
                         onChange={onChange}
                         id="mat"
-                        placeholder="Taper matricule fiscale"
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={4}>
                     <div className="mb-3">
-                      <Form.Label htmlFor="adresse">Adresse</Form.Label>
+                      <Form.Label htmlFor="tel">
+                        Telephone <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={formData.tel}
+                        onChange={onChange}
+                        id="tel"
+                        required
+                        minLength={8}
+                        maxLength={8}
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={4}>
+                    <div className="mb-3">
+                      <Form.Label htmlFor="adresse">
+                        Adresse <span className="text-danger">*</span>
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={formData.adresse}
                         onChange={onChange}
                         id="adresse"
-                        placeholder="Taper l'adresse du fournisseur"
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={4}>
                     <div className="mb-3">
-                      <Form.Label htmlFor="tel">Telephone</Form.Label>
+                      <Form.Label htmlFor="rib">
+                        RIB <span className="text-danger">*</span>
+                      </Form.Label>
                       <Form.Control
-                        type="text"
-                        value={formData.tel}
-                        onChange={onChange}
-                        id="tel"
-                        placeholder="Taper numéro"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="rib">RIB</Form.Label>
-                      <Form.Control
-                        type="text"
+                        type="number"
                         value={formData.rib}
                         onChange={onChange}
                         id="rib"
-                        placeholder="Taper RIB "
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={4}>
                     <div className="mb-3">
                       <Form.Label htmlFor="mail">E-mail</Form.Label>
                       <Form.Control
@@ -520,12 +516,11 @@ const UserList = () => {
                         value={formData.mail}
                         onChange={onChange}
                         id="mail"
-                        placeholder="Taper e-mail"
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={3}>
                     <div className="mb-3">
                       <Form.Label htmlFor="etat">Etat</Form.Label>
                       <select
@@ -536,13 +531,13 @@ const UserList = () => {
                         onChange={selectChangeEtatClient}
                         required
                       >
-                        <option value="">Selectionner Etat</option>
-                        <option value="Actif">Actif</option>
-                        <option value="Inactif">Inactif</option>
+                        <option value="">Choisir</option>
+                        <option value={1}>Actif</option>
+                        <option value={0}>Inactif</option>
                       </select>
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={5}>
                     <div className="mb-3">
                       <Form.Label htmlFor="remarque">Remarque</Form.Label>
                       <Form.Control
@@ -550,25 +545,11 @@ const UserList = () => {
                         value={formData.remarque}
                         onChange={onChange}
                         id="remarque"
-                        placeholder="Taper remarque"
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="credit">Credit</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.credit}
-                        onChange={onChange}
-                        id="credit"
-                        placeholder="Entrer crédit"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={12}>
+                  {/* <Col lg={12}>
                     <div className="text-center mb-3">
                       <div className="position-relative d-inline-block">
                         <div className="position-absolute top-100 start-100 translate-middle">
@@ -606,7 +587,7 @@ const UserList = () => {
                         </div>
                       </div>
                     </div>
-                  </Col>
+                  </Col> */}
                   <Col lg={12} className="modal-footer">
                     <div className="hstack gap-2 justify-content-end">
                       <Button

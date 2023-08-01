@@ -8,7 +8,10 @@ import {
   useFetchFournisseurQuery,
 } from "../../../features/fournisseur/fournisseurSlice";
 import { useNavigate } from "react-router-dom";
-
+import dayjs, { Dayjs } from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 const AddArrivageProduit = () => {
   document.title = "Arrivage | Radhouani";
 
@@ -41,33 +44,64 @@ const AddArrivageProduit = () => {
   };
 
   const navigate = useNavigate();
-
+  let now = dayjs();
+  const [value, setValue] = React.useState<Dayjs | null>(now);
+  const newDate = `${value?.date()}/${value!.month() + 1}/${value!.year()}`;
   const [createArrivage] = useAddArrivageMutation();
   const arrivageValue = {
     idArrivage: Math.floor(100000 + Math.random() * 900000),
     designation: "",
-    montantTotal: 0,
-    dateArrivage: "",
+    montantTotal: "",
+    dateArrivage: new Date().toLocaleDateString("en-GB"),
     raison_sociale: "",
     fournisseurID: 17,
+    piecejointe: "",
   };
-  // const today = new Date();
   const [arrivageData, setArrivageData] = useState(arrivageValue);
 
   const onChangeArrivage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setArrivageData((prevState) => ({
       ...prevState,
-      dateArrivage: new Date().toLocaleDateString("en-GB"),
       [e.target.id]: e.target.value,
     }));
   };
 
+  function convertToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        const base64String = fileReader.result as string;
+        const base64Data = base64String.split(",")[1]; // Extract only the Base64 data
+
+        resolve(base64Data);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+      fileReader.readAsDataURL(file);
+    });
+  }
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = (document.getElementById("piecejointe") as HTMLFormElement)
+      .files[0];
+    const base64 = await convertToBase64(file);
+    console.log(base64);
+    setArrivageData({
+      ...arrivageData,
+      piecejointe: base64 as string,
+    });
+  };
+
   const onSubmitArrivage = (e: React.FormEvent<HTMLFormElement>) => {
+    arrivageData["dateArrivage"] = newDate;
     arrivageData["fournisseurID"] = parseInt(fournisseurStateID);
     e.preventDefault();
     createArrivage(arrivageData).then(() => setArrivageData(arrivageData));
     notify();
-    navigate("/shipment", { state: { arrivageData } });
+    navigate("/nouveau-arrivage-produit", { state: { arrivageData } });
   };
 
   const notify = () => {
@@ -90,8 +124,8 @@ const AddArrivageProduit = () => {
             className="mx-auto"
             style={{
               width: "46rem",
-              height: "23rem",
-              marginTop: 65,
+              height: "28rem",
+              marginTop: 50,
             }}
           >
             <Card.Header>
@@ -114,7 +148,6 @@ const AddArrivageProduit = () => {
                         type="text"
                         id="designation"
                         onChange={onChangeArrivage}
-                        placeholder="..."
                         value={arrivageData.designation}
                         required
                       />
@@ -126,9 +159,8 @@ const AddArrivageProduit = () => {
                         Montant Total
                       </Form.Label>
                       <Form.Control
-                        type="text"
+                        type="number"
                         id="montantTotal"
-                        placeholder="00.00"
                         onChange={onChangeArrivage}
                         value={arrivageData.montantTotal}
                         required
@@ -142,13 +174,23 @@ const AddArrivageProduit = () => {
                       <Form.Label htmlFor="dateArrivage">
                         Date d'arrivage
                       </Form.Label>
-                      <Form.Control
-                        type="text"
-                        id="dateArrivage"
-                        placeholder="21/06/2023"
-                        onChange={onChangeArrivage}
-                        value={arrivageData.dateArrivage}
-                      />
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="de"
+                      >
+                        <DatePicker
+                          defaultValue={now}
+                          slotProps={{
+                            textField: {
+                              size: "small",
+                              inputProps: { ["placeholder"]: "DD.MM.YYYY" },
+                            },
+                          }}
+                          value={value}
+                          onChange={(newValue) => setValue(newValue)}
+                          format="DD-MM-YYYY"
+                        />
+                      </LocalizationProvider>
                     </div>
                   </Col>
                   <Col lg={6}>
@@ -176,7 +218,51 @@ const AddArrivageProduit = () => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col lg={12}>
+                  <Col lg={4}></Col>
+                  <Col lg={4}>
+                    <div className="text-center mb-3">
+                      <div className="position-relative d-inline-block">
+                        <div className="position-absolute top-100 start-100 translate-middle">
+                          <label
+                            htmlFor="piecejointe"
+                            className="mb-0"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="right"
+                            title="Select Fournisseur Logo"
+                          >
+                            <span className="avatar-xs d-inline-block">
+                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
+                                <i className="ri-image-fill"></i>
+                              </span>
+                            </span>
+                          </label>
+                          <input
+                            className="d-none"
+                            type="file"
+                            name="piecejointe"
+                            id="piecejointe"
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e)}
+                          />
+                        </div>
+                        <div className="avatar-xl">
+                          <div className="avatar-title bg-light rounded-4">
+                            <img
+                              src={`data:image/jpeg;base64, ${arrivageData.piecejointe}`}
+                              alt={arrivageData.piecejointe}
+                              id="category-img"
+                              className="avatar-xl h-auto rounded-4 object-fit-cover"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="error-msg mt-1">
+                      Please add a product images.
+                    </div>
+                  </Col>
+                  <Col lg={4}>
                     <div className="hstack gap-2 justify-content-end">
                       <Button
                         variant="success"
@@ -189,6 +275,7 @@ const AddArrivageProduit = () => {
                     </div>
                   </Col>
                 </Row>
+                <Row></Row>
               </form>
             </Card.Body>
           </Card>

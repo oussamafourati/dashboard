@@ -3,18 +3,9 @@ import { Button, Card, Col, Dropdown, Form, Modal, Row } from "react-bootstrap";
 import TableContainer from "Common/TableContainer";
 import { ListView } from "Common/data";
 import Flatpickr from "react-flatpickr";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Facture,
-  useDeleteFactureMutation,
-  useFetchFacturesQuery,
-} from "features/facture/factureSlice";
-import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 const InvoiceListTable = () => {
-  const { data = [] } = useFetchFacturesQuery();
-  const [deleteFacture] = useDeleteFactureMutation();
-
   const [modal_AddUserModals, setmodal_AddUserModals] =
     useState<boolean>(false);
   const [isMultiDeleteButton, setIsMultiDeleteButton] =
@@ -47,142 +38,103 @@ const InvoiceListTable = () => {
       ? setIsMultiDeleteButton(true)
       : setIsMultiDeleteButton(false);
   };
-  const navigate = useNavigate();
-  const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-      confirmButton: "btn btn-success",
-      cancelButton: "btn btn-danger",
-    },
-    buttonsStyling: false,
-  });
-
-  const AlertDelete = async (id: number) => {
-    swalWithBootstrapButtons
-      .fire({
-        title: "Êtes-vous sûr?",
-        text: "Vous ne pourrez pas revenir en arrière !",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Oui, supprimez-le !",
-        cancelButtonText: "Non, annulez !",
-        reverseButtons: true,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          deleteFacture(id);
-          swalWithBootstrapButtons.fire(
-            "Supprimé !",
-            "Le Client a été supprimé.",
-            "success"
-          );
-          navigate("/invoices-list");
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
-          swalWithBootstrapButtons.fire(
-            "Annulé",
-            "Le Client est en sécurité :)",
-            "error"
-          );
-        }
-      });
-  };
 
   const columns = useMemo(
     () => [
+      {
+        Header: "Numéro",
+        accessor: (cellProps: any) => {
+          return (
+            <Link to="#" className="fw-medium">
+              {cellProps.id}
+            </Link>
+          );
+        },
+        disableFilters: true,
+        filterable: true,
+      },
+      {
+        Header: "Client",
+        disableFilters: true,
+        filterable: true,
+        accessor: (cellProps: any) => {
+          return (
+            <div className="d-flex align-items-center gap-2">
+              <div className="flex-shrink-0">
+                <img
+                  src={cellProps.img}
+                  alt=""
+                  className="avatar-xs rounded-circle user-profile-img"
+                />
+              </div>
+              <div className="flex-grow-1 ms-2 user_name">
+                {cellProps.customer}
+              </div>
+            </div>
+          );
+        },
+      },
       // {
-      //     Header: (<div className="form-check">
-      //         <input className="form-check-input" type="checkbox" id="checkAll" onClick={() => checkedAll()} />
-      //     </div>),
-      //     Cell: (cellProps: any) => {
-      //         return (<div className="form-check">
-      //             <input className="invoiceCheckBox form-check-input" type="checkbox" name="chk_child" value={cellProps.row.original.id} onChange={() => checkedbox()} />
-      //         </div>);
-      //     },
-      //     id: '#',
+      //     Header: "Email",
+      //     accessor: "email",
+      //     disableFilters: true,
+      //     filterable: true,
       // },
       {
-        Header: "Numéro Facture",
-        accessor: "designationFacture",
+        Header: "Date",
+        accessor: "date",
         disableFilters: true,
         filterable: true,
       },
       {
-        Header: "Date Facturation",
+        Header: "Montant",
+        accessor: "amt",
         disableFilters: true,
         filterable: true,
-        accessor: "dateFacturation",
-      },
-      {
-        Header: "Montant Total",
-        accessor: "MontantTotal",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "Date Paiement",
-        accessor: "datePaiement",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "Nom Client",
-        accessor: "nomClient",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "Status",
-        disableFilters: true,
-        filterable: true,
-        accessor: (facture: Facture) => {
-          switch (facture.statusFacture) {
-            case 2:
-              return <span className="badge badge-soft-success">{"Payé"}</span>;
-            case 0:
-              return (
-                <span className="badge badge-soft-danger">{"Impayé"}</span>
-              );
-            case 1:
-              return (
-                <span className="badge badge-soft-warning">{"Semi-Payé"}</span>
-              );
-            default:
-              return (
-                <span className="badge badge-soft-danger">{"Impayé"}</span>
-              );
-          }
-        },
       },
       {
         Header: "Action",
         disableFilters: true,
         filterable: true,
-        accessor: (facture: Facture) => {
+        accessor: (cellProps: any) => {
           return (
-            <ul className="hstack gap-2 list-unstyled mb-0">
-              <li>
-                <Link
-                  to="/invoices-details"
-                  state={facture}
-                  className="link-primary"
-                  data-bs-toggle="modal"
+            <React.Fragment>
+              <Dropdown>
+                <Dropdown.Toggle
+                  href="#!"
+                  className="btn btn-soft-secondary btn-sm dropdown btn-icon arrow-none"
                 >
-                  <i className="ri-eye-line ri-xl" />
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  onClick={() => AlertDelete(facture.idFacture)}
-                  data-bs-toggle="modal"
-                  className="link-danger"
-                >
-                  <i className="ri-delete-bin-5-line ri-xl" />
-                </Link>
-              </li>
-            </ul>
+                  <i className="ri-more-fill align-middle"></i>
+                </Dropdown.Toggle>
+                <Dropdown.Menu as="ul" className="dropdown-menu-end">
+                  <li>
+                    <Dropdown.Item href="/invoices-details">
+                      <i className="ri-eye-fill align-bottom me-2 text-muted" />{" "}
+                      Voir
+                    </Dropdown.Item>
+                  </li>
+                  <li>
+                    <Dropdown.Item href="#" className="remove-list">
+                      <i className="ri-pencil-fill align-bottom me-2 text-muted" />
+                      Modifier
+                    </Dropdown.Item>
+                  </li>
+                  <li>
+                    <Dropdown.Item href="#" className="remove-list">
+                      <i className="ri-pencil-fill align-bottom me-2 text-muted" />
+                      Télécharger
+                    </Dropdown.Item>
+                  </li>
+                  <Dropdown.Divider />
+                  <li>
+                    <Dropdown.Item href="#" className="remove-list">
+                      <i className="ri-delete-bin-fill align-bottom me-2 text-muted" />
+                      Supprimer
+                    </Dropdown.Item>
+                  </li>
+                </Dropdown.Menu>
+              </Dropdown>
+            </React.Fragment>
           );
         },
       },
@@ -196,7 +148,8 @@ const InvoiceListTable = () => {
         <Col lg={12}>
           <Card id="invoiceList">
             <Card.Header className="border-0">
-              <div className="d-flex align-items-center justify-content-end">
+              <div className="d-flex justify-content-end">
+                {/* <h5 className="card-title mb-0 flex-grow-1">Factures</h5> */}
                 <div className="flex-shrink-0">
                   <div className="d-flex gap-2 flex-wrap">
                     {isMultiDeleteButton && (
@@ -205,67 +158,23 @@ const InvoiceListTable = () => {
                       </Button>
                     )}
                     <Link
-                      to="/invoices-create"
+                      to="/devis-create"
                       className="btn btn-primary"
                       onClick={tog_AddUserModals}
                     >
                       <i className="ri-add-line align-bottom me-1"></i> Créer
-                      Facture
+                      Devis
                     </Link>
                   </div>
                 </div>
               </div>
             </Card.Header>
-            {/* <Card.Body className="bg-soft-light border border-dashed border-start-0 border-end-0">
-              <form>
-                <Row className="g-3">
-                  <Col xxl={5} sm={12}>
-                    <div className="search-box">
-                      <input
-                        type="text"
-                        className="form-control search bg-light border-light"
-                        placeholder="rechercher facture par date, client, status..."
-                      />
-                      <i className="ri-search-line search-icon"></i>
-                    </div>
-                  </Col>
-                  <Col xxl={3} sm={4}>
-                    <Flatpickr
-                      className="form-control bg-light border-light"
-                      placeholder="Selectionner Date"
-                      options={{
-                        mode: "range",
-                        dateFormat: "d M, Y",
-                      }}
-                    />
-                  </Col>
-                  <Col xxl={3} sm={4}>
-                    <div className="input-light">
-                      <select
-                        className="form-control"
-                        data-choices
-                        data-choices-search-false
-                        name="choices-single-default"
-                        id="idStatus"
-                      >
-                        <option value="">Status</option>
-                        <option defaultValue="all">Tous</option>
-                        <option value="Unpaid">Payée</option>
-                        <option value="Paid">Impayée</option>
-                        <option value="Cancel">Annulée</option>
-                        <option value="Refund">Remboursée</option>
-                      </select>
-                    </div>
-                  </Col>
-                </Row>
-              </form>
-            </Card.Body> */}
             <Card.Body>
               <div>
                 <div className="table-responsive table-card">
                   <TableContainer
                     columns={columns || []}
-                    data={data || []}
+                    data={ListView || []}
                     isGlobalFilter={true}
                     iscustomPageSize={false}
                     isBordered={false}
@@ -273,7 +182,7 @@ const InvoiceListTable = () => {
                     className="custom-header-css table align-middle table-nowrap"
                     tableClassName="table-centered align-middle table-nowrap mb-0"
                     theadClassName="text-muted table-light"
-                    SearchPlaceholder="Chercher..."
+                    SearchPlaceholder="Rechercher..."
                   />
                   <div className="noresult" style={{ display: "none" }}>
                     <div className="text-center">

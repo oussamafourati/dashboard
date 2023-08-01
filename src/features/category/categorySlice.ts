@@ -17,10 +17,11 @@ export const categorySlice = createApi({
   endpoints(builder) {
     return {
       fetchCategories: builder.query<Category[], number | void>({
-        query() {
-          return `/all`;
-        },
-        providesTags: ["Category"],
+        query: () => "/all",
+        providesTags: (result) =>
+          result
+            ? result.map(({ idcategory }) => ({ type: "Category", idcategory }))
+            : ["Category"],
       }),
       fetchOneCategory: builder.query<Category, number | void>({
         query(idCategory) {
@@ -48,7 +49,7 @@ export const categorySlice = createApi({
       }),
       deleteCategory: builder.mutation<void, number>({
         query: (idcategory) => ({
-          url: `delete/${idcategory}`,
+          url: `/delete/${idcategory}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Category"],

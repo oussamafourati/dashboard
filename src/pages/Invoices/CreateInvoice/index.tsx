@@ -1,41 +1,45 @@
 import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, ToggleButton } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import PassagerInvoice from "./PassagerInvoice";
 import ProInvoice from "./ProInvoice";
 
 const CreateInvoice = () => {
   document.title = "Créer Facture | Radhouani";
-  const [buttonText, setButtonText] = useState("Passager");
-  const [toggle, setToggle] = useState(true);
-  const handleClick = (text: string) => {
-    setButtonText(text);
-    setToggle(!toggle);
-    setButtonText(text);
-  };
+  const [checked, setChecked] = useState<boolean>(true);
   const [show, setShow] = useState(true);
+
   return (
     <div>
       <React.Fragment>
         <div className="page-content">
           <Breadcrumb title="Créer Facture" pageTitle="Factures" />
           <Row>
-            <Col className="justify-content-center d-flex gap-2 mb-2">
-              <Button
+            <Col className="justify-content-center d-flex gap-2 mb-1">
+              <ToggleButton
+                className="mb-2"
+                id="toggle-check"
+                type="checkbox"
                 variant="outline-info"
+                checked={checked}
+                value={1}
+                onChange={(e) => setChecked(e.currentTarget.checked)}
                 onClick={() => setShow(true)}
-                size="sm"
               >
                 Passager
-              </Button>
-              <Button
+              </ToggleButton>
+              <ToggleButton
+                className="mb-2"
+                id="toggle-check2"
+                type="checkbox"
                 variant="outline-info"
                 onClick={() => setShow(false)}
-                size="sm"
+                checked={!checked}
+                value={2}
+                onChange={(e) => setChecked(e.currentTarget.checked)}
               >
                 Professionnel
-              </Button>
+              </ToggleButton>
             </Col>
           </Row>
           {show ? <PassagerInvoice /> : <ProInvoice />}

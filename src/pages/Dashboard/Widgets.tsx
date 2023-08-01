@@ -1,5 +1,6 @@
 import { useGetAllArrivagesQuery } from "features/arrivage/arrivageSlice";
 import { useGetAllChargesQuery } from "features/charge/chargeSlice";
+import { useFetchFacturePayeQuery } from "features/facture/factureSlice";
 import React from "react";
 import { Card, Col } from "react-bootstrap";
 import CountUp from "react-countup";
@@ -15,11 +16,20 @@ interface WidgetsProps {
 const Widgets = () => {
   const { data = [] } = useGetAllChargesQuery();
   const { data: allArrivage = [] } = useGetAllArrivagesQuery();
+  const { data: facturePaye = [] } = useFetchFacturePayeQuery();
   const arrivageTotal = allArrivage.reduce(
-    (sum, i) => (sum += i.montantTotal),
+    (sum, i) => (sum += parseInt(i.montantTotal)),
     0
   );
-  const chargeTotal = data.reduce((sum, i) => (sum += i.montantCharges), 0);
+  const chargeTotal = data.reduce(
+    (sum, i) => (sum += parseInt(i.montantCharges)),
+    0
+  );
+
+  const montantTotalPaye = facturePaye.reduce(
+    (sum, i) => (sum += i.MontantTotal),
+    0
+  );
 
   const widgetsData: Array<WidgetsProps> = [
     {
@@ -37,18 +47,18 @@ const Widgets = () => {
       iconColor: "info",
     },
     {
-      id: 3,
-      name: "TOTAL Impayés",
-      amount: 79958,
-      icon: "ph-user-circle",
-      iconColor: "warning",
-    },
-    {
       id: 4,
       name: "TOTAL CHARGE",
       amount: chargeTotal,
-      icon: "ph-sketch-logo",
-      iconColor: "primary",
+      icon: "bi bi-currency-dollar",
+      iconColor: "warning",
+    },
+    {
+      id: 3,
+      name: "TOTAL Impayés",
+      amount: montantTotalPaye,
+      icon: "ph-clock",
+      iconColor: "danger",
     },
   ];
   return (
@@ -69,12 +79,7 @@ const Widgets = () => {
                   <h4 className="fs-22 fw-semibold mb-3">
                     {item.decimal ? "$" : ""}
                     <span className="counter-value" data-target="98851.35">
-                      <CountUp
-                        start={0}
-                        end={item.amount}
-                        separator=","
-                        decimals={item.decimal && 2}
-                      />
+                      <CountUp start={0} end={item.amount} />
                     </span>
                   </h4>
                   <div className="d-flex align-items-center gap-2">

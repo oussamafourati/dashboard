@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export interface Charges {
   idCharges: number;
   typeCharges: string;
-  montantCharges: number;
+  montantCharges: string;
   dateCharges: string;
   descriptionCharge: string;
   piecejointes: string;
@@ -23,9 +23,27 @@ export const chargesSlice = createApi({
         },
         providesTags: ["Charges"],
       }),
-      getSommeCharges: builder.query<Charges, number | void>({
+      getChargeAnnee: builder.query<Charges[], number | void>({
         query() {
-          return "/sommeCharges";
+          return `/anneeCharges`;
+        },
+        providesTags: ["Charges"],
+      }),
+      getChargeDay: builder.query<Charges[], number | void>({
+        query() {
+          return `/dayCharges`;
+        },
+        providesTags: ["Charges"],
+      }),
+      getChargeMonth: builder.query<Charges[], number | void>({
+        query() {
+          return `/moisCharges`;
+        },
+        providesTags: ["Charges"],
+      }),
+      getChargeWeek: builder.query<Charges[], number | void>({
+        query() {
+          return `/weekCharges`;
         },
         providesTags: ["Charges"],
       }),
@@ -65,10 +83,13 @@ export const chargesSlice = createApi({
 });
 
 export const {
+  useGetChargeWeekQuery,
+  useGetChargeMonthQuery,
+  useGetChargeDayQuery,
+  useGetChargeAnneeQuery,
   useGetOneChargesQuery,
   useGetAllChargesQuery,
   useAddChargeMutation,
   useUpdateChargeMutation,
   useDeleteChargesMutation,
-  useGetSommeChargesQuery,
 } = chargesSlice;

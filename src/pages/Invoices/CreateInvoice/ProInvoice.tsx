@@ -107,12 +107,10 @@ const ProInvoice: React.FC = () => {
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
-      console.log(reqstatedata);
       setClientid(clientMoraleid);
     } else {
       setSelected([]);
     }
-    console.log(clientMoraleid);
   };
 
   //Query to Fetch All Client Morale
@@ -140,11 +138,11 @@ const ProInvoice: React.FC = () => {
     idclient_m: 99,
     raison_sociale: "",
     adresse: "",
-    tel: 14785236,
+    tel: "",
     mail: "",
-    mat: 1,
+    mat: "",
     logo: "",
-    rib: 1142250,
+    rib: "",
     etat: 1,
     remarque: "",
     credit: 123,
@@ -402,7 +400,7 @@ const ProInvoice: React.FC = () => {
                       size="small"
                       type="text"
                       id="invoicenoInput"
-                      placeholder="#VL25000355"
+                      placeholder="25000355"
                     />
                   </Col>
                   <Col lg={3} sm={6}>
@@ -423,7 +421,7 @@ const ProInvoice: React.FC = () => {
                   </Col>
                 </Row>
               </Card.Body>
-              <Card.Body className="p-4">
+              <Card.Body className="p-3">
                 <div>
                   <Row>
                     <Col lg={5}>
@@ -482,7 +480,7 @@ const ProInvoice: React.FC = () => {
                           type="number"
                           size="small"
                           name="prixunitaire"
-                          placeholder="prixunitaire"
+                          placeholder="00.00"
                           onChange={(event) => handleFormChange(event, index)}
                           value={form.prixunitaire}
                         />
@@ -495,10 +493,7 @@ const ProInvoice: React.FC = () => {
                           name="benifice"
                           defaultValue={form.benifice}
                           placeholder="0.0"
-                          onChange={(event) => {
-                            handleFormChange(event, index),
-                              onChangePourcentageBenifice;
-                          }}
+                          onChange={(event) => handleFormChange(event, index)}
                           value={pourcentageBenifice}
                         />
                       </Col>
@@ -566,30 +561,23 @@ const ProInvoice: React.FC = () => {
                   <Col lg={9}></Col>
                   <Col lg={3} className="mt-3">
                     <TextField
-                      label="Total"
+                      label="% Bénifice"
                       InputLabelProps={{
                         shrink: true,
                       }}
-                      InputProps={{
-                        readOnly: true,
-                      }}
                       size="small"
                       type="number"
-                      name="subTotal"
-                      value={
-                        formFields.reduce(
-                          (sum, i) => (sum += parseInt(i.montanttotal!)),
-                          0
-                        ) || (0).toString()
-                      }
-                      id="cart-subtotal"
+                      name="benifice"
+                      onChange={onChangePourcentageBenifice}
+                      value={pourcentageBenifice}
+                      id="benifice"
                       placeholder="0.00"
                     />
                   </Col>
                 </Row>
                 <Row>
                   <Col lg={9}>
-                    <Row className="mt-3">
+                    <Row className="mt-2">
                       <Col lg={7}>
                         <div className="mb-2">
                           <Form.Label htmlFor="choices-payment-status">
@@ -695,23 +683,30 @@ const ProInvoice: React.FC = () => {
                       )}
                     </Row>
                   </Col>
-                  <Col lg={2} className="mt-3">
+                  <Col lg={3} className="mt-3">
                     <TextField
-                      label="% Bénifice"
+                      label="Total"
                       InputLabelProps={{
                         shrink: true,
                       }}
+                      InputProps={{
+                        readOnly: true,
+                      }}
                       size="small"
                       type="number"
-                      name="benifice"
-                      onChange={onChangePourcentageBenifice}
-                      value={pourcentageBenifice}
-                      id="benifice"
+                      name="subTotal"
+                      value={
+                        formFields.reduce(
+                          (sum, i) => (sum += parseInt(i.montanttotal!)),
+                          0
+                        ) || (0).toString()
+                      }
+                      id="cart-subtotal"
                       placeholder="0.00"
                     />
                   </Col>
                 </Row>
-                <div className="hstack gap-2 justify-content-end d-print-none mt-3">
+                <div className="hstack gap-2 justify-content-end d-print-none mt-0">
                   <Button
                     variant="success"
                     type="submit"

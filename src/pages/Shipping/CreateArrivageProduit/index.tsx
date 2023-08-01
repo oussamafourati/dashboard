@@ -65,13 +65,13 @@ const CreateArrivageProduit = () => {
     }
   };
 
-  const [prixAchatHT, setPrixAchatHT] = useState<number>(1);
-  const [prixAchatTTC, setPrixAchatTTc] = useState<number>(1);
-  const [prixvente, setPrixVente] = useState<number>(1);
-  const [benifice, setBenifice] = useState<number>(1);
-  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>(1);
-  const [prixRemise, setPrixRemise] = useState<number>(1);
-  const [pourcentageRemise, setPourcentageRemise] = useState<number>(1);
+  const [prixAchatHT, setPrixAchatHT] = useState<number>();
+  const [prixAchatTTC, setPrixAchatTTc] = useState<number>();
+  const [prixvente, setPrixVente] = useState<number>();
+  const [benifice, setBenifice] = useState<number>();
+  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>();
+  const [prixRemise, setPrixRemise] = useState<number>();
+  const [pourcentageRemise, setPourcentageRemise] = useState<number>();
 
   const onChangePAHT = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrixAchatHT(parseInt(event.target.value));
@@ -84,19 +84,19 @@ const CreateArrivageProduit = () => {
 
   const onChangePV = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrixVente(parseInt(event.target.value));
-    setBenifice(parseInt(event.target.value) - prixAchatTTC);
+    setBenifice(parseInt(event.target.value) - prixAchatTTC!);
     setPourcentageBenifice(
-      ((parseInt(event.target.value) - prixAchatTTC) * 100) /
+      ((parseInt(event.target.value) - prixAchatTTC!) * 100) /
         parseInt(event.target.value)
     );
   };
 
   const onChangeBenifice = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBenifice(parseInt(event.target.value));
-    setPrixVente(parseInt(event.target.value) + prixAchatTTC);
+    setPrixVente(parseInt(event.target.value) + prixAchatTTC!);
     setPourcentageBenifice(
       (parseInt(event.target.value) * 100) /
-        (parseInt(event.target.value) + prixAchatTTC)
+        (parseInt(event.target.value) + prixAchatTTC!)
     );
   };
   const onChangePourcentageBenifice = (
@@ -104,32 +104,32 @@ const CreateArrivageProduit = () => {
   ) => {
     setPourcentageBenifice(parseInt(event.target.value));
     setBenifice(
-      (prixAchatTTC * parseInt(event.target.value)) /
+      (prixAchatTTC! * parseInt(event.target.value)) /
         (100 - parseInt(event.target.value))
     );
     setPrixVente(
-      (prixAchatTTC * parseInt(event.target.value)) /
+      (prixAchatTTC! * parseInt(event.target.value)) /
         (100 - parseInt(event.target.value)) +
-        prixAchatTTC
+        prixAchatTTC!
     );
   };
 
   const onChangePrixRemise = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPrixRemise(parseInt(event.target.value));
     setPourcentageRemise(
-      ((prixvente - parseInt(event.target.value)) * 100) / prixvente
+      ((prixvente! - parseInt(event.target.value)) * 100) / prixvente!
     );
   };
   const onChangePourcentagePrixRemise = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setPourcentageRemise(parseInt(event.target.value));
-    setPrixRemise((prixvente * (100 - parseInt(event.target.value))) / 100);
+    setPrixRemise((prixvente! * (100 - parseInt(event.target.value))) / 100);
   };
 
   const [CreateArrivageProduit] = useAddArrivageProduitMutation();
 
-  const [arrivageProduitData, setArrivageProduitData] = useState({
+  const initialArrivageProduitData = {
     idArrivageProduit: 1,
     produitID: 34,
     arrivageID: location.state.idArrivage,
@@ -147,7 +147,11 @@ const CreateArrivageProduit = () => {
     designation: "",
     montantTotal: 1,
     dateArrivage: "",
-  });
+  };
+
+  const [arrivageProduitData, setArrivageProduitData] = useState(
+    initialArrivageProduitData
+  );
 
   const [text, setText] = useState<string>("");
   const [products, setProducts] = useState<Produit[]>([]);
@@ -192,19 +196,19 @@ const CreateArrivageProduit = () => {
   };
   const onSubmitArrivageProduit = (e: React.FormEvent<HTMLFormElement>) => {
     arrivageProduitData["produitID"] = acValue?.idproduit!;
-    arrivageProduitData["prixAchatHt"] = prixAchatHT;
-    arrivageProduitData["prixAchatTtc"] = prixAchatTTC;
-    arrivageProduitData["prixVente"] = prixvente;
-    arrivageProduitData["Benifice"] = benifice;
-    arrivageProduitData["PourcentageBenifice"] = pourcentageBenifice;
-    arrivageProduitData["PrixRemise"] = prixRemise;
-    arrivageProduitData["PourcentageRemise"] = pourcentageRemise;
+    arrivageProduitData["prixAchatHt"] = prixAchatHT!;
+    arrivageProduitData["prixAchatTtc"] = prixAchatTTC!;
+    arrivageProduitData["prixVente"] = prixvente!;
+    arrivageProduitData["Benifice"] = benifice!;
+    arrivageProduitData["PourcentageBenifice"] = pourcentageBenifice!;
+    arrivageProduitData["PrixRemise"] = prixRemise!;
+    arrivageProduitData["PourcentageRemise"] = pourcentageRemise!;
     arrivageProduitData["MontantTotalProduit"] =
-      prixAchatTTC * arrivageProduitData["quantite"];
+      prixAchatTTC! * arrivageProduitData["quantite"];
 
     e.preventDefault();
     CreateArrivageProduit(arrivageProduitData).then(() =>
-      setArrivageProduitData(arrivageProduitData)
+      setArrivageProduitData(initialArrivageProduitData)
     );
   };
 
@@ -364,14 +368,14 @@ const CreateArrivageProduit = () => {
               <Card.Body className="mx-auto">
                 <Row>
                   <Row>
-                    <Col lg={8}>
+                    <Col lg={10}>
                       <label htmlFor="productdetail" className="form-label">
                         Produit
                       </label>
                       <div className="input-group mb-4">
                         <Autocomplete
                           id="country-select-demo"
-                          sx={{ width: 300 }}
+                          sx={{ width: 480 }}
                           options={allProduit}
                           autoHighlight
                           onChange={(event, value) => setACValue(value)}
@@ -421,7 +425,7 @@ const CreateArrivageProduit = () => {
                           <Form.Label htmlFor="quantite">Quantité</Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
-                              type="text"
+                              type="number"
                               value={arrivageProduitData.quantite}
                               onChange={onChangeArrivageProduit}
                               id="quantite"
@@ -447,7 +451,6 @@ const CreateArrivageProduit = () => {
                               value={prixAchatHT!}
                               onChange={onChangePAHT}
                               id="prixAchatHt"
-                              placeholder="00.00"
                               aria-label="prixAchatHt"
                               aria-describedby="product-price-addon"
                               autoComplete="off"
@@ -474,10 +477,9 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
-                              value={prixAchatTTC}
+                              value={prixAchatTTC?.toFixed(3)}
                               onChange={onChangePATTC}
                               id="prixAchatTtc"
-                              placeholder="00.00"
                               aria-label="Price"
                               aria-describedby="product-price-addon"
                             />
@@ -497,10 +499,8 @@ const CreateArrivageProduit = () => {
                           <Form.Control
                             type="number"
                             id="prixVente"
-                            placeholder="00.00"
                             value={prixvente}
                             min={prixAchatTTC}
-                            max="9999"
                             onChange={onChangePV}
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
@@ -517,10 +517,9 @@ const CreateArrivageProduit = () => {
                             <Form.Control
                               type="number"
                               id="PourcentageBenifice"
-                              placeholder="0"
                               aria-label="discount"
                               aria-describedby="product-discount-addon"
-                              value={pourcentageBenifice}
+                              value={pourcentageBenifice?.toFixed(3)}
                               onChange={onChangePourcentageBenifice}
                             />
                             <span
@@ -542,8 +541,7 @@ const CreateArrivageProduit = () => {
                           <Form.Control
                             type="number"
                             id="Benifice"
-                            placeholder="00.00"
-                            value={benifice}
+                            value={benifice?.toFixed(3)}
                             onChange={onChangeBenifice}
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
@@ -565,10 +563,8 @@ const CreateArrivageProduit = () => {
                               type="number"
                               value={prixRemise}
                               min={prixAchatTTC}
-                              max={prixvente}
                               onChange={onChangePrixRemise}
                               id="PrixRemise"
-                              placeholder="00.00"
                               aria-label="discount"
                               aria-describedby="product-discount-addon"
                             />
@@ -587,10 +583,9 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
-                              value={pourcentageRemise}
+                              value={pourcentageRemise?.toFixed(3)}
                               onChange={onChangePourcentagePrixRemise}
                               id="PourcentageRemise"
-                              placeholder="0"
                               aria-label="discount"
                               aria-describedby="product-discount-addon"
                               required
@@ -662,11 +657,17 @@ const CreateArrivageProduit = () => {
                                         <td>{produitArr?.prixVente!}</td>
                                         <td>{produitArr?.Benifice!}</td>
                                         <td>
-                                          {produitArr?.PourcentageBenifice!} %
+                                          {(
+                                            produitArr?.PourcentageBenifice! * 1
+                                          ).toFixed(3)}
+                                          %
                                         </td>
                                         <td>{produitArr?.PrixRemise!}</td>
                                         <td>
-                                          {produitArr.PourcentageRemise!}%
+                                          {(
+                                            produitArr.PourcentageRemise! * 1
+                                          ).toFixed(3)}
+                                          %
                                         </td>
                                         <td>{produitArr?.quantite!}</td>
                                         <td>

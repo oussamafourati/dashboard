@@ -1,19 +1,13 @@
-import React from 'react';
-import { Card, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import ProductCategoryFilter from './ProductCategoryFilter';
-import ProductTable from './ProductTable';
-
-
+import React from "react";
+import { Card, Col } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import ProductCategoryFilter from "./ProductCategoryFilter";
+import ProductTable from "./ProductTable";
 
 const ProductFilter = () => {
-
-
-
-
   return (
     <React.Fragment>
-      <Col xl={3} lg={4}>
+      {/* <Col xl={3} lg={4}>
         <Card className="overflow-hidden">
           <Card.Header>
             <div className="d-flex align-items-center">
@@ -21,18 +15,23 @@ const ProductFilter = () => {
                 <h5 className="card-title mb-0">Filtres</h5>
               </div>
               <div className="flex-shrink-0">
-                <Link to="#" className="text-decoration-underline" id="clearall">Effacer Tout</Link>
+                <Link
+                  to="#"
+                  className="text-decoration-underline"
+                  id="clearall"
+                >
+                  Effacer Tout
+                </Link>
               </div>
             </div>
           </Card.Header>
 
-          {/* Product Category Filter */}
+          {/* Product Category Filter 
           <ProductCategoryFilter />
-
         </Card>
-      </Col>
+      </Col> */}
 
-      <Col xl={9} lg={8}>
+      <Col xl={12} lg={8}>
         <ProductTable />
       </Col>
     </React.Fragment>

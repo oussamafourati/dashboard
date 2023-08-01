@@ -42,7 +42,7 @@ import Coupons from "pages/Coupons";
 import ReviewRating from "pages/Reviews-Rating";
 
 //Brands
-import Brands from "pages/Brands";
+import Brands from "pages/Charges";
 
 //statistics
 import Statistics from "pages/Statistics";
@@ -72,6 +72,8 @@ import Register from "pages/Authentication/Register";
 import ForgotPassword from "pages/Authentication/ForgotPassword";
 import UserProfile from "pages/Authentication/user-profile";
 import ShippingDetails from "pages/Shipping/ShippingList/ShippingDetails";
+import CreateDevis from "pages/Devis/CreateDevis";
+import DevisList from "pages/Devis/DevisList";
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <Dashboard /> },
@@ -90,27 +92,32 @@ const authProtectedRoutes = [
 
   // Sellers
   { path: "/sellers-list-view", component: <SellersListView /> },
-  { path: "/seller-grid-view", component: <SellersGridView /> },
-  { path: "/seller-overview", component: <SellersOverview /> },
+  { path: "/liste-fournisseurs", component: <SellersGridView /> },
+  { path: "/detail-fournisseur", component: <SellersOverview /> },
 
   // Invoice
   { path: "/invoices-list", component: <InvoiceList /> },
   { path: "/invoices-details", component: <InvoiceDetails /> },
   { path: "/invoices-create", component: <CreateInvoice /> },
 
+  // Devis
+  { path: "/liste-devis", component: <DevisList /> },
+  { path: "/invoices-details", component: <InvoiceDetails /> },
+  { path: "/devis-create", component: <CreateDevis /> },
+
   // User List
-  { path: "/users-list", component: <UsersList /> },
+  { path: "/client-morale", component: <UsersList /> },
 
   // Shipping
-  { path: "/shipping-list", component: <ShippingList /> },
-  { path: "/shipments", component: <Shipments /> },
+  { path: "/nouveau-arrivage", component: <ShippingList /> },
+  { path: "/liste-arrivage", component: <Shipments /> },
   { path: "/detail", component: <ShippingDetails /> },
-  { path: "/shipment", component: <CreateArrivageProduit /> },
+  { path: "/nouveau-arrivage-produit", component: <CreateArrivageProduit /> },
 
   // Coupons
-  { path: "/coupons", component: <Coupons /> },
+  { path: "/client-physique", component: <Coupons /> },
 
-  { path: "/calendar", component: <Calendar /> },
+  { path: "/calendrier", component: <ComingSoon /> },
 
   //Review & Rating
   { path: "/reviews-ratings", component: <ReviewRating /> },
@@ -126,14 +133,14 @@ const authProtectedRoutes = [
   { path: "/currency-rates", component: <CurrencyRates /> },
 
   // Accounts
-  { path: "/account", component: <MyAccount /> },
-  { path: "/settings", component: <Settings /> },
+  { path: "/liste-comptes", component: <MyAccount /> },
+  { path: "/creer-compte", component: <Settings /> },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
   { path: "*", component: <Navigate to="/dashboard" /> },
-  { path: "/user-profile", component: <UserProfile /> },
+  { path: "/profil", component: <UserProfile /> },
 ];
 
 const publicRoutes = [
@@ -145,7 +152,7 @@ const publicRoutes = [
 
   // AuthenticationInner
   { path: "/auth-signup-basic", component: <SignUp /> },
-  { path: "/auth-signin-basic", component: <SignIn /> },
+  { path: "/connexion", component: <SignIn /> },
   { path: "/auth-pass-reset-basic", component: <PasswordReset /> },
   { path: "/auth-pass-change-basic", component: <PasswordCreate /> },
   { path: "/auth-success-msg-basic", component: <SuccessMessage /> },

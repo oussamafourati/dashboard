@@ -87,7 +87,7 @@ const SubCategories = () => {
               <Card>
                 <Card.Header>
                   <h6 className="card-title mb-0" id="addCategoryLabel">
-                    Créer Catégorie
+                    Créer Sous-Catégorie
                   </h6>
                 </Card.Header>
                 <Card.Body>
@@ -95,7 +95,6 @@ const SubCategories = () => {
                     autoComplete="off"
                     className="needs-validation createCategory-form"
                     id="createCategory-form"
-                    noValidate
                     onSubmit={onSubmit}
                   >
                     <input
@@ -108,14 +107,13 @@ const SubCategories = () => {
                       <Col xxl={12} lg={6}>
                         <div className="mb-3">
                           <label htmlFor="title" className="form-label">
-                            Titre Sous-catégorie
-                            <span className="text-danger">*</span>
+                            Titre
+                            <span className="text-danger"> *</span>
                           </label>
                           <input
                             type="text"
                             className="form-control"
                             id="title"
-                            placeholder="Entrer Titre"
                             required
                             value={formData.title}
                             onChange={onChange}
@@ -138,8 +136,9 @@ const SubCategories = () => {
                             name="categorySelect"
                             id="categorySelect"
                             onChange={handleCategory}
+                            required
                           >
-                            <option value="">Choisir ...</option>
+                            <option value="">Choisir</option>
                             {data.map((category) => (
                               <option
                                 key={category.idcategory}
@@ -160,15 +159,14 @@ const SubCategories = () => {
                             htmlFor="subDescription"
                             className="form-label"
                           >
-                            Description
+                            Description <span className="text-danger">*</span>
                           </label>
                           <input
                             className="form-control"
                             id="subDescription"
-                            placeholder="Description"
-                            required
                             onChange={onChange}
                             value={formData.subDescription}
+                            required
                           />
                           <div className="invalid-feedback">
                             Please enter a description.

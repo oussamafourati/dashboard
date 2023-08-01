@@ -88,20 +88,20 @@ const SellersGridView = () => {
 
   const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
   const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
-
-  const [formData, setFormData] = useState({
+  const initialFournisseur = {
     idfournisseur: 99,
     raison_sociale: "",
     adresse: "",
-    tel: 14785236,
+    tel: "",
     mail: "",
-    type: 1,
-    matricule_fiscale: 1,
+    type: 0,
+    matricule_fiscale: "",
     logo: "",
-    rib: 1142250,
+    rib: "",
     etat: 1,
     piecejointes: "",
-  });
+  };
+  const [formData, setFormData] = useState(initialFournisseur);
 
   const {
     raison_sociale,
@@ -127,7 +127,7 @@ const SellersGridView = () => {
     formData["type"] = parseInt(selectedOption);
     formData["etat"] = parseInt(selectedEtat);
     e.preventDefault();
-    createFournisseur(formData).then(() => setFormData(formData));
+    createFournisseur(formData).then(() => setFormData(initialFournisseur));
     notify();
   };
 
@@ -137,12 +137,8 @@ const SellersGridView = () => {
     const fileLogo = (
       document.getElementById("logo") as HTMLInputElement
     ).files?.item(0) as File;
-    const filePJ = (
-      document.getElementById("piecejointes") as HTMLInputElement
-    ).files?.item(0) as File;
 
     const base64 = await convertToBase64(fileLogo);
-    const base64PJ = await convertToBase64(filePJ);
     console.log(base64);
 
     setFormData({
@@ -156,7 +152,7 @@ const SellersGridView = () => {
       logo: base64 as string,
       rib,
       etat,
-      piecejointes: base64PJ as string,
+      piecejointes,
     });
   };
 
@@ -218,7 +214,7 @@ const SellersGridView = () => {
   };
 
   const pageNumbers: any = [];
-  for (let i = 1; i <= Math.ceil(sellerGrid.length / perPageData); i++) {
+  for (let i = 1; i <= Math.ceil(data.length / perPageData); i++) {
     pageNumbers.push(i);
   }
 
@@ -248,7 +244,7 @@ const SellersGridView = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumb title="Fournisseur" pageTitle="Tableau de bord" />
-          <Row>
+          <Row className="justify-content-center">
             <Col xl={3} md={6}>
               <Card className="card-animate bg-info-subtle border-0 overflow-hidden">
                 <div className="position-absolute end-0 start-0 top-0 z-0">
@@ -565,7 +561,6 @@ const SellersGridView = () => {
                 </Card.Body>
               </Card>
             </Col>
-
             <Col xl={3} md={6}>
               <Card className="card-animate bg-warning-subtle border-0 overflow-hidden">
                 <div className="position-absolute end-0 start-0 top-0 z-0">
@@ -719,7 +714,7 @@ const SellersGridView = () => {
                     </div>
                     <div className="avatar-sm flex-shrink-0">
                       <span className="avatar-title bg-white text-warning rounded fs-3">
-                        <i className="ph-clock"></i>
+                        <i className="ri-rest-time-line"></i>
                       </span>
                     </div>
                   </div>
@@ -728,7 +723,7 @@ const SellersGridView = () => {
             </Col>
           </Row>
 
-          <Row className="mb-4 justify-content-between">
+          <Row className="mb-4 justify-content-end">
             <Col xxl={2} sm={6}>
               <Button
                 onClick={() => tog_AddSellerModals()}
@@ -809,7 +804,6 @@ const SellersGridView = () => {
                       value={formData.raison_sociale}
                       type="text"
                       id="raison_sociale"
-                      placeholder="Entrer raison_sociale"
                       required
                     />
                   </div>
@@ -823,7 +817,6 @@ const SellersGridView = () => {
                         <Form.Control
                           type="text"
                           id="matricule_fiscale"
-                          placeholder="Entrer Matricule Fiscale"
                           required
                           onChange={onChange}
                           value={formData.matricule_fiscale}
@@ -836,7 +829,6 @@ const SellersGridView = () => {
                         <Form.Control
                           type="text"
                           id="adresse"
-                          placeholder="Entrer Adresse"
                           required
                           onChange={onChange}
                           value={formData.adresse}
@@ -847,11 +839,11 @@ const SellersGridView = () => {
                       <div className="mb-3">
                         <Form.Label htmlFor="tel">Téléphone</Form.Label>
                         <Form.Control
-                          type="text"
+                          type="number"
                           id="tel"
-                          placeholder="Entrer Téléphone"
                           required
                           value={formData.tel}
+                          minLength={8}
                           onChange={onChange}
                         />
                       </div>
@@ -862,7 +854,6 @@ const SellersGridView = () => {
                         <Form.Control
                           type="email"
                           id="mail"
-                          placeholder="Entrer Email"
                           required
                           onChange={onChange}
                           value={formData.mail}
@@ -880,10 +871,10 @@ const SellersGridView = () => {
                           id="type"
                           required
                         >
-                          <option value="">
-                            Selectionner type de fournisseur
+                          <option value="">Choisir</option>
+                          <option value={0} selected>
+                            Morale
                           </option>
-                          <option value={0}>Morale</option>
                           <option value={1}>Physique</option>
                         </select>
                       </div>
@@ -893,9 +884,8 @@ const SellersGridView = () => {
                       <div className="mb-3">
                         <Form.Label htmlFor="rib">R.I.B</Form.Label>
                         <Form.Control
-                          type="text"
+                          type="number"
                           id="rib"
-                          placeholder="Entrer Rib"
                           required
                           onChange={onChange}
                           value={formData.rib}
@@ -913,13 +903,13 @@ const SellersGridView = () => {
                           id="etat"
                           required
                         >
-                          <option value="">Selectionner Etat</option>
-                          <option value="1">Actif</option>
-                          <option value="0">Inactif</option>
+                          <option value="">Choisir</option>
+                          <option value={1}>Actif</option>
+                          <option value={0}>Inactif</option>
                         </select>
                       </div>
                     </Col>
-                    <Col md={6}>
+                    {/* <Col md={6}>
                       <div className="text-center mb-3">
                         <div className="position-relative d-inline-block">
                           <div className="position-absolute top-100 start-100 translate-middle">
@@ -957,7 +947,7 @@ const SellersGridView = () => {
                           </div>
                         </div>
                       </div>
-                    </Col>
+                    </Col> */}
                   </Row>
                 </div>
                 <div className="hstack gap-2 justify-content-end">
@@ -965,6 +955,7 @@ const SellersGridView = () => {
                     variant="light"
                     onClick={() => {
                       tog_AddSellerModals();
+                      setFormData(initialFournisseur);
                     }}
                   >
                     Fermer
@@ -989,17 +980,19 @@ const SellersGridView = () => {
               <Col xxl={3} lg={6} key={fournisseur.idfournisseur}>
                 <Card>
                   <Card.Body className="p-4">
-                    <div className="avatar-md mx-auto">
-                      <div className="avatar-title bg-light rounded">
-                        <img
-                          src={`data:image/jpeg;base64, ${fournisseur.logo}`}
-                          alt=""
-                          className="avatar-lg"
-                        />
+                    <Link to="/detail-fournisseur" state={fournisseur}>
+                      <div className="avatar-md mx-auto">
+                        <div className="avatar-title bg-light rounded">
+                          <img
+                            src={`data:image/jpeg;base64, ${fournisseur.logo}`}
+                            alt=""
+                            className="avatar-lg"
+                          />
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                     <div className="text-center mt-3">
-                      <Link to="/seller-overview" state={fournisseur}>
+                      <Link to="/detail-fournisseur" state={fournisseur}>
                         <h5 className="mb-1">{fournisseur.raison_sociale}</h5>
                       </Link>
                       {fournisseur.etat === 0 ? (
@@ -1016,46 +1009,41 @@ const SellersGridView = () => {
                       </p>
                     </div>
                     <Row>
-                      <div className="col-6">
+                      <div>
                         <div className="text-center">
-                          <p className="text-muted mb-2 fs-15">Téléphone</p>
-                          <h6 className="mb-0">{fournisseur.tel}</h6>
-                        </div>
-                      </div>
-                      <div className="col-6 border-start border-start-dashed">
-                        <div className="text-center">
-                          <p className="text-muted mb-2 fs-15">E-mail</p>
-                          <h6 className="mb-0">{fournisseur.mail}</h6>
+                          <p className="mb-2 fs-15">
+                            Téléphone:{" "}
+                            <span className="text-muted">
+                              {fournisseur.tel}
+                            </span>
+                          </p>{" "}
                         </div>
                       </div>
                     </Row>
-                    <div className="mt-4 hstack gap-2">
-                      <Dropdown className="flex-shrink-0">
-                        <Dropdown.Toggle className="btn btn-soft-info btn-icon arrow-none">
-                          <i className="ph-dots-three-outline-vertical-fill"></i>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu as="ul">
-                          <li>
-                            {" "}
-                            <Dropdown.Item href="#" className="edit-list">
-                              {" "}
-                              Modifier{" "}
-                            </Dropdown.Item>{" "}
-                          </li>
-                          <li>
-                            {" "}
-                            <Dropdown.Item
-                              onClick={() =>
-                                AlertDelete(fournisseur.idfournisseur)
-                              }
-                              className="remove-list"
-                            >
-                              {" "}
-                              Supprimer{" "}
-                            </Dropdown.Item>{" "}
-                          </li>
-                        </Dropdown.Menu>
-                      </Dropdown>
+                    <div className="mt-4 align-items-center justify-content-center text-center">
+                      <ul className="gap-2 list-unstyled mb-0">
+                        {/* <li>
+                          <Link
+                            to="#"
+                            className="link-primary"
+                            data-bs-toggle="modal"
+                          >
+                            <i className="ri-eye-line ri-xl" />
+                          </Link>
+                        </li> */}
+                        <li>
+                          <Link
+                            to="#"
+                            onClick={() =>
+                              AlertDelete(fournisseur.idfournisseur)
+                            }
+                            data-bs-toggle="modal"
+                            className="link-danger"
+                          >
+                            <i className="ri-delete-bin-5-line ri-xl" />
+                          </Link>
+                        </li>
+                      </ul>
                     </div>
                   </Card.Body>
                 </Card>

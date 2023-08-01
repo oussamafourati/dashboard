@@ -6,6 +6,7 @@ const Navdata = () => {
   const [isOrder, setIsOrder] = useState(false);
   const [isSellers, setIsSellers] = useState(false);
   const [isInvoice, setIsInvoice] = useState(false);
+  const [isDevis, setIsDevis] = useState(false);
   const [isShipping, setIsShipping] = useState(false);
   const [isLocalization, setIsLocalization] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
@@ -46,6 +47,9 @@ const Navdata = () => {
     if (iscurrentState !== "Invoice") {
       setIsInvoice(false);
     }
+    if (iscurrentState !== "Devis") {
+      setIsDevis(false);
+    }
     if (iscurrentState !== "Shipping") {
       setIsShipping(false);
     }
@@ -60,6 +64,7 @@ const Navdata = () => {
     isEcommerce,
     isOrder,
     isInvoice,
+    isDevis,
     isShipping,
     isLocalization,
     isAuth,
@@ -102,12 +107,45 @@ const Navdata = () => {
           link: "/invoices-list",
           parentId: "invoice",
         },
+        // {
+        //   id: "overview",
+        //   label: "Détail Facture",
+        //   link: "/invoices-details",
+        //   parentId: "invoice",
+        // },
+      ],
+    },
+    {
+      id: "devis",
+      label: "Devis",
+      icon: "bi bi-wallet2",
+      link: "/#",
+      click: function (e: any) {
+        e.preventDefault();
+        setIsDevis(!isDevis);
+        setIscurrentState("Devis");
+        updateIconSidebar(e);
+      },
+      stateVariables: isDevis,
+      subItems: [
         {
-          id: "overview",
-          label: "Overview",
-          link: "/invoices-details",
-          parentId: "invoice",
+          id: "createdevis",
+          label: "Créer Devis",
+          link: "/devis-create",
+          parentId: "devis",
         },
+        {
+          id: "listview",
+          label: "Liste des devis",
+          link: "/liste-devis",
+          parentId: "devis",
+        },
+        // {
+        //   id: "overview",
+        //   label: "Détail Devis",
+        //   link: "/devis-details",
+        //   parentId: "devis",
+        // },
       ],
     },
     {
@@ -147,19 +185,19 @@ const Navdata = () => {
       id: "seller",
       label: "Fournisseur",
       icon: "bi bi-person-vcard-fill",
-      link: "/seller-grid-view",
+      link: "/liste-fournisseurs",
     },
     {
       id: "userslist",
       label: "Client morale",
       icon: "bi bi-buildings-fill",
-      link: "/users-list",
+      link: "/client-morale",
     },
     {
       id: "coupons",
       label: "Client physique",
       icon: "bi bi-person-bounding-box",
-      link: "/coupons",
+      link: "/client-physique",
     },
     {
       id: "shipping",
@@ -177,7 +215,7 @@ const Navdata = () => {
         {
           id: "shippinglist",
           label: "Créer Arrivage",
-          link: "/shipping-list",
+          link: "/nouveau-arrivage",
           parentId: "shipping",
         },
         // {
@@ -189,7 +227,7 @@ const Navdata = () => {
         {
           id: "shipments",
           label: "Liste Arrivage",
-          link: "/shipments",
+          link: "/liste-arrivage",
           parentId: "shipping",
         },
       ],
@@ -290,7 +328,7 @@ const Navdata = () => {
       id: "calendar",
       label: "Calendrier",
       icon: "bi bi-calendar-week",
-      link: "/calendar",
+      link: "/calendrier",
     },
 
     {
@@ -308,76 +346,76 @@ const Navdata = () => {
       subItems: [
         {
           id: "monCompte",
-          label: "My Accounts",
-          link: "/account",
+          label: "Liste des comptes",
+          link: "/liste-comptes",
           parentId: "account",
         },
         {
           id: "settings",
-          label: "Paramètres",
-          link: "/settings",
+          label: "Créer Compte",
+          link: "/creer-compte",
           parentId: "account",
         },
-        {
-          id: "signup",
-          label: "Sign Up",
-          link: "/auth-signup-basic",
-          parentId: "account",
-        },
-        {
-          id: "signin",
-          label: "Sign In",
-          link: "/auth-signin-basic",
-          parentId: "account",
-        },
-        {
-          id: "password-reset",
-          label: "Password Reset",
-          link: "/auth-pass-reset-basic",
-          parentId: "account",
-        },
-        {
-          id: "password-create",
-          label: "Password Create",
-          link: "/auth-pass-change-basic",
-          parentId: "account",
-        },
-        {
-          id: "success-message",
-          label: "Success Message",
-          link: "/auth-success-msg-basic",
-          parentId: "account",
-        },
-        {
-          id: "two-step-verify",
-          label: "Two Step Verify",
-          link: "/auth-twostep-basic",
-          parentId: "account",
-        },
-        {
-          id: "logout",
-          label: "Logout",
-          link: "/auth-logout-basic",
-          parentId: "account",
-        },
-        {
-          id: "auth-404",
-          label: "Error 404",
-          link: "/auth-404",
-          parentId: "account",
-        },
-        {
-          id: "auth-500",
-          label: "Error 500",
-          link: "/auth-500",
-          parentId: "account",
-        },
-        {
-          id: "coming-soon",
-          label: "Coming Soon",
-          link: "/coming-soon",
-          parentId: "account",
-        },
+        // {
+        //   id: "signup",
+        //   label: "Sign Up",
+        //   link: "/auth-signup-basic",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "signin",
+        //   label: "Sign In",
+        //   link: "/connexion",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "password-reset",
+        //   label: "Password Reset",
+        //   link: "/auth-pass-reset-basic",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "password-create",
+        //   label: "Password Create",
+        //   link: "/auth-pass-change-basic",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "success-message",
+        //   label: "Success Message",
+        //   link: "/auth-success-msg-basic",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "two-step-verify",
+        //   label: "Two Step Verify",
+        //   link: "/auth-twostep-basic",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "logout",
+        //   label: "Logout",
+        //   link: "/auth-logout-basic",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "auth-404",
+        //   label: "Error 404",
+        //   link: "/auth-404",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "auth-500",
+        //   label: "Error 500",
+        //   link: "/auth-500",
+        //   parentId: "account",
+        // },
+        // {
+        //   id: "coming-soon",
+        //   label: "Coming Soon",
+        //   link: "/coming-soon",
+        //   parentId: "account",
+        // },
       ],
     },
     // {

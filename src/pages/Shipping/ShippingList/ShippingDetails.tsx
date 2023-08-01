@@ -36,12 +36,6 @@ const ShippingDetails = () => {
                   <div className="d-flex gap-3">
                     <div className="flex-grow-1">
                       <h6 className="fs-18 mb-3">Détail Arrivage</h6>
-                      <p className="mb-0">
-                        ID:{" "}
-                        <span className="fw-medium">
-                          <b>{locationDetail.state.idArrivage}</b>
-                        </span>
-                      </p>
                       <p className="mb-1">
                         Désignation:{" "}
                         <span className="fw-medium">
@@ -51,7 +45,8 @@ const ShippingDetails = () => {
                       <p className="mb-1">
                         Montant Total:
                         <span className="fw-medium">
-                          {locationDetail.state.montantTotal} dt
+                          <strong>{locationDetail.state.montantTotal}</strong>{" "}
+                          dt
                         </span>
                       </p>
                       <p className="mb-0">
@@ -77,9 +72,9 @@ const ShippingDetails = () => {
                     <div className="flex-grow-1">
                       <h6 className="fs-18 mb-3">Détail Produit</h6>
                       <p className="mb-1">
-                        Quantité Total :{" "}
+                        Nombre des produits :{" "}
                         <span className="fw-medium">
-                          <strong>{arrivageTotal}</strong>
+                          <strong>{result.length}</strong>
                         </span>
                       </p>
                     </div>

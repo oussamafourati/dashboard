@@ -8,11 +8,20 @@ import {
   Produit,
 } from "features/produit/productSlice";
 import Swal from "sweetalert2";
-import { ArrivageProduit } from "features/arrivageProduit/arrivageProduitSlice";
+import {
+  ArrivageProduit,
+  useGetFournisseurProduitQuery,
+} from "features/arrivageProduit/arrivageProduitSlice";
 
-const ProductTable = () => {
+interface MyProps {
+  idfournisseur: number;
+}
+
+const ProductList = ({ idfournisseur }: MyProps) => {
   const { data = [] } = useFetchProduitsQuery();
   const [arrProd, setArrProd] = useState<ArrivageProduit>();
+  const { data: AllProductByFournisseur = [] } =
+    useGetFournisseurProduitQuery(idfournisseur);
 
   const [deleteProduit] = useDeleteProduitMutation();
 
@@ -77,10 +86,9 @@ const ProductTable = () => {
           );
         },
       },
-
       {
-        Header: "Marque",
-        accessor: "marque",
+        Header: "Date Arrivage",
+        accessor: "dateArrivage",
         Filter: true,
       },
       {
@@ -89,13 +97,23 @@ const ProductTable = () => {
         Filter: true,
       },
       {
-        Header: "Category",
-        accessor: "nom",
+        Header: "Prix Achat TTC",
+        accessor: "prixAchatTtc",
         Filter: true,
       },
       {
-        Header: "Sous-Category",
-        accessor: "title",
+        Header: "Prix Vente",
+        accessor: "prixVente",
+        Filter: true,
+      },
+      {
+        Header: "Quantite",
+        accessor: "quantite",
+        Filter: true,
+      },
+      {
+        Header: "Montant Total Produit",
+        accessor: "MontantTotalProduit",
         Filter: true,
       },
       {
@@ -142,7 +160,7 @@ const ProductTable = () => {
       <div>
         <TableContainer
           columns={columns}
-          data={data || []}
+          data={AllProductByFournisseur || []}
           isGlobalFilter={true}
           isAddUserList={false}
           customPageSize={10}
@@ -157,4 +175,4 @@ const ProductTable = () => {
   );
 };
 
-export default ProductTable;
+export default ProductList;

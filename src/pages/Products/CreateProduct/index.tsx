@@ -234,7 +234,6 @@ const CreateProduct = () => {
             id="createproduct-form"
             autoComplete="off"
             className="needs-validation"
-            noValidate
             onSubmit={onSubmitProduct}
           >
             <Row>
@@ -243,12 +242,11 @@ const CreateProduct = () => {
                   <Card.Body>
                     <div className="mb-3">
                       <Form.Label htmlFor="nomProduit">
-                        Titre du produit
+                        Titre <span className="text-danger">*</span>
                       </Form.Label>
                       <Form.Control
                         type="text"
                         id="nomProduit"
-                        placeholder="..."
                         required
                         onChange={onChange}
                         value={formData.nomProduit}
@@ -265,7 +263,6 @@ const CreateProduct = () => {
                           <Form.Control
                             type="text"
                             id="marque"
-                            placeholder="..."
                             value={formData.marque}
                             onChange={onChange}
                           />
@@ -281,7 +278,6 @@ const CreateProduct = () => {
                           <Form.Control
                             type="text"
                             id="remarqueProduit"
-                            placeholder="..."
                             value={formData.remarqueProduit}
                             onChange={onChange}
                             as="textarea"
@@ -470,12 +466,12 @@ const CreateProduct = () => {
                         value={categoryData.nom}
                         onChange={onChangeCategory}
                         id="nom"
-                        placeholder="Taper le nom du catégorie"
+                        placeholder="..."
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={12}>
+                  <Col lg={12} className="text-center">
                     <div className="mb-3">
                       <label htmlFor="image" className="form-label d-block">
                         Image <span className="text-danger">*</span>

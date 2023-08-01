@@ -11,7 +11,9 @@ import {
 import Breadcrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
 import { Link, useNavigate } from "react-router-dom";
-import Flatpickr from "react-flatpickr";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   useGetAllArrivagesQuery,
   useAddArrivageMutation,
@@ -20,6 +22,7 @@ import {
 } from "features/arrivage/arrivageSlice";
 import { useFetchFournisseurQuery } from "../../../features/fournisseur/fournisseurSlice";
 import Swal from "sweetalert2";
+import dayjs, { Dayjs } from "dayjs";
 
 const Shipments = () => {
   const navigate = useNavigate();
@@ -32,6 +35,10 @@ const Shipments = () => {
       text: "L'arrivage a été créer avec succès",
     });
   };
+
+  let now = dayjs();
+  const [value, setValue] = React.useState<Dayjs | null>(now);
+  const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
 
   // All Arrivage
   const { data = [] } = useGetAllArrivagesQuery();
@@ -78,14 +85,14 @@ const Shipments = () => {
         }
       });
   };
-
   const [formData, setFormData] = useState({
     idArrivage: 0,
     designation: "",
-    montantTotal: 0,
+    montantTotal: "",
     dateArrivage: "",
     raison_sociale: "",
     fournisseurID: 17,
+    piecejointe: "",
   });
 
   const {
@@ -95,6 +102,7 @@ const Shipments = () => {
     dateArrivage,
     raison_sociale,
     fournisseurID,
+    piecejointe,
   } = formData;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,6 +113,7 @@ const Shipments = () => {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    formData["dateArrivage"] = newDate;
     e.preventDefault();
     addArrivage(formData).then(() => setFormData(formData));
     notify();
@@ -119,12 +128,6 @@ const Shipments = () => {
 
   const columns = useMemo(
     () => [
-      {
-        Header: "ID arrivage",
-        disableFilters: true,
-        filterable: true,
-        accessor: "idArrivage",
-      },
       {
         Header: "Designation",
         accessor: "designation",
@@ -159,7 +162,7 @@ const Shipments = () => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
               <li>
-                <Link to="/shipment" state={arrivageProd}>
+                <Link to="/nouveau-arrivage-produit" state={arrivageProd}>
                   <i className="ri-folder-add-line ri-xl" />
                 </Link>
               </li>
@@ -195,24 +198,6 @@ const Shipments = () => {
         <Container fluid={true}>
           <Breadcrumb title="Arrivage" pageTitle="Tableau de bord" />
           <Card id="shipmentsList">
-            <Card.Header className="border-bottom-dashed">
-              <Row className="align-items-center g-3">
-                <Col xxl={3} sm={6}>
-                  <h6 className="card-title mb-0">Arrivage</h6>
-                </Col>
-                <Col className="col-xxl-auto col-sm-auto ms-auto">
-                  <Button
-                    onClick={() => navigate("/shipping-list")}
-                    variant="success"
-                    type="submit"
-                    className="add-btn"
-                  >
-                    <i className="bi bi-plus-circle me-1 align-middle"></i>
-                    Ajouter Arrivage
-                  </Button>
-                </Col>
-              </Row>
-            </Card.Header>
             {/* <Card.Header className="border-bottom-dashed">
               <Row className="g-3">
                 <Col xxl={3} lg={2}></Col>
@@ -231,6 +216,19 @@ const Shipments = () => {
               </Row>
             </Card.Header> */}
             <Card.Body>
+              <Row className="align-items-center g-3">
+                <Col className="col-xxl-auto col-sm-auto ms-auto">
+                  <Button
+                    onClick={() => navigate("/nouveau-arrivage")}
+                    variant="success"
+                    type="submit"
+                    className="add-btn"
+                  >
+                    <i className="bi bi-plus-circle me-1 align-middle"></i>
+                    Ajouter Arrivage
+                  </Button>
+                </Col>
+              </Row>
               <div className="table-responsive table-card">
                 <TableContainer
                   columns={columns || []}
@@ -318,15 +316,23 @@ const Shipments = () => {
                       <Form.Label htmlFor="dateArrivage">
                         Date d'arrivage
                       </Form.Label>
-
-                      <Form.Control
-                        type="text"
-                        id="dateArrivage"
-                        placeholder="Selectionner date"
-                        onChange={onChange}
-                        value={formData.dateArrivage}
-                        required
-                      />
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="de"
+                      >
+                        <DatePicker
+                          defaultValue={now}
+                          slotProps={{
+                            textField: {
+                              size: "small",
+                              inputProps: { ["placeholder"]: "AAAA.MM.DD" },
+                            },
+                          }}
+                          value={value}
+                          onChange={(newValue) => setValue(newValue)}
+                          format="YYYY-MM-DD"
+                        />
+                      </LocalizationProvider>
                     </div>
                   </Col>
                   <Col lg={6}>

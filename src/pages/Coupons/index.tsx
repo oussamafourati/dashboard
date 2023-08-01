@@ -77,24 +77,31 @@ const Coupons = () => {
         }
       });
   };
+  const [selectedEtat, setSelectedEtat] = useState<string>("");
+  // This function is triggered when the select changes
+  const selectChangeEtat = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedEtat(value);
+  };
 
   const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
   const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
 
-  const [formData, setFormData] = useState({
+  const clientPhysiqueInitialValue = {
     idclient_p: 99,
     raison_sociale: "",
     adresse: "",
-    tel: 14785236,
+    tel: "",
     mail: "",
-    cin: 1234,
+    cin: "",
     avatar: "",
-    rib: 1142250,
+    rib: "",
     etat: 1,
     remarque: "",
     credit: 123,
     piecejointes: "",
-  });
+  };
+  const [formData, setFormData] = useState(clientPhysiqueInitialValue);
 
   const {
     raison_sociale,
@@ -118,8 +125,11 @@ const Coupons = () => {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    formData["etat"] = parseInt(selectedEtat);
     e.preventDefault();
-    createClientPhysique(formData).then(() => setFormData(formData));
+    createClientPhysique(formData).then(() =>
+      setFormData(clientPhysiqueInitialValue)
+    );
     notify();
   };
 
@@ -129,18 +139,18 @@ const Coupons = () => {
     const fileLogo = (
       document.getElementById("avatar") as HTMLInputElement
     ).files?.item(0) as File;
-    const filePJ = (
-      document.getElementById("piecejointes") as HTMLInputElement
-    ).files?.item(0) as File;
+    // const filePJ = (
+    //   document.getElementById("piecejointes") as HTMLInputElement
+    // ).files?.item(0) as File;
 
     const base64 = await convertToBase64(fileLogo);
-    const base64PJ = await convertToBase64(filePJ);
-    console.log(base64);
+    // const base64PJ = await convertToBase64(filePJ);
+    // console.log(base64);
 
     setFormData({
       ...formData,
       avatar: base64 as string,
-      piecejointes: base64PJ as string,
+      // piecejointes: base64PJ as string,
     });
   };
 
@@ -168,12 +178,6 @@ const Coupons = () => {
 
   const columns = useMemo(
     () => [
-      {
-        Header: "ID",
-        disableFilters: true,
-        filterable: true,
-        accessor: "idclient_p",
-      },
       {
         Header: "Avatar",
         disableFilters: true,
@@ -236,21 +240,21 @@ const Coupons = () => {
           switch (clientPhy.etat) {
             case 0:
               return (
-                <span className="badge badge-soft-success text-uppercase">
+                <span className="badge badge-soft-danger text-uppercase">
                   {" "}
                   inactif
                 </span>
               );
             case 1:
               return (
-                <span className="badge badge-soft-danger text-uppercase">
+                <span className="badge badge-soft-success text-uppercase">
                   {" "}
                   actif
                 </span>
               );
             default:
               return (
-                <span className="badge badge-soft-success text-uppercase">
+                <span className="badge badge-soft-danger text-uppercase">
                   {" "}
                   inactif
                 </span>
@@ -264,12 +268,12 @@ const Coupons = () => {
         disableFilters: true,
         filterable: true,
       },
-      {
-        Header: "Credit",
-        accessor: "credit",
-        disableFilters: true,
-        filterable: true,
-      },
+      // {
+      //   Header: "Credit",
+      //   accessor: "credit",
+      //   disableFilters: true,
+      //   filterable: true,
+      // },
       {
         Header: "Action",
         disableFilters: true,
@@ -280,20 +284,11 @@ const Coupons = () => {
               <li>
                 <Link
                   to="#"
-                  className="badge badge-soft-primary edit-item-btn"
-                  data-bs-toggle="modal"
-                >
-                  Modifier
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/coupons"
                   onClick={() => AlertDelete(clientPhy.idclient_p)}
                   data-bs-toggle="modal"
-                  className="badge badge-soft-danger remove-item-btn"
+                  className="link-danger"
                 >
-                  Supprimer
+                  <i className="ri-delete-bin-5-line ri-xl" />
                 </Link>
               </li>
             </ul>
@@ -398,14 +393,14 @@ const Coupons = () => {
               </h5>
             </Modal.Header>
             <Modal.Body className="p-4">
-              <Form className="tablelist-form" onSubmit={onSubmit}>
+              <form className="tablelist-form" onSubmit={onSubmit}>
                 <Row>
                   <div
                     id="alert-error-msg"
                     className="d-none alert alert-danger py-2"
                   ></div>
                   <input type="hidden" id="id-field" />
-                  <Col lg={12}>
+                  <Col lg={12} className="text-center">
                     <div className="mb-3">
                       <div className="position-relative d-inline-block">
                         <div className="position-absolute top-100 start-100 translate-middle">
@@ -448,75 +443,85 @@ const Coupons = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col lg={12}>
+                  <Col lg={6} className="mt-3">
                     <div className="mb-3">
                       <Form.Label htmlFor="raison_sociale">
-                        Nom Client
+                        Nom Client <span className="text-danger">*</span>
                       </Form.Label>
-                      <Form.Control
+                      <input
                         type="text"
                         value={formData.raison_sociale}
                         onChange={onChange}
                         id="raison_sociale"
-                        placeholder="Taper Raison sociale"
                         required
+                        className="form-control"
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={6} className="mt-3">
                     <div className="mb-3">
-                      <Form.Label htmlFor="cin">C.I.N</Form.Label>
-                      <Form.Control
-                        type="text"
+                      <Form.Label htmlFor="cin">
+                        C.I.N <span className="text-danger">*</span>
+                      </Form.Label>
+                      <input
+                        className="form-control"
+                        type="number"
                         value={formData.cin}
                         onChange={onChange}
                         id="cin"
-                        placeholder="Taper C.I.N"
+                        minLength={8}
+                        maxLength={8}
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={5}>
                     <div className="mb-3">
-                      <Form.Label htmlFor="adresse">Adresse</Form.Label>
-                      <Form.Control
+                      <Form.Label htmlFor="adresse">
+                        Adresse <span className="text-danger">*</span>
+                      </Form.Label>
+                      <input
+                        className="form-control"
                         type="text"
                         value={formData.adresse}
                         onChange={onChange}
                         id="adresse"
-                        placeholder="Taper l'adresse du fournisseur"
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={3}>
                     <div className="mb-3">
-                      <Form.Label htmlFor="tel">Telephone</Form.Label>
-                      <Form.Control
-                        type="text"
+                      <Form.Label htmlFor="tel">
+                        Telephone <span className="text-danger">*</span>
+                      </Form.Label>
+                      <input
+                        className="form-control"
+                        type="number"
                         value={formData.tel}
                         onChange={onChange}
                         id="tel"
-                        placeholder="Taper numéro"
+                        maxLength={8}
+                        minLength={8}
                         required
                       />
                     </div>
                   </Col>
-
-                  <Col lg={6}>
+                  <Col lg={4}>
                     <div className="mb-3">
-                      <Form.Label htmlFor="rib">RIB</Form.Label>
+                      <Form.Label htmlFor="rib">
+                        RIB<span className="text-danger">*</span>
+                      </Form.Label>
                       <Form.Control
-                        type="text"
+                        type="number"
                         value={formData.rib}
                         onChange={onChange}
                         id="rib"
-                        placeholder="Taper RIB "
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={5}>
                     <div className="mb-3">
                       <Form.Label htmlFor="mail">E-mail</Form.Label>
                       <Form.Control
@@ -524,27 +529,26 @@ const Coupons = () => {
                         value={formData.mail}
                         onChange={onChange}
                         id="mail"
-                        placeholder="Taper e-mail"
                         required
                       />
                     </div>
                   </Col>
-
-                  <Col lg={6}>
+                  <Col lg={3}>
                     <div className="mb-3">
-                      <Form.Label htmlFor="statusSelect">Statut</Form.Label>
+                      <Form.Label htmlFor="etat">Etat</Form.Label>
                       <select
+                        onChange={selectChangeEtat}
                         className="form-select"
                         name="choices-single-default"
-                        id="statusSelect"
+                        id="etat"
                       >
-                        <option value="">Status</option>
-                        <option value="Active">Actif</option>
-                        <option value="Expired">Inactif</option>
+                        <option value="">Choisir</option>
+                        <option value={1}>Actif</option>
+                        <option value={0}>Inactif</option>
                       </select>
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  <Col lg={4}>
                     <div className="mb-3">
                       <Form.Label htmlFor="remarque">Remarque</Form.Label>
                       <Form.Control
@@ -552,12 +556,11 @@ const Coupons = () => {
                         value={formData.remarque}
                         onChange={onChange}
                         id="remarque"
-                        placeholder="Taper vos remarques"
                         required
                       />
                     </div>
                   </Col>
-                  <Col lg={6}>
+                  {/* <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="credit">Credit</Form.Label>
                       <Form.Control
@@ -569,8 +572,8 @@ const Coupons = () => {
                         required
                       />
                     </div>
-                  </Col>
-                  <Col lg={12}>
+                  </Col> */}
+                  {/* <Col lg={12}>
                     <div className="mb-3">
                       <label htmlFor="avatar" className="form-label d-block">
                         Piece-Jointe <span className="text-danger">*</span>
@@ -616,7 +619,7 @@ const Coupons = () => {
                         Please add a category images.
                       </div>
                     </div>
-                  </Col>
+                  </Col> */}
                   <Col lg={12} className="modal-footer">
                     <div className="hstack gap-2 justify-content-end">
                       <Button
@@ -641,7 +644,7 @@ const Coupons = () => {
                     </div>
                   </Col>
                 </Row>
-              </Form>
+              </form>
             </Modal.Body>
           </Modal>
         </Container>

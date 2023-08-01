@@ -4,12 +4,12 @@ export interface Fournisseur {
   idfournisseur: number;
   raison_sociale: string;
   adresse: string;
-  tel: number;
+  tel: string;
   mail: string;
   type: number;
-  matricule_fiscale: number;
+  matricule_fiscale: string;
   logo: string;
-  rib: number;
+  rib: string;
   etat: number;
   piecejointes: string;
 }

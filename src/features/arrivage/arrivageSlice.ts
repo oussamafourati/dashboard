@@ -3,10 +3,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export interface Arrivage {
   idArrivage: number;
   designation: string;
-  montantTotal: number;
+  montantTotal: string;
   dateArrivage: string;
   raison_sociale: string;
   fournisseurID?: number;
+  piecejointe: string;
 }
 
 export const arrivageSlice = createApi({
@@ -26,6 +27,12 @@ export const arrivageSlice = createApi({
       getOneArrivage: builder.query<Arrivage, number | void>({
         query(idArrivage) {
           return `/oneArrivage/${idArrivage}`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageByFournisseur: builder.query<Arrivage[], number | void>({
+        query(fournisseurID) {
+          return `/ArrivagebyFournisseur/${fournisseurID}`;
         },
         providesTags: ["Arrivage"],
       }),
@@ -59,6 +66,7 @@ export const arrivageSlice = createApi({
 });
 
 export const {
+  useGetArrivageByFournisseurQuery,
   useAddArrivageMutation,
   useDeleteArrivageMutation,
   useGetAllArrivagesQuery,

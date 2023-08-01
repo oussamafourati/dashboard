@@ -4,14 +4,16 @@ export interface Facture {
   idFacture: number;
   designationFacture: string;
   dateFacturation: string;
-  montantHt: number;
-  montantTtc: number;
+  prixUnitaire: number;
+  MontantTotal: number;
   quantiteProduit: number;
   datePaiement: string;
   modePaiement: string;
   statusFacture: number;
   clientID: number;
   produitID: number;
+  nomClient: string;
+  nomProduit: string;
 }
 
 export const facturetSlice = createApi({
@@ -34,6 +36,18 @@ export const facturetSlice = createApi({
       fetchOneFacture: builder.query<Facture, number | void>({
         query(idFacture) {
           return `/oneFacture/${idFacture}`;
+        },
+        providesTags: ["Facture"],
+      }),
+      fetchFacturePaye: builder.query<Facture[], number | void>({
+        query() {
+          return "/factureimpaye";
+        },
+        providesTags: ["Facture"],
+      }),
+      fetchFactureImpaye: builder.query<Facture[], number | void>({
+        query() {
+          return "/facturepaye";
         },
         providesTags: ["Facture"],
       }),
@@ -67,6 +81,8 @@ export const facturetSlice = createApi({
 });
 
 export const {
+  useFetchFactureImpayeQuery,
+  useFetchFacturePayeQuery,
   useAddFactureMutation,
   useDeleteFactureMutation,
   useFetchFacturesQuery,

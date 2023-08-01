@@ -2,10 +2,12 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface Compte {
   idCompte: number;
+  fullname: string;
   username: string;
   password: string;
   role: number;
   code: string;
+  avatar: string;
 }
 
 export const compteSlice = createApi({
@@ -26,33 +28,41 @@ export const compteSlice = createApi({
         query: (code) => `/oneUser/${code}`,
         providesTags: ["Compte"],
       }),
-      //   createCategory: builder.mutation<void, Compte>({
-      //     query(payload) {
-      //       return {
-      //         url: `/new`,
-      //         method: "POST",
-      //         body: payload,
-      //       };
-      //     },
-      //     invalidatesTags: ["Category"],
-      //   }),
-      //   updateCategory: builder.mutation<void, Category>({
-      //     query: ({ idcategory, ...rest }) => ({
-      //       url: `edit/${idcategory}`,
-      //       method: "PUT",
-      //       body: rest,
-      //     }),
-      //     invalidatesTags: ["Category"],
-      //   }),
-      //   deleteCategory: builder.mutation<void, number>({
-      //     query: (idcategory) => ({
-      //       url: `delete/${idcategory}`,
-      //       method: "DELETE",
-      //     }),
-      //     invalidatesTags: ["Category"],
-      //   }),
+      createUser: builder.mutation<void, Compte>({
+        query(payload) {
+          return {
+            url: `/createCompte`,
+            method: "POST",
+            body: payload,
+          };
+        },
+        invalidatesTags: ["Compte"],
+      }),
+      login: builder.mutation({
+        query(body: { username: string; password: string }) {
+          return {
+            url: `/login`,
+            method: "POST",
+            body,
+          };
+        },
+        invalidatesTags: ["Compte"],
+      }),
+      deleteCompte: builder.mutation<void, number>({
+        query: (idCompte) => ({
+          url: `removeUser/${idCompte}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Compte"],
+      }),
     };
   },
 });
 
-export const { useFetchAllUsersQuery, useFetchOneUserQuery } = compteSlice;
+export const {
+  useLoginMutation,
+  useFetchAllUsersQuery,
+  useFetchOneUserQuery,
+  useCreateUserMutation,
+  useDeleteCompteMutation,
+} = compteSlice;

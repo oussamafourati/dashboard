@@ -35,7 +35,7 @@ const Categories = () => {
     });
   };
   // Fetch Category
-  const { data: allCategory = [] } = useFetchCategoriesQuery();
+  const { data } = useFetchCategoriesQuery();
   const [createCategory] = useCreateCategoryMutation();
   const { data: subdata = [] } = useFetchSubCategoriesQuery();
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -99,7 +99,16 @@ const Categories = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createCategory(categoryData).then(() => setCategoryData(categoryData));
+    createCategory(categoryData).then(() =>
+      setCategoryData({
+        idcategory: 1,
+        nom: "",
+        image: "",
+        id_parent: 1,
+        final_level: 1,
+        title: "",
+      })
+    );
     notify();
   };
 
@@ -153,7 +162,7 @@ const Categories = () => {
   const indexOfFirst = indexOfLast - perPageData;
 
   const currentdata = useMemo(
-    () => allCategory.slice(indexOfFirst, indexOfLast),
+    () => data?.slice(indexOfFirst, indexOfLast),
     [indexOfFirst, indexOfLast]
   );
 
@@ -166,7 +175,7 @@ const Categories = () => {
     if (search) {
       search = search.toLowerCase();
       setCurrentpages(
-        allCategory.filter((data: any) =>
+        data?.filter((data: any) =>
           data.categoryTitle.toLowerCase().includes(search)
         )
       );
@@ -178,7 +187,7 @@ const Categories = () => {
   };
 
   const pageNumbers: any = [];
-  for (let i = 1; i <= Math.ceil(allCategory.length / perPageData); i++) {
+  for (let i = 1; i <= Math.ceil(data?.length! / perPageData); i++) {
     pageNumbers.push(i);
   }
 
@@ -214,7 +223,6 @@ const Categories = () => {
                     autoComplete="off"
                     className="needs-validation createCategory-form"
                     id="createCategory-form"
-                    noValidate
                     onSubmit={onSubmit}
                   >
                     <input
@@ -233,7 +241,6 @@ const Categories = () => {
                             type="text"
                             className="form-control"
                             id="nom"
-                            placeholder="Taper Nom Catégorie"
                             onChange={onChange}
                             value={categoryData.nom}
                             required
@@ -248,7 +255,6 @@ const Categories = () => {
                           <label htmlFor="image" className="form-label d-block">
                             Image <span className="text-danger">*</span>
                           </label>
-
                           <div className="position-relative d-inline-block">
                             <div className="position-absolute top-100 start-100 translate-middle">
                               <label
@@ -270,6 +276,7 @@ const Categories = () => {
                                 type="file"
                                 accept=".png, .gif, .jpeg, .jpg"
                                 onChange={(e) => handleFileUpload(e)}
+                                required={true}
                               />
                             </div>
                             <div className="avatar-lg">
@@ -283,7 +290,6 @@ const Categories = () => {
                               </div>
                             </div>
                           </div>
-
                           <div className="error-msg mt-1">
                             Please add a category images.
                           </div>
@@ -302,7 +308,7 @@ const Categories = () => {
               </Card>
             </Col>
             <Col xxl={9}>
-              <Row className="justify-content-between mb-4">
+              {/* <Row className="justify-content-between mb-4">
                 <Col xxl={3} lg={6}>
                   <div className="search-box mb-3 mb-lg-0">
                     <Form.Control
@@ -314,51 +320,48 @@ const Categories = () => {
                     <i className="ri-search-line search-icon"></i>
                   </div>
                 </Col>
-              </Row>
+              </Row> */}
               <Row id="categories-list">
-                {(currentpages || allCategory).map(
-                  (item: Category, key: number) => (
-                    <Col xxl={4} md={6} key={key}>
-                      <Card className="categrory-widgets overflow-hidden">
-                        <Card.Body className="p-4">
-                          <div className="d-flex align-items-center mb-3">
-                            <h5 className="flex-grow-1 mb-0">{item.nom}</h5>
-                            <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
-                              <li>
-                                <Link
-                                  to="#"
-                                  data-bs-toggle="modal"
-                                  className="badge badge-soft-danger"
-                                  onClick={() => AlertDelete(item.idcategory)}
-                                >
-                                  Supprimer
-                                </Link>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="mt-3">
-                            <Link
-                              to="#"
-                              className="fw-medium link-effect"
-                              onClick={() => {
-                                setShow(true);
-                                setInfo(item);
-                              }}
-                            >
-                              Détails
-                              <i className="ri-arrow-right-line align-bottom ms-1"></i>
-                            </Link>
-                          </div>
-                          <img
-                            src={`data:image/jpeg;base64,${item.image}`}
-                            alt={item.nom}
-                            className="img-fluid category-img object-fit-cover"
-                          />
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  )
-                )}
+                {(currentpages || data)?.map((item: Category, key: number) => (
+                  <Col xxl={4} md={6} key={key}>
+                    <Card className="categrory-widgets overflow-hidden">
+                      <Card.Body className="p-4">
+                        <div className="d-flex align-items-center mb-3">
+                          <h5 className="flex-grow-1 mb-0">{item.nom}</h5>
+                          <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
+                            <li>
+                              <Link
+                                to="#"
+                                className="link-danger"
+                                onClick={() => AlertDelete(item.idcategory)}
+                              >
+                                <i className="ri-delete-bin-5-line ri-xl" />
+                              </Link>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="mt-3">
+                          <Link
+                            to="#"
+                            className="fw-medium link-effect"
+                            onClick={() => {
+                              setShow(true);
+                              setInfo(item);
+                            }}
+                          >
+                            Détails
+                            <i className="ri-arrow-right-line align-bottom ms-1"></i>
+                          </Link>
+                        </div>
+                        <img
+                          src={`data:image/jpeg;base64,${item.image}`}
+                          alt={item.nom}
+                          className="img-fluid category-img object-fit-cover"
+                        />
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
               </Row>
               {pagination && (
                 <Row id="pagination-element" className="mb-4">
@@ -433,12 +436,12 @@ const Categories = () => {
           <Offcanvas.Title>#{info.idcategory}</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <div className="avatar-lg mx-auto">
+          <div className="avatar-xl mx-auto">
             <div className="avatar-title bg-light rounded">
               <img
                 src={`data:image/jpeg;base64,${info.image}`}
                 alt=""
-                className="avatar-sm overview-img"
+                className="avatar-xl overview-img"
               />
             </div>
           </div>
@@ -483,14 +486,17 @@ const Categories = () => {
                   data-bs-toggle="modal"
                   data-bs-target="#delteModal"
                   data-remove-id="12"
-                  onClick={() => AlertDelete(info.idcategory)}
+                  onClick={() => {
+                    AlertDelete(info.idcategory);
+                    setShow(false);
+                  }}
                 >
                   <i className="ri-delete-bin-line me-1 align-bottom"></i>{" "}
                   Supprimer
                 </Button>
               </div>
             </Col>
-            <Col sm={6}>
+            {/* <Col sm={6}>
               <Button
                 variant="secondary"
                 type="button"
@@ -500,7 +506,7 @@ const Categories = () => {
               >
                 <i className="ri-pencil-line me-1 align-bottom"></i> Modifier
               </Button>
-            </Col>
+            </Col> */}
           </Row>
         </div>
       </Offcanvas>
