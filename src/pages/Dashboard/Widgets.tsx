@@ -26,10 +26,10 @@ const Widgets = () => {
     0
   );
 
-  const montantTotalPaye = facturePaye.reduce(
-    (sum, i) => (sum += i.MontantTotal),
-    0
-  );
+  // const montantTotalPaye = facturePaye.reduce(
+  //   (sum, i) => (sum += i.MontantTotal),
+  //   0
+  // );
 
   const widgetsData: Array<WidgetsProps> = [
     {
@@ -56,7 +56,7 @@ const Widgets = () => {
     {
       id: 3,
       name: "TOTAL Impayés",
-      amount: montantTotalPaye,
+      amount: 123456,
       icon: "ph-clock",
       iconColor: "danger",
     },

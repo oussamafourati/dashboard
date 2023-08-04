@@ -4,16 +4,10 @@ export interface Facture {
   idFacture: number;
   designationFacture: string;
   dateFacturation: string;
-  prixUnitaire: number;
-  MontantTotal: number;
-  quantiteProduit: number;
   datePaiement: string;
   modePaiement: string;
   statusFacture: number;
   clientID: number;
-  produitID: number;
-  nomClient: string;
-  nomProduit: string;
 }
 
 export const facturetSlice = createApi({

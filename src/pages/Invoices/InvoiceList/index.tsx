@@ -14,21 +14,20 @@ const InvoiceList = () => {
   const { data: allFacture = [] } = useFetchFacturesQuery();
   const { data: factureImpaye = [] } = useFetchFactureImpayeQuery();
   const { data: facturePaye = [] } = useFetchFacturePayeQuery();
-  const montantTotalFactures = allFacture.reduce(
-    (sumAllFacture, i) => (sumAllFacture += i.MontantTotal),
-    0
-  );
+  // const montantTotalFactures = allFacture.reduce(
+  //   (sumAllFacture, i) => (sumAllFacture += i.MontantTotal),
+  //   0
+  // );
   const nombreTotalFactures = allFacture.length;
-  const montantTotalPaye = facturePaye.reduce(
-    (sum, i) => (sum += i.MontantTotal),
-    0
-  );
+  // const montantTotalPaye = facturePaye.reduce(
+  //   (sum, i) => (sum += i.MontantTotal),
+  //   0
+  // );
   const nombreTotalPaye = facturePaye.length;
-  console.log("nombreTotalPaye", nombreTotalPaye);
-  const montantTotalImpaye = factureImpaye.reduce(
-    (sumFactureImpaye, i) => (sumFactureImpaye += i.MontantTotal),
-    0
-  );
+  // const montantTotalImpaye = factureImpaye.reduce(
+  //   (sumFactureImpaye, i) => (sumFactureImpaye += i.MontantTotal),
+  //   0
+  // );
   const nombreTotalImpaye = factureImpaye.length;
   return (
     <React.Fragment>
@@ -189,7 +188,7 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp end={montantTotalFactures} decimals={2} /> Dt
+                        <CountUp end={123456} decimals={2} /> Dt
                       </h4>
                       <span className="badge bg-info me-1">
                         {nombreTotalFactures}
@@ -359,7 +358,7 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp end={montantTotalImpaye} decimals={2} /> Dt
+                        <CountUp end={123456} decimals={2} /> Dt
                       </h4>
                       <span className="badge bg-info me-1">
                         {nombreTotalImpaye}
@@ -529,7 +528,7 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp end={montantTotalPaye} decimals={2} /> Dt
+                        <CountUp end={123456} decimals={2} /> Dt
                       </h4>
                       <span className="badge bg-info me-1">
                         {nombreTotalPaye}

@@ -5,7 +5,7 @@ export interface ArrivageProduit {
   produitID: number;
   arrivageID: number;
   quantite: number;
-  piecejointes: string;
+  piecejointes?: string;
   prixAchatHt?: number;
   prixAchatTtc?: number;
   prixVente?: number;
@@ -41,9 +41,11 @@ export const arrivageProduitSlice = createApi({
         },
         providesTags: ["ArrivageProduit"],
       }),
-      getOneArrivProduit: builder.query<ArrivageProduit, number | void>({
+      getOneArrivProduit: builder.query<ArrivageProduit, number>({
         query: (produitID) => `/ArrProduit/${produitID}`,
-        providesTags: ["ArrivageProduit"],
+        providesTags: (result, error, produitID) => [
+          { type: "ArrivageProduit", produitID },
+        ],
       }),
       getFournisseurProduit: builder.query<ArrivageProduit[], number | void>({
         query: (fournisseurID) => `/fournisseurProduit/${fournisseurID}`,
@@ -67,6 +69,14 @@ export const arrivageProduitSlice = createApi({
         }),
         invalidatesTags: ["ArrivageProduit"],
       }),
+      updateStore: builder.mutation<void, ArrivageProduit>({
+        query: ({ idArrivageProduit, ...rest }) => ({
+          url: `/updateStore/${idArrivageProduit}`,
+          method: "PUT",
+          body: rest,
+        }),
+        invalidatesTags: ["ArrivageProduit"],
+      }),
       deleteArrivageProduit: builder.mutation<void, number>({
         query: (idArrivageProduit) => ({
           url: `removeArrivageProduit/${idArrivageProduit}`,
@@ -86,4 +96,5 @@ export const {
   useAddArrivageProduitMutation,
   useDeleteArrivageProduitMutation,
   useUpdateArrivageProduitMutation,
+  useUpdateStoreMutation,
 } = arrivageProduitSlice;

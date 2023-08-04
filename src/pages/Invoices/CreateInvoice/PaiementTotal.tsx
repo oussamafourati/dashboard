@@ -6,8 +6,6 @@ interface ChildProps {
   setCount: (count: number) => void;
 }
 const PaiementTotal: React.FC<ChildProps> = ({ setCount }) => {
-  const [amountToPay, setmontantApresRemise] = useState<string>();
-
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCount(parseInt(event.target.value));
   };
@@ -19,7 +17,7 @@ const PaiementTotal: React.FC<ChildProps> = ({ setCount }) => {
         <Col lg={4}>
           <Form.Label htmlFor="amountTotalPay">Montant Encaissé</Form.Label>
           <Form.Control
-            type="number"
+            type="text"
             id="amountTotalPay"
             placeholder="0.00"
             onChange={onChangeHandler}
