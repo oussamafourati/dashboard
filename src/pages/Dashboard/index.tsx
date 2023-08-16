@@ -1,18 +1,11 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import CustomerSatisfaction from "./CustomerSatisfaction";
-import NewCustomers from "./NewCustomers";
-import ProductDelivery from "./ProductDelivery";
 import Revenue from "./Revenue";
-import StockReport from "./StockReport";
-import TopCategories from "./TopCategories";
-import TopProducts from "./TopProducts";
 import TopSalesLocation from "./TopSalesLocation";
 import Widgets from "./Widgets";
-import RecentOrders from "./RecentOrders";
 
 const Dashboard = () => {
-  document.title = "Dashboard | Toner eCommerce + Admin React Template";
+  document.title = "Tableau de bord | Radhouani";
 
   return (
     <React.Fragment>
@@ -27,17 +20,6 @@ const Dashboard = () => {
             <Revenue />
             <TopSalesLocation />
           </Row>
-          {/* <Row className='widget-responsive-fullscreen'>
-                        <CustomerSatisfaction />
-                        <StockReport />
-                        <ProductDelivery />
-                        <TopCategories />
-                        <NewCustomers />
-                        <TopProducts />
-                    </Row>
-                    <Row>
-                        <RecentOrders />
-                    </Row> */}
         </Container>
       </div>
     </React.Fragment>

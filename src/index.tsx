@@ -4,7 +4,6 @@ import App from "./App";
 import { Provider } from "react-redux";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
-import "antd/dist/antd";
 
 import { store } from "app/store";
 

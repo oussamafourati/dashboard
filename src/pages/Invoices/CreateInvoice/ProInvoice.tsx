@@ -33,12 +33,11 @@ import {
 } from "features/clientMoral/clientMoralSlice";
 
 interface FormFields {
-  nomproduit: string;
-  prixunitaire: string;
-  qty: string;
-  benifice: string;
-  montanttotal: string;
-  subTotal: string;
+  PU: string;
+  quantiteProduit: string;
+  productName: string;
+  montantTtl: string;
+  numFacture: string;
   [key: string]: string;
 }
 
@@ -249,12 +248,11 @@ const ProInvoice: React.FC = () => {
 
   const [formFields, setFormFields] = useState<FormFields[]>([
     {
-      nomproduit: "",
-      prixunitaire: "",
-      qty: "",
-      benifice: "",
-      montanttotal: "",
-      subTotal: "",
+      PU: "",
+      montantTtl: "",
+      quantiteProduit: "",
+      productName: "",
+      numFacture: "",
     },
   ]);
 
@@ -275,12 +273,11 @@ const ProInvoice: React.FC = () => {
 
   const addFields = () => {
     let object: FormFields = {
-      nomproduit: "",
-      prixunitaire: "",
-      qty: "",
-      benifice: "",
-      montanttotal: "",
-      subTotal: "",
+      PU: "",
+      montantTtl: "",
+      quantiteProduit: "",
+      productName: "",
+      numFacture: "",
     };
     setFormFields([...formFields, object]);
   };
@@ -454,7 +451,12 @@ const ProInvoice: React.FC = () => {
                           sx={{ width: 440 }}
                           options={allArrivageProduit}
                           autoHighlight
-                          onChange={(event, value) => setACValue(value)}
+                          onChange={(event, value) => {
+                            setACValue(value);
+                            const updatedPU = [...formFields];
+                            updatedPU[index].PU = value!.prixVente!.toString();
+                            setFormFields(updatedPU);
+                          }}
                           getOptionLabel={(option) => option.nomProduit!}
                           renderOption={(props, option) => (
                             <li {...props} key={option.idArrivageProduit}>
@@ -476,13 +478,12 @@ const ProInvoice: React.FC = () => {
                       </Col>
                       <Col lg={2}>
                         <TextField
-                          id="PrixUnitaire"
+                          id="PU"
                           type="number"
                           size="small"
-                          name="prixunitaire"
+                          name="PU"
                           placeholder="00.00"
-                          onChange={(event) => handleFormChange(event, index)}
-                          value={form.prixunitaire}
+                          value={form.PU}
                         />
                       </Col>
                       <Col lg={1}>

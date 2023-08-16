@@ -36,6 +36,30 @@ export const arrivageSlice = createApi({
         },
         providesTags: ["Arrivage"],
       }),
+      getLastYearArrivage: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/ArrivageLastYear`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getThisYearArrivage: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/ArrivageThisYear`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getThisMonthArrivage: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/ArrivageLastMonth`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getToDayArrivage: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/ArrivageToDay`;
+        },
+        providesTags: ["Arrivage"],
+      }),
       addArrivage: builder.mutation<void, Arrivage>({
         query(payload) {
           return {
@@ -66,6 +90,10 @@ export const arrivageSlice = createApi({
 });
 
 export const {
+  useGetToDayArrivageQuery,
+  useGetThisMonthArrivageQuery,
+  useGetThisYearArrivageQuery,
+  useGetLastYearArrivageQuery,
   useGetArrivageByFournisseurQuery,
   useAddArrivageMutation,
   useDeleteArrivageMutation,

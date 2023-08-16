@@ -1,11 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface LigneVente {
-  idlignevente: number;
-  PU: number;
-  montantTtl: number;
-  quantiteProduit: number;
-  produitID: number;
+  PU: string;
+  montantTtl: string;
+  quantiteProduit: string;
+  productName: string;
   numFacture: string;
 }
 

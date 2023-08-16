@@ -29,7 +29,6 @@
     "@types/react-dom": "^18.0.0",
     "@types/react-responsive-masonry": "^2.1.0",
     "@types/react-table": "^7.7.14",
-    "antd": "^5.5.2",
     "apexcharts": "^3.37.0",
     "axios": "^0.26.0",
     "axios-mock-adapter": "^1.21.2",

@@ -16,7 +16,7 @@ const TopSalesLocation = () => {
   return (
     <React.Fragment>
       <Col xxl={3} lg={6} className="order-0 order-xxl-last">
-        <Card className="card-height-100">
+        <Card className="card-height-100 mt-5">
           <Card.Header>
             <div className="d-flex align-items-center">
               <h6 className="card-title flex-grow-1 mb-0">Ajouter Note</h6>

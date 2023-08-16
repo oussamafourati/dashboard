@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -9,24 +9,19 @@ import dayjs from "dayjs";
 import { Link } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import {
-  ClientPhysique,
-  useGetOneClientQuery,
-  useAddClientPhysiqueMutation,
-} from "features/clientPhysique/clientPhysiqueSlice";
+import { useGetOneClientQuery } from "features/clientPhysique/clientPhysiqueSlice";
 import { useAddFactureMutation } from "features/facture/factureSlice";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
-  useGetOneArrivProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
 
 interface FormFields {
-  nomproduit: string;
-  prixunitaire: string;
-  qty: string;
-  montanttotal: string;
-  subTotal: string;
+  PU: string;
+  quantiteProduit: string;
+  productName: string;
+  montantTtl: string;
+  numFacture: string;
   [key: string]: string;
 }
 
@@ -98,11 +93,11 @@ const CreateDevis = () => {
 
   const [formFields, setFormFields] = useState<FormFields[]>([
     {
-      nomproduit: "",
-      prixunitaire: "",
-      qty: "",
-      montanttotal: "",
-      subTotal: "",
+      PU: "",
+      montantTtl: "",
+      quantiteProduit: "",
+      productName: "",
+      numFacture: "",
     },
   ]);
 
@@ -124,11 +119,11 @@ const CreateDevis = () => {
 
   const addFields = () => {
     let object: FormFields = {
-      nomproduit: "",
-      prixunitaire: "",
-      qty: "",
-      montanttotal: "",
-      subTotal: "",
+      PU: "",
+      montantTtl: "",
+      quantiteProduit: "",
+      productName: "",
+      numFacture: "",
     };
     setFormFields([...formFields, object]);
   };
@@ -160,7 +155,6 @@ const CreateDevis = () => {
     event.preventDefault();
     addFacture(factureData).then(() => setFactureData(factureValue));
   };
-  console.log(factureData);
 
   const submit = (e: React.FormEvent) => {
     factureData["nomProduit"] = acValue?.nomProduit!;
@@ -280,7 +274,13 @@ const CreateDevis = () => {
                                 sx={{ width: 380 }}
                                 options={allArrivageProduit!}
                                 autoHighlight
-                                onChange={(event, value) => setACValue(value)}
+                                onChange={(event, value) => {
+                                  setACValue(value);
+                                  const updatedPrixUnitaire = [...formFields];
+                                  updatedPrixUnitaire[index].PU =
+                                    value!.prixVente!.toString();
+                                  setFormFields(updatedPrixUnitaire);
+                                }}
                                 getOptionLabel={(option) => option.nomProduit!}
                                 renderOption={(props, option) => (
                                   <li {...props} key={option.idArrivageProduit}>
@@ -301,16 +301,12 @@ const CreateDevis = () => {
                             </Col>
                             <Col lg={3}>
                               <TextField
-                                id="PrixUnitaire"
+                                id="PU"
                                 type="number"
                                 size="small"
-                                name="prixunitaire"
-                                placeholder="prixunitaire"
-                                onChange={(event) =>
-                                  handleFormChange(event, index)
-                                }
-                                sx={{ width: 280 }}
-                                value={form.prixunitaire}
+                                name="PU"
+                                placeholder="00.00"
+                                value={form.PU}
                               />
                             </Col>
                             {montantTotal !== count ? (

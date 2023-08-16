@@ -23,30 +23,25 @@ import {
   ClientPhysique,
   useAddClientPhysiqueMutation,
 } from "features/clientPhysique/clientPhysiqueSlice";
-import { Facture, useAddFactureMutation } from "features/facture/factureSlice";
+import { useAddFactureMutation } from "features/facture/factureSlice";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
-  useGetOneArrivProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
-import {
-  LigneVente,
-  useCreateNewLigneVenteMutation,
-} from "features/ligneVente/ligneVenteSlice";
+import { useCreateNewLigneVenteMutation } from "features/ligneVente/ligneVenteSlice";
 import Swal from "sweetalert2";
 
 interface FormFields {
-  nomproduit: string;
-  prixunitaire: string;
-  qty: string;
-  montanttotal: string;
-  subTotal: string;
+  PU: string;
+  quantiteProduit: string;
+  productName: string;
+  montantTtl: string;
+  numFacture: string;
   [key: string]: string;
 }
 
 const PassagerInvoice: React.FC = () => {
   document.title = "Créer Facture | Radhouani";
-
   {
     /********** Client Physique *********/
   }
@@ -159,11 +154,6 @@ const PassagerInvoice: React.FC = () => {
   // Get All Arrivage/Produit
   const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
 
-  const [acValue, setACValue] = useState<ArrivageProduit | null>(
-    allArrivageProduit[0]
-  );
-  const { data: OneArrivage } = useGetOneArrivProduitQuery(acValue?.produitID!);
-  console.log("acValue", OneArrivage);
   const [ArriProdData, setArriProdData] = useState({
     idArrivageProduit: 1,
     produitID: 1,
@@ -244,31 +234,6 @@ const PassagerInvoice: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    localStorage.setItem(
-      "facture",
-      JSON.stringify({
-        idFacture,
-        designationFacture,
-        dateFacturation: newDate,
-        datePaiement,
-        modePaiement,
-        statusFacture,
-        clientID: clientValue?.idclient_p,
-      })
-    );
-  }, [
-    {
-      idFacture,
-      designationFacture,
-      dateFacturation: newDate,
-      datePaiement,
-      modePaiement,
-      statusFacture,
-      clientID: clientValue?.idclient_p,
-    },
-  ]);
-
   const factureValue = {
     idFacture: 1,
     designationFacture: "",
@@ -282,13 +247,17 @@ const PassagerInvoice: React.FC = () => {
   const [factureData, setFactureData] = useState(factureValue);
   const [formFields, setFormFields] = useState<FormFields[]>([
     {
-      nomproduit: acValue?.nomProduit!,
-      prixunitaire: "",
-      qty: "",
-      montanttotal: "",
-      subTotal: "",
+      PU: "",
+      montantTtl: "",
+      quantiteProduit: "",
+      productName: "",
+      numFacture: "",
     },
   ]);
+  const [acValue, setACValue] = useState<ArrivageProduit | null>(
+    allArrivageProduit[0]
+  );
+
   const handleFormChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number
@@ -303,14 +272,21 @@ const PassagerInvoice: React.FC = () => {
   };
   const addFields = (e: React.FormEvent) => {
     let object: FormFields = {
-      nomproduit: "",
-      prixunitaire: "",
-      qty: "",
-      montanttotal: "",
-      subTotal: "",
+      PU: "",
+      montantTtl: "",
+      quantiteProduit: "",
+      productName: acValue?.nomProduit!,
+      numFacture: designationFacture,
     };
     setFormFields([...formFields, object]);
-    handleAddFacture();
+    // e.preventDefault();
+    // createLigneVente({
+    //   PU: object.PU,
+    //   montantTtl: object.montantTtl,
+    //   quantiteProduit: object.quantiteProduit,
+    //   productName: acValue?.nomProduit!,
+    //   numFacture: designationFacture,
+    // });
   };
   const removeFields = (index: number) => {
     let data = [...formFields];
@@ -366,258 +342,326 @@ const PassagerInvoice: React.FC = () => {
       <Row className="justify-content-center">
         <Col xxl={12}>
           <Card>
-            <Form
+            {/* <Form
               className="needs-validation"
               id="invoice_form"
               onSubmit={submit}
-            >
-              <Card.Body className="border-bottom border-bottom-dashed p-4">
+            > */}
+            <Card.Body className="border-bottom border-bottom-dashed p-4">
+              <Row>
+                <Col lg={4}>
+                  <div>
+                    <div className="input-group d-flex gap-2 mb-4">
+                      <Autocomplete
+                        id="clientID"
+                        sx={{ width: 300 }}
+                        options={clientPhysique!}
+                        autoHighlight
+                        onChange={(event, value) => setClientValue(value)}
+                        getOptionLabel={(option) => option.raison_sociale!}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.idclient_p}>
+                            {option.raison_sociale}
+                          </li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Nom Client"
+                            inputProps={{
+                              ...params.inputProps,
+                            }}
+                            size="small"
+                          />
+                        )}
+                      />
+                      <Button
+                        onClick={() => tog_AddClientPhyModals()}
+                        variant="info"
+                        size="sm"
+                        className="rounded"
+                      >
+                        <i className="ri-user-add-line ri-xl"></i>
+                      </Button>
+                    </div>
+                  </div>
+                </Col>
+                <Col lg={3} sm={6}>
+                  <TextField
+                    label="Numero Facture"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    size="small"
+                    type="text"
+                    id="designationFacture"
+                    placeholder="25000355"
+                    value={designationFacture}
+                    onChange={(e) => setDesignationFacture(e.target.value)}
+                  />
+                </Col>
+                <Col lg={3} sm={6}>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="de"
+                  >
+                    <DatePicker
+                      defaultValue={now}
+                      slotProps={{
+                        textField: {
+                          size: "small",
+                          inputProps: { ["placeholder"]: "AAAA.MM.DD" },
+                        },
+                      }}
+                      value={value}
+                      onChange={(newValue) => setValue(newValue)}
+                      format="DD-MM-YYYY"
+                    />
+                  </LocalizationProvider>
+                </Col>
+              </Row>
+            </Card.Body>
+            <Card.Body className="p-4">
+              <div>
                 <Row>
                   <Col lg={4}>
-                    <div>
-                      <div className="input-group d-flex gap-2 mb-4">
-                        <Autocomplete
-                          id="clientID"
-                          sx={{ width: 300 }}
-                          options={clientPhysique!}
-                          autoHighlight
-                          onChange={(event, value) => setClientValue(value)}
-                          getOptionLabel={(option) => option.raison_sociale!}
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.idclient_p}>
-                              {option.raison_sociale}
-                            </li>
-                          )}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Nom Client"
-                              inputProps={{
-                                ...params.inputProps,
-                              }}
-                              size="small"
-                            />
-                          )}
-                        />
-                        <Button
-                          onClick={() => tog_AddClientPhyModals()}
-                          variant="info"
-                          size="sm"
-                          className="rounded"
-                        >
-                          <i className="ri-user-add-line ri-xl"></i>
-                        </Button>
-                      </div>
-                    </div>
+                    <Form.Label htmlFor="nomProduit">Détail Produit</Form.Label>
                   </Col>
-                  <Col lg={3} sm={6}>
-                    <TextField
-                      label="Numero Facture"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      size="small"
-                      type="text"
-                      id="designationFacture"
-                      placeholder="25000355"
-                      value={designationFacture}
-                      onChange={(e) => setDesignationFacture(e.target.value)}
-                    />
+                  <Col lg={1}>
+                    <Form.Label htmlFor="quantiteProduit">Quantité</Form.Label>
                   </Col>
-                  <Col lg={3} sm={6}>
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                      adapterLocale="de"
-                    >
-                      <DatePicker
-                        defaultValue={now}
-                        slotProps={{
-                          textField: {
-                            size: "small",
-                            inputProps: { ["placeholder"]: "AAAA.MM.DD" },
-                          },
-                        }}
-                        value={value}
-                        onChange={(newValue) => setValue(newValue)}
-                        format="DD-MM-YYYY"
-                      />
-                    </LocalizationProvider>
+                  <Col lg={2}>
+                    <Form.Label htmlFor="PU">Prix Unitaire</Form.Label>
                   </Col>
+                  <Col lg={2}>
+                    <Form.Label htmlFor="montantTtl">Montant </Form.Label>
+                  </Col>
+                  <Col lg={2}>
+                    <Form.Label htmlFor="MontantAR">
+                      {" "}
+                      PU après Remise
+                    </Form.Label>
+                  </Col>
+                  <Col lg={1}></Col>
                 </Row>
-              </Card.Body>
-              <Card.Body className="p-4">
-                <div>
-                  <Row>
+                {formFields.map((form, index) => (
+                  <Row style={{ marginBottom: 20 }} key={index}>
                     <Col lg={4}>
-                      <Form.Label htmlFor="nomProduit">
-                        Détail Produit
-                      </Form.Label>
-                    </Col>
-                    <Col lg={1}>
-                      <Form.Label htmlFor="quantiteProduit">
-                        Quantité
-                      </Form.Label>
-                    </Col>
-                    <Col lg={2}>
-                      <Form.Label htmlFor="PrixUnitaire">
-                        Prix Unitaire
-                      </Form.Label>
-                    </Col>
-                    <Col lg={2}>
-                      <Form.Label htmlFor="MontantAR">
-                        {" "}
-                        PU après Remise
-                      </Form.Label>
-                    </Col>
-                    <Col lg={2}>
-                      <Form.Label htmlFor="MontantTotal">Montant </Form.Label>
-                    </Col>
-                    <Col lg={1}></Col>
-                  </Row>
-                  {formFields.map((form, index) => (
-                    <Row style={{ marginBottom: 20 }} key={index}>
-                      <Col lg={4}>
-                        <Autocomplete
-                          id="nomProduit"
-                          sx={{ width: 380 }}
-                          options={allArrivageProduit!}
-                          autoHighlight
-                          onChange={(event, value) => setACValue(value)}
-                          getOptionLabel={(option) => option.nomProduit!}
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.idArrivageProduit}>
-                              {option.nomProduit}
-                              ---
-                              <strong>{option.dateArrivage}</strong>---
-                              <span style={{ color: "red" }}>
-                                ({option.quantite})
-                              </span>
-                            </li>
-                          )}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Référence"
-                              inputProps={{
-                                ...params.inputProps,
-                              }}
-                              size="small"
-                            />
-                          )}
-                        />
-                      </Col>
-                      <Col lg={1} sm={6}>
-                        <TextField
-                          sx={{ width: 80 }}
-                          id="quantiteProduit"
-                          type="number"
-                          size="small"
-                          name="qty"
-                          placeholder="0.0"
-                          onChange={(event) => handleFormChange(event, index)}
-                          value={form.qty}
-                        />
-                      </Col>
-                      <Col lg={2}>
-                        <TextField
-                          id="PrixUnitaire"
-                          type="number"
-                          size="small"
-                          name="prixunitaire"
-                          placeholder="00.00"
-                          onChange={(event) => handleFormChange(event, index)}
-                          sx={{ width: 190 }}
-                          value={acValue?.prixVente}
-                        />
-                      </Col>
-                      {montantTotal !== count ? (
-                        <Col lg={2}>
+                      <Autocomplete
+                        id="nomProduit"
+                        sx={{ width: 380 }}
+                        options={allArrivageProduit!}
+                        autoHighlight
+                        onChange={(event, value) => {
+                          setACValue(value);
+                          const updatedValue = [...formFields];
+                          updatedValue[index].PU = value!.prixVente!.toString();
+                          setFormFields(updatedValue);
+                        }}
+                        getOptionLabel={(option) => option.nomProduit!}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.idArrivageProduit}>
+                            {option.nomProduit}
+                            ---
+                            <strong>{option.dateArrivage}</strong>---
+                            <span style={{ color: "red" }}>
+                              ({option.quantite})
+                            </span>
+                          </li>
+                        )}
+                        renderInput={(params) => (
                           <TextField
-                            sx={{ width: 190 }}
-                            id="MontantAR"
-                            size="small"
-                            type="number"
-                            name="montanttotalAR"
-                            placeholder="0.0"
-                            value={(
-                              parseInt(form.prixunitaire) -
-                              (parseInt(form.prixunitaire) * rem) / 100
-                            ).toFixed(3)}
-                            onChange={(event) => handleFormChange(event, index)}
-                            InputProps={{
-                              readOnly: true,
+                            {...params}
+                            label="Référence"
+                            inputProps={{
+                              ...params.inputProps,
                             }}
+                            size="small"
                           />
-                        </Col>
-                      ) : (
-                        ""
-                      )}
+                        )}
+                      />
+                    </Col>
+                    <Col lg={1} sm={6}>
+                      <TextField
+                        sx={{ width: 80 }}
+                        id="quantiteProduit"
+                        type="number"
+                        size="small"
+                        name="quantiteProduit"
+                        placeholder="0.0"
+                        onChange={(event) => handleFormChange(event, index)}
+                        value={form.quantiteProduit}
+                      />
+                    </Col>
+                    <Col lg={2}>
+                      <TextField
+                        id="PU"
+                        type="text"
+                        size="small"
+                        name="PU"
+                        placeholder="00.00"
+                        sx={{ width: 190 }}
+                        value={form.PU}
+                      />
+                    </Col>
+                    <Col lg={2} sm={6}>
+                      <TextField
+                        sx={{ width: 190 }}
+                        id="montantTtl"
+                        size="small"
+                        type="number"
+                        name="montantTtl"
+                        placeholder="0.0"
+                        onChange={(event) => handleFormChange(event, index)}
+                        value={
+                          (form.montantTtl = (
+                            parseInt(form.PU) * parseInt(form.quantiteProduit)
+                          ).toString())
+                        }
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    </Col>
+                    {montantTotal !== count ? (
                       <Col lg={2} sm={6}>
                         <TextField
                           sx={{ width: 190 }}
-                          id="MontantTotal"
+                          id="MontantAR"
                           size="small"
                           type="number"
-                          name="montanttotal"
+                          name="montanttotalAR"
                           placeholder="0.0"
+                          value={(
+                            parseInt(form.PU) -
+                            (parseInt(form.PU) * rem) / 100
+                          ).toFixed(3)}
                           onChange={(event) => handleFormChange(event, index)}
-                          value={
-                            (form.montanttotal = (
-                              parseInt(form.prixunitaire) * parseInt(form.qty)
-                            ).toString())
-                          }
                           InputProps={{
                             readOnly: true,
                           }}
                         />
                       </Col>
-                      {index ? (
-                        <Col lg={1} style={{ marginTop: 13 }}>
-                          <Link
-                            to="#"
-                            className="link-danger"
-                            onClick={() => removeFields(index)}
-                          >
-                            <i className="ri-delete-bin-5-line ri-xl" />
-                          </Link>
-                        </Col>
-                      ) : (
-                        ""
-                      )}
-                    </Row>
-                  ))}
-                  <Row>
-                    <Col id="newForm" style={{ display: "none" }}>
-                      <div className="d-none">
-                        <p>Add New Form</p>
-                      </div>
-                    </Col>
-                    <Col>
-                      <div>
-                        <Link
-                          to="#"
-                          id="add-item"
-                          className="btn btn-soft-secondary fw-medium"
-                          onClick={addFields}
-                        >
-                          <i className="ri-add-fill me-1 align-bottom"></i>
-                        </Link>
-                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <Col lg={1} style={{ marginTop: 13 }}>
+                      <Link
+                        to="#"
+                        className="link-danger"
+                        onClick={() => removeFields(index)}
+                      >
+                        <i className="ri-delete-bin-5-line ri-xl" />
+                      </Link>
                     </Col>
                   </Row>
-                </div>
-                <Row className="border-top border-top-dashed mt-2">
-                  <Col lg={9}>
-                    {clientPhyId === "18" ? (
-                      <Row className="mt-3">
-                        <Col lg={8}>
-                          <div className="mb-2">
-                            <fieldset>
-                              <legend>Reglement</legend>
+                ))}
+                <Row>
+                  <Col id="newForm" style={{ display: "none" }}>
+                    <div className="d-none">
+                      <p>Add New Form</p>
+                    </div>
+                  </Col>
+                  <Col>
+                    <div>
+                      <Link
+                        to="#"
+                        id="add-item"
+                        className="btn btn-soft-secondary fw-medium"
+                        onClick={addFields}
+                      >
+                        <i className="ri-add-fill me-1 align-bottom"></i>
+                      </Link>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+              <Row className="border-top border-top-dashed mt-2">
+                <Col lg={9}>
+                  {clientPhyId === "18" ? (
+                    <Row className="mt-3">
+                      <Col lg={8}>
+                        <div className="mb-2">
+                          <fieldset>
+                            <legend>Reglement</legend>
+                            <PaiementTotal setCount={setCount} />
+                          </fieldset>
+                        </div>
+                      </Col>
+                      <Col lg={3} sm={6}>
+                        <Form.Label htmlFor="choices-payment-status">
+                          Status de Payement
+                        </Form.Label>
+                        <div>
+                          <p className="fs-15 badge badge-soft-success">Payé</p>
+                        </div>
+                      </Col>
+                    </Row>
+                  ) : (
+                    <Row className="mt-3">
+                      <Col lg={7}>
+                        <div className="mb-2">
+                          <Form.Label htmlFor="Paiement partiel espèces">
+                            Reglement
+                          </Form.Label>
+                          <p>
+                            <input
+                              className="m-2"
+                              type="radio"
+                              name="reglement"
+                              value="Paiement total en espèces"
+                              id="Paiement total en espèces"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement total en espèces">
+                              Total en espèces
+                            </label>
+                            <input
+                              className="m-2"
+                              type="radio"
+                              name="reglement"
+                              value="Paiement partiel espèces"
+                              id="Paiement partiel espèces"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement partiel espèces">
+                              Partiel espèces
+                            </label>
+                            <input
+                              className="m-2"
+                              type="radio"
+                              name="reglement"
+                              value="Paiement partiel chèque"
+                              id="Paiement partiel chèque"
+                              onChange={radioHandler}
+                            />
+                            <label htmlFor="Paiement partiel chèque">
+                              Partiel chèque
+                            </label>
+                          </p>
+                          {selectedReglement === "Paiement total en espèces" ? (
+                            <>
                               <PaiementTotal setCount={setCount} />
-                            </fieldset>
-                          </div>
-                        </Col>
+                              {rem}
+                            </>
+                          ) : (
+                            ""
+                          )}
+
+                          {selectedReglement === "Paiement partiel espèces" ? (
+                            <PaiementEspece />
+                          ) : (
+                            ""
+                          )}
+
+                          {selectedReglement === "Paiement partiel chèque" ? (
+                            <PaiementCheque />
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                      </Col>
+                      {selectedReglement === "Paiement total en espèces" ? (
                         <Col lg={3} sm={6}>
                           <Form.Label htmlFor="choices-payment-status">
                             Status de Payement
@@ -628,162 +672,84 @@ const PassagerInvoice: React.FC = () => {
                             </p>
                           </div>
                         </Col>
-                      </Row>
-                    ) : (
-                      <Row className="mt-3">
-                        <Col lg={7}>
-                          <div className="mb-2">
-                            <Form.Label htmlFor="Paiement partiel espèces">
-                              Reglement
-                            </Form.Label>
-                            <p>
-                              <input
-                                className="m-2"
-                                type="radio"
-                                name="reglement"
-                                value="Paiement total en espèces"
-                                id="Paiement total en espèces"
-                                onChange={radioHandler}
-                              />
-                              <label htmlFor="Paiement total en espèces">
-                                Total en espèces
-                              </label>
-                              <input
-                                className="m-2"
-                                type="radio"
-                                name="reglement"
-                                value="Paiement partiel espèces"
-                                id="Paiement partiel espèces"
-                                onChange={radioHandler}
-                              />
-                              <label htmlFor="Paiement partiel espèces">
-                                Partiel espèces
-                              </label>
-                              <input
-                                className="m-2"
-                                type="radio"
-                                name="reglement"
-                                value="Paiement partiel chèque"
-                                id="Paiement partiel chèque"
-                                onChange={radioHandler}
-                              />
-                              <label htmlFor="Paiement partiel chèque">
-                                Partiel chèque
-                              </label>
+                      ) : (
+                        ""
+                      )}
+                      {selectedReglement === "Paiement partiel espèces" ? (
+                        <Col lg={3} sm={6}>
+                          <Form.Label htmlFor="choices-payment-status">
+                            Status de Payement
+                          </Form.Label>
+                          <div>
+                            <p className="fs-15 badge badge-soft-danger">
+                              Impayé
                             </p>
-                            {selectedReglement ===
-                            "Paiement total en espèces" ? (
-                              <>
-                                <PaiementTotal setCount={setCount} />
-                                {rem}
-                              </>
-                            ) : (
-                              ""
-                            )}
-
-                            {selectedReglement ===
-                            "Paiement partiel espèces" ? (
-                              <PaiementEspece />
-                            ) : (
-                              ""
-                            )}
-
-                            {selectedReglement === "Paiement partiel chèque" ? (
-                              <PaiementCheque />
-                            ) : (
-                              ""
-                            )}
                           </div>
                         </Col>
-                        {selectedReglement === "Paiement total en espèces" ? (
-                          <Col lg={3} sm={6}>
-                            <Form.Label htmlFor="choices-payment-status">
-                              Status de Payement
-                            </Form.Label>
-                            <div>
-                              <p className="fs-15 badge badge-soft-success">
-                                Payé
-                              </p>
-                            </div>
-                          </Col>
-                        ) : (
-                          ""
-                        )}
-                        {selectedReglement === "Paiement partiel espèces" ? (
-                          <Col lg={3} sm={6}>
-                            <Form.Label htmlFor="choices-payment-status">
-                              Status de Payement
-                            </Form.Label>
-                            <div>
-                              <p className="fs-15 badge badge-soft-danger">
-                                Impayé
-                              </p>
-                            </div>
-                          </Col>
-                        ) : (
-                          ""
-                        )}
-                        {selectedReglement === "Paiement partiel chèque" ? (
-                          <Col lg={3} sm={6}>
-                            <Form.Label htmlFor="choices-payment-status">
-                              Status de Payement
-                            </Form.Label>
-                            <div>
-                              <p className="fs-15 badge badge-soft-warning">
-                                Semi-Payé
-                              </p>
-                            </div>
-                          </Col>
-                        ) : (
-                          ""
-                        )}
-                      </Row>
-                    )}
-                  </Col>
-                  <Col lg={3} className="mt-3">
-                    <TextField
-                      label="Total"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      sx={{ width: 280 }}
-                      size="small"
-                      type="number"
-                      name="subTotal"
-                      value={
-                        formFields.reduce(
-                          (sum, i) => (sum += parseInt(i.montanttotal!)),
-                          0
-                        ) || (0).toString()
-                      }
-                      id="cart-subtotal"
-                      placeholder="0.00"
-                    />
-                  </Col>
-                </Row>
-                <div className="hstack gap-2 justify-content-end d-print-none mt-3">
-                  <Button
-                    variant="success"
-                    type="submit"
-                    onClick={() => tog_AddCodeUser()}
-                  >
-                    <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
-                    Paiement
-                  </Button>
-                  <Button variant="success" onClick={handleAddFacture}>
-                    <i className="ri-printer-line align-bottom me-1"></i>{" "}
-                    Enregister
-                  </Button>
-                  <Link to="#" className="btn btn-primary">
-                    <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                    Telecharger Facture
-                  </Link>
-                </div>
-              </Card.Body>
-            </Form>
+                      ) : (
+                        ""
+                      )}
+                      {selectedReglement === "Paiement partiel chèque" ? (
+                        <Col lg={3} sm={6}>
+                          <Form.Label htmlFor="choices-payment-status">
+                            Status de Payement
+                          </Form.Label>
+                          <div>
+                            <p className="fs-15 badge badge-soft-warning">
+                              Semi-Payé
+                            </p>
+                          </div>
+                        </Col>
+                      ) : (
+                        ""
+                      )}
+                    </Row>
+                  )}
+                </Col>
+                <Col lg={3} className="mt-3">
+                  <TextField
+                    label="Total"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    sx={{ width: 280 }}
+                    size="small"
+                    type="number"
+                    name="subTotal"
+                    value={
+                      formFields.reduce(
+                        (sum, i) => (sum += parseInt(i.montanttotal!)),
+                        0
+                      ) || (0).toString()
+                    }
+                    id="cart-subtotal"
+                    placeholder="0.00"
+                  />
+                </Col>
+              </Row>
+              <div className="hstack gap-2 justify-content-end d-print-none mt-3">
+                <Button
+                  variant="success"
+                  type="submit"
+                  onClick={() => tog_AddCodeUser()}
+                >
+                  <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
+                  Paiement
+                </Button>
+                <Button variant="success" onClick={handleAddFacture}>
+                  <i className="ri-printer-line align-bottom me-1"></i>{" "}
+                  Enregister
+                </Button>
+                <Link to="#" className="btn btn-primary">
+                  <i className="ri-download-2-line align-bottom me-1"></i>{" "}
+                  Telecharger Facture
+                </Link>
+              </div>
+            </Card.Body>
+            {/* </Form> */}
           </Card>
         </Col>
       </Row>

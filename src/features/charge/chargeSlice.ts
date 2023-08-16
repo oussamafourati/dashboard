@@ -47,6 +47,18 @@ export const chargesSlice = createApi({
         },
         providesTags: ["Charges"],
       }),
+      getChargeThreeMonths: builder.query<Charges[], number | void>({
+        query() {
+          return `/lastCharges`;
+        },
+        providesTags: ["Charges"],
+      }),
+      getChargeLastYear: builder.query<Charges[], number | void>({
+        query() {
+          return `/lastYearCharges`;
+        },
+        providesTags: ["Charges"],
+      }),
       getOneCharges: builder.query<Charges, number | void>({
         query(idCharges) {
           return `/oneCharge/${idCharges}`;
@@ -83,6 +95,8 @@ export const chargesSlice = createApi({
 });
 
 export const {
+  useGetChargeLastYearQuery,
+  useGetChargeThreeMonthsQuery,
   useGetChargeWeekQuery,
   useGetChargeMonthQuery,
   useGetChargeDayQuery,
