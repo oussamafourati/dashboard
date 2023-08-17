@@ -43,18 +43,12 @@ const PaiementEspece = () => {
         {inputFields.map((inputField, index) => (
           <Row className="g-3" style={{ marginBottom: 15 }}>
             <Col lg={6} sm={9}>
-              <Form.Control
-                type="text"
-                id="invoicenoInput"
-                placeholder="Taper l'echeance "
-                defaultValue="00"
-              />
+              <Form.Control type="text" id="invoicenoInput" />
             </Col>
             <Col lg={4} sm={9}>
               <div>
                 <Flatpickr
                   className="form-control flatpickr-input"
-                  placeholder="Selectionner Date"
                   options={{
                     dateFormat: "d M, Y",
                   }}
@@ -64,8 +58,7 @@ const PaiementEspece = () => {
             <Col lg={1}>
               <Button
                 onClick={() => handleRemoveFields(index)}
-                variant="primary"
-                className="btn btn-danger w-10"
+                className="btn btn-soft-danger w-10"
               >
                 <i className="mdi mdi-archive-remove-outline align-bottom me-1"></i>{" "}
               </Button>
@@ -75,7 +68,7 @@ const PaiementEspece = () => {
       </Card.Body>
       <Button
         onClick={handleAddFields}
-        variant="primary"
+        variant="soft-primary"
         className="w-10"
         id="btn-new-event"
       >

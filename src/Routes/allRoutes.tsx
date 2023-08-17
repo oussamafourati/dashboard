@@ -10,13 +10,6 @@ import CreateProduct from "pages/Products/CreateProduct";
 import Categories from "pages/Products/Categories";
 import SubCategories from "pages/Products/SubCategories";
 
-// Orders
-import OrdersListView from "pages/Orders/ListView";
-import OrdersOverview from "pages/Orders/Overview";
-
-// Calender
-import Calendar from "pages/Calendar";
-
 // Sellers
 import SellersListView from "pages/Sellers/ListView";
 import SellersGridView from "pages/Sellers/GridView";
@@ -76,7 +69,7 @@ import CreateDevis from "pages/Devis/CreateDevis";
 import DevisList from "pages/Devis/DevisList";
 
 const authProtectedRoutes = [
-  { path: "/dashboard", component: <Dashboard /> },
+  { path: "/tableau_de_bord", component: <Dashboard /> },
 
   //Product
   { path: "/products-list", component: <ListView /> },
@@ -85,10 +78,6 @@ const authProtectedRoutes = [
   { path: "/product-create", component: <CreateProduct /> },
   { path: "/categories", component: <Categories /> },
   { path: "/sub-categories", component: <SubCategories /> },
-
-  // Orders
-  // { path: "/orders-list-view", component: <OrdersListView /> },
-  // { path: "/orders-overview", component: <OrdersOverview /> },
 
   // Sellers
   { path: "/sellers-list-view", component: <SellersListView /> },
@@ -138,8 +127,8 @@ const authProtectedRoutes = [
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
-  { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
-  { path: "*", component: <Navigate to="/dashboard" /> },
+  { path: "/", exact: true, component: <Navigate to="/tableau_de_bord" /> },
+  { path: "*", component: <Navigate to="/tableau_de_bord" /> },
   { path: "/profil", component: <UserProfile /> },
 ];
 

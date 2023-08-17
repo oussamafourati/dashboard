@@ -43,7 +43,7 @@ const AchatWidgets = () => {
   );
 
   const [selectedValeur, setSelectedValeur] = useState<number>();
-  const handlesousCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectedValue = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedValeur(parseInt(e.target.value));
   };
 
@@ -81,9 +81,7 @@ const AchatWidgets = () => {
                     className="form-select"
                     id="choices-category-input"
                     name="choices-category-input"
-                    value={selectedValeur}
-                    defaultValue={toDayTotal}
-                    onChange={handlesousCategory}
+                    onChange={handleSelectedValue}
                   >
                     <option value=""></option>
                     <option value={toDayTotal}>Aujourd'hui</option>

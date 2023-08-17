@@ -323,12 +323,12 @@ const ProInvoice: React.FC = () => {
             >
               <Card.Body className="border-bottom border-bottom-dashed p-4">
                 <Row>
-                  <Col lg={4}>
+                  <Col lg={4} sm={6}>
                     <div>
                       <div className="input-group d-flex gap-2 mb-2">
                         <Autocomplete
                           id="nomClient"
-                          sx={{ width: 300 }}
+                          sx={{ width: 320 }}
                           options={clientMorale!}
                           autoHighlight
                           onChange={(event, value) => setClientValue(value)}
@@ -351,41 +351,16 @@ const ProInvoice: React.FC = () => {
                         />
                         <Button
                           onClick={() => tog_AddClientMoraleModals()}
-                          variant="info"
+                          variant="soft-info"
                           size="sm"
                           className="rounded"
                         >
                           <i className="ri-user-add-line ri-xl"></i>
                         </Button>
                       </div>
-                      {selected.map((s) => {
-                        return (
-                          <div className="mb-2">
-                            <strong>Raison Sociale: </strong>
-                            <span>{s.raison_sociale}</span>
-
-                            <div>
-                              <strong>Matricule Fiscale: </strong>
-                              <span>{s.mat}</span>
-                            </div>
-                            <div>
-                              <strong>Numéro Téléphone: </strong>
-                              <span>{s.tel}</span>
-                            </div>
-                            <div className="mb-2">
-                              <strong>Adresse: </strong>
-                              <span>{s.adresse}</span>
-                            </div>
-                            <div className="mb-2 mb-lg-0">
-                              <strong>Email: </strong>
-                              <span>{s.mail}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
                     </div>
                   </Col>
-                  <Col lg={3} sm={6}>
+                  <Col lg={4} sm={6}>
                     <TextField
                       label=" Numero Facture"
                       InputLabelProps={{
@@ -398,9 +373,10 @@ const ProInvoice: React.FC = () => {
                       type="text"
                       id="invoicenoInput"
                       placeholder="25000355"
+                      sx={{ width: 320 }}
                     />
                   </Col>
-                  <Col lg={3} sm={6}>
+                  <Col lg={4} sm={6}>
                     <LocalizationProvider
                       dateAdapter={AdapterDayjs}
                       adapterLocale="de"
@@ -410,9 +386,11 @@ const ProInvoice: React.FC = () => {
                         slotProps={{
                           textField: {
                             size: "small",
-                            inputProps: { ["placeholder"]: "JJ.MM.AAAA" },
+                            inputProps: { ["placeholder"]: "DD-MM-YYYY" },
                           },
                         }}
+                        format="DD-MM-YYYY"
+                        sx={{ width: 320 }}
                       />
                     </LocalizationProvider>
                   </Col>
@@ -420,11 +398,14 @@ const ProInvoice: React.FC = () => {
               </Card.Body>
               <Card.Body className="p-3">
                 <div>
-                  <Row>
+                  <Row className="text-center">
                     <Col lg={5}>
                       <Form.Label htmlFor="nomProduit">
                         Détail Produit
                       </Form.Label>
+                    </Col>
+                    <Col lg={1}>
+                      <Form.Label htmlFor="Quantite">Quantité</Form.Label>
                     </Col>
                     <Col lg={2}>
                       <Form.Label htmlFor="PrixUnitaire">
@@ -434,21 +415,17 @@ const ProInvoice: React.FC = () => {
                     <Col lg={1}>
                       <Form.Label htmlFor="Benifice">Benifice</Form.Label>
                     </Col>
-                    <Col lg={1}>
-                      <Form.Label htmlFor="Quantite">Quantité</Form.Label>
-                    </Col>
                     <Col lg={2}>
                       <Form.Label htmlFor="Montant">Montant</Form.Label>
                     </Col>
-
                     <Col lg={1}></Col>
                   </Row>
                   {formFields.map((form, index) => (
                     <Row style={{ marginBottom: 20 }} key={index}>
-                      <Col lg={5}>
+                      <Col lg={5} sm={6}>
                         <Autocomplete
                           id="nomProduit"
-                          sx={{ width: 440 }}
+                          sx={{ width: 495 }}
                           options={allArrivageProduit}
                           autoHighlight
                           onChange={(event, value) => {
@@ -460,7 +437,12 @@ const ProInvoice: React.FC = () => {
                           getOptionLabel={(option) => option.nomProduit!}
                           renderOption={(props, option) => (
                             <li {...props} key={option.idArrivageProduit}>
-                              {option.nomProduit}__{option.dateArrivage}
+                              {option.nomProduit}
+                              ---
+                              <strong>{option.dateArrivage}</strong>---
+                              <span style={{ color: "red" }}>
+                                ({option.quantite})
+                              </span>
                             </li>
                           )}
                           renderInput={(params) => (
@@ -476,29 +458,7 @@ const ProInvoice: React.FC = () => {
                           )}
                         />
                       </Col>
-                      <Col lg={2}>
-                        <TextField
-                          id="PU"
-                          type="number"
-                          size="small"
-                          name="PU"
-                          placeholder="00.00"
-                          value={form.PU}
-                        />
-                      </Col>
-                      <Col lg={1}>
-                        <TextField
-                          id="benifice"
-                          type="number"
-                          size="small"
-                          name="benifice"
-                          defaultValue={form.benifice}
-                          placeholder="0.0"
-                          onChange={(event) => handleFormChange(event, index)}
-                          value={pourcentageBenifice}
-                        />
-                      </Col>
-                      <Col lg={1}>
+                      <Col lg={1} sm={6}>
                         <TextField
                           id="Quantite"
                           type="number"
@@ -509,8 +469,33 @@ const ProInvoice: React.FC = () => {
                           value={form.qty}
                         />
                       </Col>
-                      <Col lg={2}>
+                      <Col lg={2} sm={6}>
                         <TextField
+                          id="PU"
+                          type="number"
+                          size="small"
+                          name="PU"
+                          placeholder="00.00"
+                          value={form.PU}
+                          sx={{ width: 195 }}
+                        />
+                      </Col>
+                      <Col lg={1} sm={6}>
+                        <TextField
+                          sx={{ width: 95 }}
+                          id="benifice"
+                          type="number"
+                          size="small"
+                          name="benifice"
+                          defaultValue={form.benifice}
+                          placeholder="0.0"
+                          onChange={(event) => handleFormChange(event, index)}
+                          value={pourcentageBenifice}
+                        />
+                      </Col>
+                      <Col lg={2} sm={6}>
+                        <TextField
+                          sx={{ width: 195 }}
                           id="Montant"
                           size="small"
                           type="number"
@@ -527,7 +512,7 @@ const ProInvoice: React.FC = () => {
                           }
                         />
                       </Col>
-                      <Col lg={1} style={{ marginTop: 13 }}>
+                      <Col lg={1} className="mt-2" sm={6}>
                         <Link
                           to="#"
                           className="link-danger"
@@ -549,7 +534,7 @@ const ProInvoice: React.FC = () => {
                         <Link
                           to="#"
                           id="add-item"
-                          className="btn btn-soft-secondary fw-medium"
+                          className="btn btn-soft-info fw-medium"
                           onClick={addFields}
                         >
                           <i className="ri-add-fill me-1 align-bottom"></i>
@@ -579,7 +564,7 @@ const ProInvoice: React.FC = () => {
                 <Row>
                   <Col lg={9}>
                     <Row className="mt-2">
-                      <Col lg={7}>
+                      <Col lg={9}>
                         <div className="mb-2">
                           <Form.Label htmlFor="choices-payment-status">
                             Reglement
@@ -709,20 +694,20 @@ const ProInvoice: React.FC = () => {
                 </Row>
                 <div className="hstack gap-2 justify-content-end d-print-none mt-0">
                   <Button
-                    variant="success"
+                    variant="soft-success"
                     type="submit"
                     onClick={() => tog_AddCodeUser()}
                   >
                     <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
                     Paiement
                   </Button>
-                  <Button variant="success" type="submit">
+                  <Button variant="soft-secondary" type="submit">
                     <i className="ri-printer-line align-bottom me-1"></i>{" "}
                     Enregister
                   </Button>
-                  <Link to="#" className="btn btn-primary">
+                  <Link to="#" className="btn btn-soft-primary">
                     <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                    Telecharger Facture
+                    Telecharger
                   </Link>
                 </div>
               </Card.Body>

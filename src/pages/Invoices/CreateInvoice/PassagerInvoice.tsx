@@ -354,7 +354,7 @@ const PassagerInvoice: React.FC = () => {
                     <div className="input-group d-flex gap-2 mb-4">
                       <Autocomplete
                         id="clientID"
-                        sx={{ width: 300 }}
+                        sx={{ width: 320 }}
                         options={clientPhysique!}
                         autoHighlight
                         onChange={(event, value) => setClientValue(value)}
@@ -377,7 +377,7 @@ const PassagerInvoice: React.FC = () => {
                       />
                       <Button
                         onClick={() => tog_AddClientPhyModals()}
-                        variant="info"
+                        variant="soft-info"
                         size="sm"
                         className="rounded"
                       >
@@ -386,7 +386,7 @@ const PassagerInvoice: React.FC = () => {
                     </div>
                   </div>
                 </Col>
-                <Col lg={3} sm={6}>
+                <Col lg={4} sm={6}>
                   <TextField
                     label="Numero Facture"
                     InputLabelProps={{
@@ -398,9 +398,10 @@ const PassagerInvoice: React.FC = () => {
                     placeholder="25000355"
                     value={designationFacture}
                     onChange={(e) => setDesignationFacture(e.target.value)}
+                    sx={{ width: 320 }}
                   />
                 </Col>
-                <Col lg={3} sm={6}>
+                <Col lg={4} sm={6}>
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
                     adapterLocale="de"
@@ -416,6 +417,7 @@ const PassagerInvoice: React.FC = () => {
                       value={value}
                       onChange={(newValue) => setValue(newValue)}
                       format="DD-MM-YYYY"
+                      sx={{ width: 320 }}
                     />
                   </LocalizationProvider>
                 </Col>
@@ -423,7 +425,7 @@ const PassagerInvoice: React.FC = () => {
             </Card.Body>
             <Card.Body className="p-4">
               <div>
-                <Row>
+                <Row className="text-center">
                   <Col lg={4}>
                     <Form.Label htmlFor="nomProduit">Détail Produit</Form.Label>
                   </Col>
@@ -567,7 +569,7 @@ const PassagerInvoice: React.FC = () => {
                       <Link
                         to="#"
                         id="add-item"
-                        className="btn btn-soft-secondary fw-medium"
+                        className="btn btn-soft-info fw-medium"
                         onClick={addFields}
                       >
                         <i className="ri-add-fill me-1 align-bottom"></i>
@@ -599,7 +601,7 @@ const PassagerInvoice: React.FC = () => {
                     </Row>
                   ) : (
                     <Row className="mt-3">
-                      <Col lg={7}>
+                      <Col lg={9}>
                         <div className="mb-2">
                           <Form.Label htmlFor="Paiement partiel espèces">
                             Reglement
@@ -640,10 +642,7 @@ const PassagerInvoice: React.FC = () => {
                             </label>
                           </p>
                           {selectedReglement === "Paiement total en espèces" ? (
-                            <>
-                              <PaiementTotal setCount={setCount} />
-                              {rem}
-                            </>
+                            <PaiementTotal setCount={setCount} />
                           ) : (
                             ""
                           )}
@@ -732,20 +731,20 @@ const PassagerInvoice: React.FC = () => {
               </Row>
               <div className="hstack gap-2 justify-content-end d-print-none mt-3">
                 <Button
-                  variant="success"
+                  variant="soft-success"
                   type="submit"
                   onClick={() => tog_AddCodeUser()}
                 >
                   <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
                   Paiement
                 </Button>
-                <Button variant="success" onClick={handleAddFacture}>
+                <Button variant="soft-secondary" onClick={handleAddFacture}>
                   <i className="ri-printer-line align-bottom me-1"></i>{" "}
                   Enregister
                 </Button>
-                <Link to="#" className="btn btn-primary">
+                <Link to="#" className="btn btn-soft-primary">
                   <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                  Telecharger Facture
+                  Télécharger
                 </Link>
               </div>
             </Card.Body>

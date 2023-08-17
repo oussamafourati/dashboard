@@ -89,8 +89,6 @@ const ChargeWidgets = () => {
                     className="form-select"
                     id="choices-category-input"
                     name="choices-category-input"
-                    value={categoryid}
-                    defaultValue={chargeTotal}
                     onChange={handlesousCategory}
                   >
                     <option value=""></option>

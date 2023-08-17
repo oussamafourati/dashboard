@@ -80,7 +80,7 @@ const Navdata = () => {
       id: "dashboard",
       label: "Tableau de bord",
       icon: "bi bi-speedometer2",
-      link: "/dashboard",
+      link: "/tableau_de_bord",
     },
     {
       id: "invoice",

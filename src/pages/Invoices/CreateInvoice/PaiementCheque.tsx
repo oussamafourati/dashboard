@@ -58,18 +58,12 @@ const PaiementCheque = () => {
         {inputFields.map((inputField, index) => (
           <Row style={{ marginBottom: 20 }}>
             <Col lg={3}>
-              <Form.Control
-                type="text"
-                id="invoicenoInput"
-                placeholder="Taper l'echeance "
-                defaultValue="00"
-              />
+              <Form.Control type="text" id="invoicenoInput" />
             </Col>
             <Col lg={2}>
               <div>
                 <Flatpickr
                   className="form-control flatpickr-input"
-                  placeholder="Selectionner Date"
                   options={{
                     dateFormat: "d M, Y",
                   }}
@@ -77,26 +71,15 @@ const PaiementCheque = () => {
               </div>
             </Col>
             <Col lg={3}>
-              <Form.Control
-                type="text"
-                id="invoicenoInput"
-                placeholder="Taper le numero "
-                defaultValue="00"
-              />
+              <Form.Control type="text" id="invoicenoInput" />
             </Col>
             <Col lg={3}>
-              <Form.Control
-                type="text"
-                id="invoicenoInput"
-                placeholder="Nom de l'agence "
-                defaultValue=""
-              />
+              <Form.Control type="text" id="invoicenoInput" />
             </Col>
             <Col lg={1}>
               <Button
                 onClick={() => handleRemoveFields(index)}
-                variant="primary"
-                className="btn btn-danger w-10"
+                className="btn btn-soft-danger w-10"
               >
                 <i className="mdi mdi-archive-remove-outline align-bottom me-1"></i>{" "}
               </Button>
@@ -106,7 +89,7 @@ const PaiementCheque = () => {
       </Card.Body>
       <Button
         onClick={handleAddFields}
-        variant="primary"
+        variant="soft-primary"
         className="w-10"
         id="btn-new-event"
       >

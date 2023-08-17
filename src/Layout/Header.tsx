@@ -64,7 +64,7 @@ const Header = () => {
               <div className="navbar-brand-box horizontal-logo">
                 <Link to="/" className="logo logo-dark">
                   <span className="logo-sm">
-                    <img src={logosm} alt="" height="22" />
+                    <img src={logolight} alt="" height="22" />
                   </span>
                   <span className="logo-lg">
                     <img src={logodark} alt="" height="25" />
@@ -73,7 +73,7 @@ const Header = () => {
 
                 <Link to="/" className="logo logo-light">
                   <span className="logo-sm">
-                    <img src={logosm} alt="" height="22" />
+                    <img src={logolight} alt="" height="22" />
                   </span>
                   <span className="logo-lg">
                     <img src={logolight} alt="" height="25" />
