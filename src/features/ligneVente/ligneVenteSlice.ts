@@ -6,6 +6,10 @@ export interface LigneVente {
   quantiteProduit: string;
   productName: string;
   numFacture: string;
+  TotalQuantity: number;
+  TotalVente: number;
+  nom: string;
+  total_sold: number;
 }
 
 export const LigneVenteSlice = createApi({
@@ -20,8 +24,20 @@ export const LigneVenteSlice = createApi({
   endpoints(builder) {
     return {
       fetchAllLigneVente: builder.query<LigneVente[], number | void>({
+        query(numFacture) {
+          return `/allLigneVente/:${numFacture}`;
+        },
+        providesTags: ["LigneVente"],
+      }),
+      fetchTopSelling: builder.query<LigneVente[], number | void>({
         query() {
-          return `/allLigneVente`;
+          return `/topcategories`;
+        },
+        providesTags: ["LigneVente"],
+      }),
+      fetchTopCategories: builder.query<LigneVente[], number | void>({
+        query() {
+          return `/topselling`;
         },
         providesTags: ["LigneVente"],
       }),
@@ -53,6 +69,8 @@ export const LigneVenteSlice = createApi({
 });
 
 export const {
+  useFetchTopCategoriesQuery,
+  useFetchTopSellingQuery,
   useCreateNewLigneVenteMutation,
   useDeleteLigneVenteMutation,
   useFetchAllLigneVenteQuery,

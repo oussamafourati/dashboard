@@ -1,30 +1,36 @@
-import { useGetAllArrivagesQuery } from "features/arrivage/arrivageSlice";
+import React, { useState } from "react";
+import { Card, Col } from "react-bootstrap";
+import CountUp from "react-countup";
 import {
   useGetAllChargesQuery,
   useGetChargeDayQuery,
   useGetChargeLastYearQuery,
   useGetChargeThreeMonthsQuery,
+  useGetChargeAnneeQuery,
 } from "features/charge/chargeSlice";
-import { useFetchFacturePayeQuery } from "features/facture/factureSlice";
-import React, { useState } from "react";
-import { Card, Col } from "react-bootstrap";
-import CountUp from "react-countup";
 
 interface WidgetsProps {
   id: number;
   name: string;
+  defaultamount: number;
   amount: number;
   icon: string;
   iconColor: string;
 }
 
 const ChargeWidgets = () => {
-  const { data = [] } = useGetAllChargesQuery();
+  const { data: AllCharge = [] } = useGetAllChargesQuery();
+  const { data: YearCharge = [] } = useGetChargeAnneeQuery();
   const { data: DayCharge = [] } = useGetChargeDayQuery();
   const { data: LastYear = [] } = useGetChargeLastYearQuery();
   const { data: ThreeMonths = [] } = useGetChargeThreeMonthsQuery();
 
-  const chargeTotal = data.reduce(
+  const chargeTotal = AllCharge.reduce(
+    (sum, i) => (sum += parseInt(i.montantCharges)),
+    0
+  );
+
+  const chargeYear = YearCharge.reduce(
     (sum, i) => (sum += parseInt(i.montantCharges)),
     0
   );
@@ -59,6 +65,7 @@ const ChargeWidgets = () => {
     {
       id: 4,
       name: "TOTAL CHARGE",
+      defaultamount: chargeYear,
       amount: categoryid!,
       icon: "bi bi-currency-dollar",
       iconColor: "warning",
@@ -68,36 +75,46 @@ const ChargeWidgets = () => {
     <React.Fragment>
       {(widgetsData || []).map((item: any, key: number) => (
         <Col key={key}>
-          <Card className="card-animate mb-5">
+          <Card className="card-animate mb-3">
             <Card.Body>
               <div className="d-flex justify-content-between">
                 <div
                   className={"vr rounded bg-" + item.iconColor + " opacity-50"}
-                  style={{ width: "4px" }}
+                  style={{ width: "3px" }}
                 ></div>
                 <div className="flex-grow-1 ms-3">
-                  <p className="text-uppercase fw-medium text-muted fs-14 text-truncate">
+                  <p className="text-uppercase fw-medium text-muted fs-12 text-truncate">
                     {item.name}
                   </p>
-                  <h4 className="fs-22 fw-semibold mb-3">
-                    {item.decimal ? "$" : ""}
-                    <span className="counter-value" data-target="98851.35">
-                      <CountUp start={0} end={item.amount} />
-                    </span>
+                  <h4 className="fs-14 fw-semibold mb-2">
+                    {!categoryid ? (
+                      <span className="counter-value" data-target="98851.35">
+                        <CountUp
+                          start={0}
+                          end={item.defaultamount}
+                          separator=","
+                        />{" "}
+                        DT
+                      </span>
+                    ) : (
+                      <span className="counter-value" data-target="98851.35">
+                        <CountUp start={0} end={item.amount} separator="," /> DT
+                      </span>
+                    )}
                   </h4>
                   <select
                     className="form-select"
-                    id="choices-category-input"
-                    name="choices-category-input"
+                    id="choices-charge-input"
+                    name="choices-charge-input"
                     onChange={handlesousCategory}
                   >
                     <option value=""></option>
                     <option value={chargeDay}>Aujourd'hui</option>
                     <option value={chargeTotalLastThreeMonths}>
                       {" "}
-                      Mois Dernier
+                      Mois en cours
                     </option>
-                    <option value={chargeTotal}>Année en cours</option>
+                    <option value={chargeYear}>Année en cours</option>
                     <option value={chargeTotalLastYear}>Année Dernière</option>
                   </select>
                   {/* </div> */}
@@ -109,7 +126,7 @@ const ChargeWidgets = () => {
                       item.iconColor +
                       "-subtle text-" +
                       item.iconColor +
-                      " rounded fs-3"
+                      " rounded fs-2"
                     }
                   >
                     <i className={item.icon}></i>

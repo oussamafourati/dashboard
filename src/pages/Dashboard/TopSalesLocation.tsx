@@ -1,16 +1,5 @@
 import React from "react";
-import { Card, Col, Dropdown } from "react-bootstrap";
-import { VectorMap } from "@south-paw/react-vector-maps";
-import world from "./world.svg.json";
-import CustomDropdownToggle from "Common/CustomDropdownToggle";
-
-//import images
-import us from "../../assets/images/flags/us.svg";
-import gl from "../../assets/images/flags/gl.svg";
-import br from "../../assets/images/flags/br.svg";
-import au from "../../assets/images/flags/au.svg";
-import ru from "../../assets/images/flags/ru.svg";
-import ca from "../../assets/images/flags/ca.svg";
+import { Card, Col } from "react-bootstrap";
 
 const TopSalesLocation = () => {
   return (

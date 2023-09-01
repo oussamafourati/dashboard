@@ -37,13 +37,17 @@ const PaiementEspece = () => {
             <Form.Label htmlFor="invoicenoInput">Echéance</Form.Label>
           </Col>
           <Col lg={6}>
-            <Form.Label htmlFor="date-field">Date</Form.Label>
+            <Form.Label htmlFor="date">Date</Form.Label>
           </Col>
         </Row>
         {inputFields.map((inputField, index) => (
           <Row className="g-3" style={{ marginBottom: 15 }}>
             <Col lg={6} sm={9}>
-              <Form.Control type="text" id="invoicenoInput" />
+              <Form.Control
+                type="text"
+                id="invoicenoInput"
+                name="invoicenoInput"
+              />
             </Col>
             <Col lg={4} sm={9}>
               <div>
@@ -52,6 +56,8 @@ const PaiementEspece = () => {
                   options={{
                     dateFormat: "d M, Y",
                   }}
+                  id="date"
+                  name="date"
                 />
               </div>
             </Col>

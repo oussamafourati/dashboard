@@ -7,27 +7,37 @@ import {
   useFetchFacturePayeQuery,
   useFetchFacturesQuery,
   useFetchFactureImpayeQuery,
+  useFetchFacturesProQuery,
 } from "features/facture/factureSlice";
+import InvoiceFilter from "./InvoiceFilter";
 
 const InvoiceList = () => {
-  document.title = "Invoice List | Toner eCommerce + Admin React Template";
+  document.title = "Liste des factures | Radhouani";
   const { data: allFacture = [] } = useFetchFacturesQuery();
+  const { data: allFacturePro = [] } = useFetchFacturesProQuery();
   const { data: factureImpaye = [] } = useFetchFactureImpayeQuery();
   const { data: facturePaye = [] } = useFetchFacturePayeQuery();
-  // const montantTotalFactures = allFacture.reduce(
-  //   (sumAllFacture, i) => (sumAllFacture += i.MontantTotal),
-  //   0
-  // );
+
+  const montantTotalFacturesPro = allFacturePro.reduce(
+    (sumAllFacturePro, i) => (sumAllFacturePro += i.MontantTotal),
+    0
+  );
+
+  const montantTotalFactures = allFacture.reduce(
+    (sumAllFacture, i) => (sumAllFacture += i.MontantTotal),
+    0
+  );
   const nombreTotalFactures = allFacture.length;
-  // const montantTotalPaye = facturePaye.reduce(
-  //   (sum, i) => (sum += i.MontantTotal),
-  //   0
-  // );
+  const nombreTotalFacturesPro = allFacturePro.length;
+  const montantTotalPaye = facturePaye.reduce(
+    (sum, i) => (sum += i.MontantTotal),
+    0
+  );
   const nombreTotalPaye = facturePaye.length;
-  // const montantTotalImpaye = factureImpaye.reduce(
-  //   (sumFactureImpaye, i) => (sumFactureImpaye += i.MontantTotal),
-  //   0
-  // );
+  const montantTotalImpaye = factureImpaye.reduce(
+    (sumFactureImpaye, i) => (sumFactureImpaye += i.MontantTotal),
+    0
+  );
   const nombreTotalImpaye = factureImpaye.length;
   return (
     <React.Fragment>
@@ -188,10 +198,13 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp end={123456} decimals={2} /> Dt
+                        <CountUp
+                          end={montantTotalFactures + montantTotalFacturesPro}
+                        />{" "}
+                        Dt
                       </h4>
                       <span className="badge bg-info me-1">
-                        {nombreTotalFactures}
+                        {nombreTotalFactures + nombreTotalFacturesPro}
                       </span>{" "}
                       <span className="text-muted align-bottom">Factures</span>
                     </div>
@@ -358,7 +371,7 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp end={123456} decimals={2} /> Dt
+                        <CountUp end={montantTotalImpaye} /> Dt
                       </h4>
                       <span className="badge bg-info me-1">
                         {nombreTotalImpaye}
@@ -528,7 +541,7 @@ const InvoiceList = () => {
                   <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                       <h4 className="fs-24 fw-semibold mb-4">
-                        <CountUp end={123456} decimals={2} /> Dt
+                        <CountUp end={montantTotalPaye} /> Dt
                       </h4>
                       <span className="badge bg-info me-1">
                         {nombreTotalPaye}
@@ -608,8 +621,7 @@ const InvoiceList = () => {
                             </Card>
                         </Col> */}
           </Row>
-
-          <InvoiceListTable />
+          <InvoiceFilter />
         </Container>
       </div>
     </React.Fragment>

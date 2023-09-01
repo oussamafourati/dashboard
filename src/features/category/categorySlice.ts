@@ -11,7 +11,7 @@ export interface Category {
 export const categorySlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/category",
+    baseUrl: "http://localhost:8000/category/",
   }),
   tagTypes: ["Category"],
   endpoints(builder) {

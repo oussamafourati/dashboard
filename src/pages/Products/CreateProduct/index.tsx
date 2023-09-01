@@ -31,7 +31,7 @@ const CreateProduct = () => {
   const [sousCategoryid, setSousCategoryid] = useState("");
   useEffect(() => {
     const getCategory = async () => {
-      const reqdata = await fetch("http://localhost:8000/category/all");
+      const reqdata = await fetch("https://src-api.onrender.com/category/all");
       const resdata = await reqdata.json();
       setCategory(resdata);
     };
@@ -41,7 +41,7 @@ const CreateProduct = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/subCategory/onesubcategory?idcategory=${categoryId}`
+        `https://src-api.onrender.com/subCategory/onesubcategory?idcategory=${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSousCategory(resstatedata);
@@ -115,7 +115,6 @@ const CreateProduct = () => {
     const file = (document.getElementById("imageProduit") as HTMLFormElement)
       .files[0];
     const base64 = await convertToBase64(file);
-    console.log(base64);
     setFormData({
       ...formData,
       imageProduit: base64 as string,

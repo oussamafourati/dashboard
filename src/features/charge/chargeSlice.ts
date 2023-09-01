@@ -65,6 +65,84 @@ export const chargesSlice = createApi({
         },
         providesTags: ["Charges"],
       }),
+      getAllChargesJav: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesJan";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesFeb: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesFeb";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesMar: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesMar";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesApr: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesApr";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesMay: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesMay";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesJuin: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesJuin";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesJuly: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesJuly";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesAug: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesAug";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesSep: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesSep";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesOct: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesOct";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesNov: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesNov";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesDec: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargesDec";
+        },
+        providesTags: ["Charges"],
+      }),
+      getAllChargesSixMonths: builder.query<Charges[], number | void>({
+        query() {
+          return "/allChargessixmonths";
+        },
+        providesTags: ["Charges"],
+      }),
       addCharge: builder.mutation<void, Charges>({
         query(payload) {
           return {
@@ -95,6 +173,19 @@ export const chargesSlice = createApi({
 });
 
 export const {
+  useGetAllChargesSixMonthsQuery,
+  useGetAllChargesAprQuery,
+  useGetAllChargesAugQuery,
+  useGetAllChargesDecQuery,
+  useGetAllChargesFebQuery,
+  useGetAllChargesJavQuery,
+  useGetAllChargesJuinQuery,
+  useGetAllChargesJulyQuery,
+  useGetAllChargesMarQuery,
+  useGetAllChargesMayQuery,
+  useGetAllChargesNovQuery,
+  useGetAllChargesOctQuery,
+  useGetAllChargesSepQuery,
   useGetChargeLastYearQuery,
   useGetChargeThreeMonthsQuery,
   useGetChargeWeekQuery,

@@ -10,6 +10,9 @@ import CreateProduct from "pages/Products/CreateProduct";
 import Categories from "pages/Products/Categories";
 import SubCategories from "pages/Products/SubCategories";
 
+// Calendrier
+import Calendar from "pages/Calendar";
+
 // Sellers
 import SellersListView from "pages/Sellers/ListView";
 import SellersGridView from "pages/Sellers/GridView";
@@ -21,28 +24,21 @@ import InvoiceDetails from "pages/Invoices/InvoiceDetails";
 import CreateInvoice from "pages/Invoices/CreateInvoice";
 
 // User List
-import UsersList from "pages/UsersList";
+import ClientMor from "pages/ClientMor";
 
 // Shipping
 import Shipments from "pages/Shipping/Shipments";
 import ShippingList from "pages/Shipping/ShippingList";
 import CreateArrivageProduit from "pages/Shipping/CreateArrivageProduit";
 
-// Coupons
-import Coupons from "pages/Coupons";
+// Echéances
+import EcheanceListTable from "pages/Echeances/EcheanceListTable";
 
-//Review & Rating
-import ReviewRating from "pages/Reviews-Rating";
+// Coupons
+import ClientPhy from "pages/ClientPhy";
 
 //Brands
 import Brands from "pages/Charges";
-
-//statistics
-import Statistics from "pages/Statistics";
-
-// Localization
-import Transactions from "pages/Localization/Transactions";
-import CurrencyRates from "pages/Localization/CurrencyRates";
 
 // Accounts
 import MyAccount from "pages/Accounts/MyAccount";
@@ -68,7 +64,12 @@ import ShippingDetails from "pages/Shipping/ShippingList/ShippingDetails";
 import CreateDevis from "pages/Devis/CreateDevis";
 import DevisList from "pages/Devis/DevisList";
 
-const authProtectedRoutes = [
+// const authProtectedRoutes = [
+
+// ];
+
+const publicRoutes = [
+  // Authentication
   { path: "/tableau_de_bord", component: <Dashboard /> },
 
   //Product
@@ -87,15 +88,15 @@ const authProtectedRoutes = [
   // Invoice
   { path: "/invoices-list", component: <InvoiceList /> },
   { path: "/invoices-details", component: <InvoiceDetails /> },
-  { path: "/invoices-create", component: <CreateInvoice /> },
+  { path: "/nouveau-facture", component: <CreateInvoice /> },
 
   // Devis
   { path: "/liste-devis", component: <DevisList /> },
-  { path: "/invoices-details", component: <InvoiceDetails /> },
-  { path: "/devis-create", component: <CreateDevis /> },
+  { path: "/details-devis", component: <InvoiceDetails /> },
+  { path: "/nouveau-devis", component: <CreateDevis /> },
 
-  // User List
-  { path: "/client-morale", component: <UsersList /> },
+  // ClientPhy
+  { path: "/client-morale", component: <ClientPhy /> },
 
   // Shipping
   { path: "/nouveau-arrivage", component: <ShippingList /> },
@@ -103,23 +104,17 @@ const authProtectedRoutes = [
   { path: "/detail", component: <ShippingDetails /> },
   { path: "/nouveau-arrivage-produit", component: <CreateArrivageProduit /> },
 
-  // Coupons
-  { path: "/client-physique", component: <Coupons /> },
+  // ClientPhy
+  { path: "/client-physique", component: <ClientPhy /> },
 
-  { path: "/calendrier", component: <ComingSoon /> },
+  // Echeances
+  { path: "/echeances", component: <EcheanceListTable /> },
 
-  //Review & Rating
-  { path: "/reviews-ratings", component: <ReviewRating /> },
+  // Calendar
+  { path: "/calendrier", component: <Calendar /> },
 
   //Review & Rating
   { path: "/charges", component: <Brands /> },
-
-  //statistics
-  { path: "/statistics", component: <Statistics /> },
-
-  // Localization
-  { path: "/transactions", component: <Transactions /> },
-  { path: "/currency-rates", component: <CurrencyRates /> },
 
   // Accounts
   { path: "/liste-comptes", component: <MyAccount /> },
@@ -130,10 +125,6 @@ const authProtectedRoutes = [
   { path: "/", exact: true, component: <Navigate to="/tableau_de_bord" /> },
   { path: "*", component: <Navigate to="/tableau_de_bord" /> },
   { path: "/profil", component: <UserProfile /> },
-];
-
-const publicRoutes = [
-  // Authentication
   { path: "/login", component: <Login /> },
   { path: "/logout", component: <Logout /> },
   { path: "/register", component: <Register /> },
@@ -152,4 +143,4 @@ const publicRoutes = [
   { path: "/coming-soon", component: <ComingSoon /> },
 ];
 
-export { authProtectedRoutes, publicRoutes };
+export { publicRoutes };

@@ -1,62 +1,25 @@
 import React, { useState, useMemo, useCallback } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Dropdown,
-  Form,
-  Modal,
-  Row,
-  Offcanvas,
-} from "react-bootstrap";
+import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import TableContainer from "Common/TableContainer";
-import Flatpickr from "react-flatpickr";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/de";
 import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/fr";
+import { frFR } from "@mui/x-date-pickers/locales";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import {
   Charges,
   useGetAllChargesQuery,
   useAddChargeMutation,
   useDeleteChargesMutation,
 } from "features/charge/chargeSlice";
-import Swal from "sweetalert2";
-// Formik Validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
 
 const ChargeTable = () => {
   const [show, setShow] = useState<boolean>(false);
   const [info, setInfo] = useState<any>([]);
-
-  const validationSchema = Yup.object().shape({
-    typeCharges: Yup.string()
-      .required("Le type du charge est obligatoire")
-      .trim(),
-    descriptionCharge: Yup.string()
-      .required("Le description Charge est obligatoire")
-      .trim()
-      .min(6, "Le nom d'utilisateur doit comporter au moins 6 caractères"),
-    montantCharges: Yup.number()
-      .required("Le montant Charges est obligatoire")
-      .positive()
-      .integer(),
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      typeCharges: "",
-      descriptionCharge: "",
-      montantCharges: "",
-    },
-    validationSchema,
-    onSubmit: (data) => {
-      console.log(JSON.stringify(data, null, 2));
-    },
-  });
 
   const notify = () => {
     Swal.fire({
@@ -301,7 +264,6 @@ const ChargeTable = () => {
                     onClick={tog_AddUserModals}
                   >
                     <i className="ri-add-line align-bottom me-1"></i> Ajouter
-                    Charge
                   </Link>
                 </div>
               </div>
@@ -321,16 +283,6 @@ const ChargeTable = () => {
                     theadClassName="text-muted table-light"
                     SearchPlaceholder="Rechercher charge..."
                   />
-                  <div className="noresult" style={{ display: "none" }}>
-                    <div className="text-center">
-                      {/* <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon> */}
-                      <h5 className="mt-2">Sorry! No Result Found</h5>
-                      <p className="text-muted mb-0">
-                        We've searched more than 150+ invoices We did not find
-                        any invoices for you search.
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </Card.Body>
@@ -373,14 +325,6 @@ const ChargeTable = () => {
                     <option value="Salaires">Salaires</option>
                     <option value="Factures">Facture</option>
                     <option value="Retour">Retour</option>
-                    {/* {allfournisseur.map((fournisseur) => (
-                    <option
-                      key={formData.fournisseurID}
-                      value={formData.fournisseurID}
-                    >
-                      {fournisseur.raison_sociale}
-                    </option>
-                  ))} */}
                   </select>
                 </div>
               </Col>
@@ -401,18 +345,6 @@ const ChargeTable = () => {
                 </div>
               </Col>
             </Row>
-            {/* <div className="mb-3">
-              <Form.Label htmlFor="typeCharges">Type Charge</Form.Label>
-              <Form.Control
-                value={formData.typeCharges}
-                onChange={onChange}
-                type="text"
-                id="typeCharges"
-                placeholder="Entrer type Charge"
-                required
-              />
-            </div> */}
-
             <Row>
               <Col lg={6}>
                 <div className="mb-3">
@@ -430,24 +362,22 @@ const ChargeTable = () => {
               </Col>
               <Col lg={6}>
                 <div className="mb-3">
-                  {/* <Form.Label htmlFor="dateCharges">Date Charge</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="dateCharges"
-                    required
-                    value={formData.dateCharges}
-                    onChange={onChange}
-                  /> */}
                   <Form.Label htmlFor="dateCharges">Date Charge</Form.Label>
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
-                    adapterLocale="de"
+                    adapterLocale="fr"
+                    localeText={
+                      frFR.components.MuiLocalizationProvider.defaultProps
+                        .localeText
+                    }
                   >
                     <DatePicker
                       defaultValue={now}
                       slotProps={{
                         textField: {
                           size: "small",
+                          id: "dateCharges",
+                          name: "dateCharges",
                           inputProps: { ["placeholder"]: "AAAA.MM.DD" },
                         },
                       }}
@@ -462,8 +392,8 @@ const ChargeTable = () => {
             <Row>
               <Col lg={12}>
                 <div className="mb-3">
-                  <label htmlFor="avatar" className="form-label d-block">
-                    Piece Jointe <span className="text-danger">*</span>
+                  <label htmlFor="piecejointes" className="form-label d-block">
+                    Piece Jointe
                   </label>
                   <div className="position-relative d-inline-block">
                     <div className="position-absolute top-100 start-100 translate-middle">
@@ -532,60 +462,6 @@ const ChargeTable = () => {
           </div>
         </Form>
       </Modal>
-      <Offcanvas show={show} onHide={() => setShow(false)} placement="end">
-        <Offcanvas.Header closeButton></Offcanvas.Header>
-        <Offcanvas.Body>
-          <div className="text-center mt-3">
-            <h5 className="overview-title">{info.descriptionCharge}</h5>
-          </div>
-          <div className="text-center mt-3">
-            <h5 className="overview-title">{info.typeCharges}</h5>
-          </div>
-          <div className="text-center mt-3">
-            <h5 className="overview-title">{info.montantCharges}</h5>
-          </div>
-        </Offcanvas.Body>
-        <Offcanvas.Body>
-          <Link
-            rel="noreferrer"
-            to={`data:image/jpeg;base64,${info.piecejointes}`}
-            target="_blank"
-          >
-            <div className="avatar-xl mx-auto">
-              <div className="avatar-title bg-light rounded">
-                <img
-                  src={`data:image/jpeg;base64,${info.piecejointes}`}
-                  alt=""
-                  className="avatar-xl overview-img"
-                />
-              </div>
-            </div>
-          </Link>
-        </Offcanvas.Body>
-        <div className="p-3 border-top">
-          <Row>
-            <Col sm={6}>
-              <div data-bs-dismiss="offcanvas">
-                <Button
-                  variant="danger"
-                  type="button"
-                  className="btn btn-danger w-100 remove-list"
-                  data-bs-toggle="modal"
-                  data-bs-target="#delteModal"
-                  data-remove-id="12"
-                  onClick={() => {
-                    AlertDelete(info.idcategory);
-                    setShow(false);
-                  }}
-                >
-                  <i className="ri-delete-bin-line me-1 align-bottom"></i>{" "}
-                  Supprimer
-                </Button>
-              </div>
-            </Col>
-          </Row>
-        </div>
-      </Offcanvas>
     </React.Fragment>
   );
 };

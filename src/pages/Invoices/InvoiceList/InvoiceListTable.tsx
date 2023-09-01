@@ -7,12 +7,12 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Facture,
   useDeleteFactureMutation,
-  useFetchFacturesQuery,
+  useFetchAllFactureQuery,
 } from "features/facture/factureSlice";
 import Swal from "sweetalert2";
 
 const InvoiceListTable = () => {
-  const { data = [] } = useFetchFacturesQuery();
+  const { data = [] } = useFetchAllFactureQuery();
   const [deleteFacture] = useDeleteFactureMutation();
 
   const [modal_AddUserModals, setmodal_AddUserModals] =
@@ -72,7 +72,7 @@ const InvoiceListTable = () => {
           deleteFacture(id);
           swalWithBootstrapButtons.fire(
             "Supprimé !",
-            "Le Client a été supprimé.",
+            "La Facture a été supprimée.",
             "success"
           );
           navigate("/invoices-list");
@@ -82,7 +82,7 @@ const InvoiceListTable = () => {
         ) {
           swalWithBootstrapButtons.fire(
             "Annulé",
-            "Le Client est en sécurité :)",
+            "La Facture est en sécuritée :)",
             "error"
           );
         }
@@ -192,31 +192,27 @@ const InvoiceListTable = () => {
 
   return (
     <React.Fragment>
-      <Row>
-        <Col lg={12}>
-          <Card id="invoiceList">
-            <Card.Header className="border-0">
-              <div className="d-flex align-items-center justify-content-end">
-                <div className="flex-shrink-0">
-                  <div className="d-flex gap-2 flex-wrap">
-                    {isMultiDeleteButton && (
-                      <Button variant="danger" className="btn-icon">
-                        <i className="ri-delete-bin-2-line"></i>
-                      </Button>
-                    )}
-                    <Link
-                      to="/invoices-create"
-                      className="btn btn-primary"
-                      onClick={tog_AddUserModals}
-                    >
-                      <i className="ri-add-line align-bottom me-1"></i> Créer
-                      Facture
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </Card.Header>
-            {/* <Card.Body className="bg-soft-light border border-dashed border-start-0 border-end-0">
+      <Card.Header className="border-0">
+        <div className="d-flex align-items-center justify-content-end">
+          <div className="flex-shrink-0">
+            <div className="d-flex gap-2 flex-wrap">
+              {isMultiDeleteButton && (
+                <Button variant="danger" className="btn-icon">
+                  <i className="ri-delete-bin-2-line"></i>
+                </Button>
+              )}
+              <Link
+                to="/invoices-create"
+                className="btn btn-primary"
+                onClick={tog_AddUserModals}
+              >
+                <i className="ri-add-line align-bottom me-1"></i> Créer Facture
+              </Link>
+            </div>
+          </div>
+        </div>
+      </Card.Header>
+      {/* <Card.Body className="bg-soft-light border border-dashed border-start-0 border-end-0">
               <form>
                 <Row className="g-3">
                   <Col xxl={5} sm={12}>
@@ -260,37 +256,34 @@ const InvoiceListTable = () => {
                 </Row>
               </form>
             </Card.Body> */}
-            <Card.Body>
-              <div>
-                <div className="table-responsive table-card">
-                  <TableContainer
-                    columns={columns || []}
-                    data={data || []}
-                    isGlobalFilter={true}
-                    iscustomPageSize={false}
-                    isBordered={false}
-                    customPageSize={10}
-                    className="custom-header-css table align-middle table-nowrap"
-                    tableClassName="table-centered align-middle table-nowrap mb-0"
-                    theadClassName="text-muted table-light"
-                    SearchPlaceholder="Chercher..."
-                  />
-                  <div className="noresult" style={{ display: "none" }}>
-                    <div className="text-center">
-                      {/* <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon> */}
-                      <h5 className="mt-2">Sorry! No Result Found</h5>
-                      <p className="text-muted mb-0">
-                        We've searched more than 150+ invoices We did not find
-                        any invoices for you search.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+      <Card.Body>
+        <div>
+          <div className="table-responsive table-card">
+            <TableContainer
+              columns={columns || []}
+              data={data || []}
+              isGlobalFilter={true}
+              iscustomPageSize={false}
+              isBordered={false}
+              customPageSize={10}
+              className="custom-header-css table align-middle table-nowrap"
+              tableClassName="table-centered align-middle table-nowrap mb-0"
+              theadClassName="text-muted table-light"
+              SearchPlaceholder="Recherche..."
+            />
+            <div className="noresult" style={{ display: "none" }}>
+              <div className="text-center">
+                {/* <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon> */}
+                <h5 className="mt-2">Sorry! No Result Found</h5>
+                <p className="text-muted mb-0">
+                  We've searched more than 150+ invoices We did not find any
+                  invoices for you search.
+                </p>
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+            </div>
+          </div>
+        </div>
+      </Card.Body>
 
       <Modal
         className="fade"

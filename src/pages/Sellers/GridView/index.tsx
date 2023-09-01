@@ -4,7 +4,6 @@ import {
   Card,
   Col,
   Container,
-  Dropdown,
   Form,
   Modal,
   Row,
@@ -14,7 +13,6 @@ import { sellerGrid } from "Common/data";
 import CountUp from "react-countup";
 import { Link } from "react-router-dom";
 import {
-  Fournisseur,
   useAddFournisseurMutation,
   useDeleteFournisseurMutation,
   useFetchFournisseurQuery,
@@ -137,9 +135,7 @@ const SellersGridView = () => {
     const fileLogo = (
       document.getElementById("logo") as HTMLInputElement
     ).files?.item(0) as File;
-
     const base64 = await convertToBase64(fileLogo);
-    console.log(base64);
 
     setFormData({
       ...formData,
@@ -160,11 +156,9 @@ const SellersGridView = () => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
-
       fileReader.onload = () => {
         const base64String = fileReader.result as string;
         const base64Data = base64String.split(",")[1];
-
         resolve(base64Data);
       };
       fileReader.onerror = (error) => {
@@ -724,14 +718,14 @@ const SellersGridView = () => {
           </Row>
 
           <Row className="mb-4 justify-content-end">
-            <Col xxl={2} sm={6}>
+            <Col lg={1} sm={6}>
               <Button
                 onClick={() => tog_AddSellerModals()}
                 variant="success"
                 data-bs-toggle="modal"
                 data-bs-target="#createModal"
               >
-                Ajouter Fournisseur
+                Ajouter
               </Button>
             </Col>
           </Row>

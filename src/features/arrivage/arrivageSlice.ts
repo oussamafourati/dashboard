@@ -24,6 +24,12 @@ export const arrivageSlice = createApi({
         },
         providesTags: ["Arrivage"],
       }),
+      getArrivagesSixMonths: builder.query<Arrivage[], number | void>({
+        query() {
+          return "/allArrivageSixMonth";
+        },
+        providesTags: ["Arrivage"],
+      }),
       getOneArrivage: builder.query<Arrivage, number | void>({
         query(idArrivage) {
           return `/oneArrivage/${idArrivage}`;
@@ -60,6 +66,78 @@ export const arrivageSlice = createApi({
         },
         providesTags: ["Arrivage"],
       }),
+      getArrivageDec: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageDec`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageNov: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageNov`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageOct: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageOct`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageSep: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageSep`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageAug: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageAug`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageJuly: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageJuly`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageJuin: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageJuin`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageMay: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageMay`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageApr: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageApr`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageMar: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageMar`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageFeb: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageFeb`;
+        },
+        providesTags: ["Arrivage"],
+      }),
+      getArrivageJan: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allArrivageJan`;
+        },
+        providesTags: ["Arrivage"],
+      }),
       addArrivage: builder.mutation<void, Arrivage>({
         query(payload) {
           return {
@@ -90,6 +168,19 @@ export const arrivageSlice = createApi({
 });
 
 export const {
+  useGetArrivagesSixMonthsQuery,
+  useGetArrivageAprQuery,
+  useGetArrivageAugQuery,
+  useGetArrivageDecQuery,
+  useGetArrivageFebQuery,
+  useGetArrivageJanQuery,
+  useGetArrivageJuinQuery,
+  useGetArrivageJulyQuery,
+  useGetArrivageMarQuery,
+  useGetArrivageMayQuery,
+  useGetArrivageNovQuery,
+  useGetArrivageOctQuery,
+  useGetArrivageSepQuery,
   useGetToDayArrivageQuery,
   useGetThisMonthArrivageQuery,
   useGetThisYearArrivageQuery,

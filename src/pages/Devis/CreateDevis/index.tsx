@@ -7,6 +7,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/de";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
+import "dayjs/locale/fr";
+import { frFR } from "@mui/x-date-pickers/locales";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useGetOneClientQuery } from "features/clientPhysique/clientPhysiqueSlice";
@@ -65,19 +67,6 @@ const CreateDevis = () => {
     nomClient,
     nomProduit,
   } = factureData;
-
-  // const onChangeFacture = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setFactureData((prevState) => ({
-  //     ...prevState,
-  //     [e.target.id]: e.target.value,
-  //   }));
-  // };
-
-  // const onSubmitFacture = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   addFacture(factureData).then(() => setFactureData(factureValue));
-  //   // notify();
-  // };
 
   // The selected Reglement
   const [selectedReglement, setSelectedReglement] = useState<String>();
@@ -189,7 +178,6 @@ const CreateDevis = () => {
                       <Row>
                         <Col lg={4} sm={6}>
                           <TextField
-                            sx={{ width: 380 }}
                             label="Nom Client"
                             InputLabelProps={{
                               shrink: true,
@@ -199,11 +187,11 @@ const CreateDevis = () => {
                             id="nomClient"
                             onChange={onFactureChange}
                             value={factureData.nomClient}
+                            className="mb-2"
                           />
                         </Col>
                         <Col lg={4} sm={6}>
                           <TextField
-                            sx={{ width: 380 }}
                             label="Numero Devis"
                             InputLabelProps={{
                               shrink: true,
@@ -214,15 +202,19 @@ const CreateDevis = () => {
                             placeholder="25000355"
                             onChange={onFactureChange}
                             value={factureData.designationFacture}
+                            className="mb-2"
                           />
                         </Col>
                         <Col lg={4} sm={6}>
                           <LocalizationProvider
                             dateAdapter={AdapterDayjs}
-                            adapterLocale="de"
+                            adapterLocale="fr"
+                            localeText={
+                              frFR.components.MuiLocalizationProvider
+                                .defaultProps.localeText
+                            }
                           >
                             <DatePicker
-                              sx={{ width: 380 }}
                               defaultValue={now}
                               slotProps={{
                                 textField: {
@@ -230,6 +222,7 @@ const CreateDevis = () => {
                                   inputProps: { ["placeholder"]: "JJ.MM.AAAA" },
                                 },
                               }}
+                              className="mb-2"
                             />
                           </LocalizationProvider>
                         </Col>
@@ -244,9 +237,7 @@ const CreateDevis = () => {
                             </Form.Label>
                           </Col>
                           <Col lg={3}>
-                            <Form.Label htmlFor="PrixUnitaire">
-                              Prix Unitaire
-                            </Form.Label>
+                            <Form.Label htmlFor="PU">Prix Unitaire</Form.Label>
                           </Col>
                           <Col lg={2}>
                             <Form.Label htmlFor="MontantAR">
@@ -270,8 +261,9 @@ const CreateDevis = () => {
                           <Row style={{ marginBottom: 20 }} key={index}>
                             <Col lg={4}>
                               <Autocomplete
+                                className="mb-2"
                                 id="nomProduit"
-                                sx={{ width: 380 }}
+                                sx={{ width: 340 }}
                                 options={allArrivageProduit!}
                                 autoHighlight
                                 onChange={(event, value) => {
@@ -307,12 +299,13 @@ const CreateDevis = () => {
                                 name="PU"
                                 placeholder="00.00"
                                 value={form.PU}
+                                className="mb-2"
                               />
                             </Col>
                             {montantTotal !== count ? (
                               <Col lg={2}>
                                 <TextField
-                                  sx={{ width: 190 }}
+                                  sx={{ width: 160 }}
                                   id="MontantAR"
                                   size="small"
                                   type="number"
@@ -328,6 +321,7 @@ const CreateDevis = () => {
                                   InputProps={{
                                     readOnly: true,
                                   }}
+                                  className="mb-2"
                                 />
                               </Col>
                             ) : (
@@ -335,7 +329,6 @@ const CreateDevis = () => {
                             )}
                             <Col lg={1} sm={6}>
                               <TextField
-                                sx={{ width: 80 }}
                                 id="quantiteProduit"
                                 type="number"
                                 size="small"
@@ -345,11 +338,13 @@ const CreateDevis = () => {
                                   handleFormChange(event, index)
                                 }
                                 value={form.qty}
+                                className="mb-2"
                               />
                             </Col>
                             <Col lg={1} sm={6}>
                               <TextField
-                                sx={{ width: 95 }}
+                                sx={{ width: 80 }}
+                                className="mb-2"
                                 id="MontantTotal"
                                 size="small"
                                 type="number"
@@ -369,7 +364,7 @@ const CreateDevis = () => {
                                 }}
                               />
                             </Col>
-                            <Col lg={1} style={{ marginTop: 13 }}>
+                            <Col lg={1} className="mt-2">
                               <Link
                                 to="#"
                                 className="link-danger"
@@ -433,7 +428,7 @@ const CreateDevis = () => {
                         </Button>
                         <Link to="#" className="btn btn-primary">
                           <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                          Telecharger Devis
+                          Telecharger
                         </Link>
                       </div>
                     </Card.Body>

@@ -54,7 +54,7 @@ const SubCategories = () => {
 
   useEffect(() => {
     const getCategory = async () => {
-      const reqdata = await fetch("http://localhost:8000/category/all");
+      const reqdata = await fetch("https://src-api.onrender.com/category/all");
       const resdata = await reqdata.json();
       setCategoryState(resdata);
     };
@@ -65,7 +65,7 @@ const SubCategories = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/category/one/${categoryId}`
+        `https://src-api.onrender.com/category/one/${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);

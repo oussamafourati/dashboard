@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import CountUp from "react-countup";
@@ -499,7 +499,7 @@ const ChargesList = () => {
                   <div className="d-flex align-items-center">
                     <div className="flex-grow-1">
                       <p className="text-uppercase fs-14 fw-medium text-muted mb-0">
-                        Charges du Mos
+                        Charges du Mois en cours
                       </p>
                     </div>
                   </div>
@@ -659,7 +659,7 @@ const ChargesList = () => {
                   <div className="d-flex align-items-center">
                     <div className="flex-grow-1">
                       <p className="text-uppercase fs-14 fw-medium text-muted mb-0">
-                        Charges Total de l'année
+                        Charges de l'année en cours
                       </p>
                     </div>
                   </div>

@@ -44,7 +44,7 @@ const CreateArrivageProduit = () => {
   useEffect(() => {
     const getProduit = async () => {
       const reqdata = await fetch(
-        "http://localhost:8000/product/getAllProducts"
+        "https://src-api.onrender.com/product/getAllProducts"
       );
       const resdata = await reqdata.json();
       setProduit(resdata);
@@ -55,7 +55,7 @@ const CreateArrivageProduit = () => {
     const produitId = e.target.value;
     if (produitId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/product/getOneProduct/${produitId}`
+        `https://src-api.onrender.com/product/getOneProduct/${produitId}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -161,7 +161,7 @@ const CreateArrivageProduit = () => {
   useEffect(() => {
     const loadProduct = async () => {
       const response = await fetch(
-        "http://localhost:8000/product/getAllProducts"
+        "https://src-api.onrender.com/product/getAllProducts"
       );
       const resData = await response.json();
       setProducts(resData);
@@ -266,7 +266,7 @@ const CreateArrivageProduit = () => {
   const [sousCategoryid, setSousCategoryid] = useState("");
   useEffect(() => {
     const getCategory = async () => {
-      const reqdata = await fetch("http://localhost:8000/category/all");
+      const reqdata = await fetch("https://src-api.onrender.com/category/all");
       const resdata = await reqdata.json();
       setCategory(resdata);
     };
@@ -276,7 +276,7 @@ const CreateArrivageProduit = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/subCategory/onesubcategory?idcategory=${categoryId}`
+        `https://src-api.onrender.com/subCategory/onesubcategory?idcategory=${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSousCategory(resstatedata);

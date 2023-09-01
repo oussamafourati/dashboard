@@ -21,6 +21,7 @@ import { facturetSlice } from "features/facture/factureSlice";
 import { arrivageProduitSlice } from "features/arrivageProduit/arrivageProduitSlice";
 import { compteSlice } from "features/compte/compteSlice";
 import { LigneVenteSlice } from "features/ligneVente/ligneVenteSlice";
+import { echanceSlice } from "features/Echance/echanceSlice";
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
     [arrivageProduitSlice.reducerPath]: arrivageProduitSlice.reducer,
     [compteSlice.reducerPath]: compteSlice.reducer,
     [LigneVenteSlice.reducerPath]: LigneVenteSlice.reducer,
+    [echanceSlice.reducerPath]: echanceSlice.reducer,
     Layout: LayoutReducer,
     Calendar: CalendarReducer,
     Login: LoginReducer,
@@ -58,6 +60,7 @@ export const store = configureStore({
       arrivageProduitSlice.middleware,
       compteSlice.middleware,
       LigneVenteSlice.middleware,
+      echanceSlice.middleware,
     ]);
   },
 });

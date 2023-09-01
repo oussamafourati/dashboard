@@ -243,20 +243,6 @@ const Shipments = () => {
                   SearchPlaceholder="Rechercher Arrivage..."
                 />
               </div>
-              <div className="noresult" style={{ display: "none" }}>
-                <div className="text-center py-4">
-                  <div className="avatar-md mx-auto mb-4">
-                    <div className="avatar-title bg-primary-subtle text-primary rounded-circle fs-24">
-                      <i className="bi bi-search"></i>
-                    </div>
-                  </div>
-                  <h5 className="mt-2">Sorry! No Result Found</h5>
-                  <p className="text-muted mb-0">
-                    We've searched more than 150+ shipment orders We did not
-                    find any shipment orders for you search.
-                  </p>
-                </div>
-              </div>
             </Card.Body>
           </Card>
           <Modal
@@ -310,7 +296,6 @@ const Shipments = () => {
                       />
                     </div>
                   </Col>
-
                   <Col lg={6}>
                     <div className="mb-3">
                       <Form.Label htmlFor="dateArrivage">

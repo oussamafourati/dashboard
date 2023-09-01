@@ -1,66 +1,16 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import TableContainer from "Common/TableContainer";
-import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import {
-  useDeleteProduitMutation,
-  useFetchProduitsQuery,
-  Produit,
-} from "features/produit/productSlice";
-import Swal from "sweetalert2";
-import {
-  ArrivageProduit,
-  useGetFournisseurProduitQuery,
-} from "features/arrivageProduit/arrivageProduitSlice";
+import { Produit } from "features/produit/productSlice";
+import { useGetFournisseurProduitQuery } from "features/arrivageProduit/arrivageProduitSlice";
 
 interface MyProps {
   idfournisseur: number;
 }
 
 const ProductList = ({ idfournisseur }: MyProps) => {
-  const { data = [] } = useFetchProduitsQuery();
-  const [arrProd, setArrProd] = useState<ArrivageProduit>();
   const { data: AllProductByFournisseur = [] } =
     useGetFournisseurProduitQuery(idfournisseur);
-
-  const [deleteProduit] = useDeleteProduitMutation();
-
-  const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-      confirmButton: "btn btn-success",
-      cancelButton: "btn btn-danger",
-    },
-    buttonsStyling: false,
-  });
-
-  const AlertDelete = async (id: any) => {
-    swalWithBootstrapButtons
-      .fire({
-        title: "Êtes-vous sûr?",
-        text: "Vous ne pourrez pas revenir en arrière !",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Oui, supprimez-le !",
-        cancelButtonText: "Non, annulez !",
-        reverseButtons: true,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          deleteProduit(id);
-          swalWithBootstrapButtons.fire(
-            "Supprimé !",
-            "Le Produit a été supprimé.",
-            "success"
-          );
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalWithBootstrapButtons.fire(
-            "Annulé",
-            "Le Produit est en sécurité :)",
-            "error"
-          );
-        }
-      });
-  };
 
   const columns = useMemo(
     () => [
@@ -129,13 +79,6 @@ const ProductList = ({ idfournisseur }: MyProps) => {
               >
                 <i className="ri-eye-line ri-xl" />
               </Link>
-              <Link
-                to="#"
-                className="link-danger"
-                onClick={() => AlertDelete(produit.idproduit)}
-              >
-                <i className="ri-delete-bin-5-line ri-xl" />
-              </Link>
             </React.Fragment>
           );
         },
@@ -145,18 +88,6 @@ const ProductList = ({ idfournisseur }: MyProps) => {
   );
   return (
     <React.Fragment>
-      <Row className="mb-4 justify-content-end">
-        <Col xxl={2} sm={6}>
-          <Link
-            to="/product-create"
-            className="btn btn-success"
-            id="addproduct-btn"
-          >
-            {" "}
-            <i className="ri-add-line align-bottom me-1"></i> Ajouter Produit
-          </Link>
-        </Col>
-      </Row>
       <div>
         <TableContainer
           columns={columns}
@@ -164,7 +95,6 @@ const ProductList = ({ idfournisseur }: MyProps) => {
           isGlobalFilter={true}
           isAddUserList={false}
           customPageSize={10}
-          // divClassName="table-responsive mb-1"
           tableClassName="gridjs-table"
           theadClassName="gridjs-thead"
           isProductsFilter={true}

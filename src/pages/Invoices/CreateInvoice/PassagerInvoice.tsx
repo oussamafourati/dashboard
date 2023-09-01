@@ -11,7 +11,8 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import "dayjs/locale/de";
+import "dayjs/locale/fr";
+import { frFR } from "@mui/x-date-pickers/locales";
 import dayjs, { Dayjs } from "dayjs";
 import { Link } from "react-router-dom";
 import TextField from "@mui/material/TextField";
@@ -37,6 +38,7 @@ interface FormFields {
   productName: string;
   montantTtl: string;
   numFacture: string;
+  subTtl: string;
   [key: string]: string;
 }
 
@@ -51,7 +53,9 @@ const PassagerInvoice: React.FC = () => {
 
   useEffect(() => {
     const getClientPhysique = async () => {
-      const reqdata = await fetch("http://localhost:8000/clientPyh/clients");
+      const reqdata = await fetch(
+        "https://src-api.onrender.com/clientPyh/clients"
+      );
       const resdata = await reqdata.json();
       setClientPhysique(resdata);
     };
@@ -62,7 +66,7 @@ const PassagerInvoice: React.FC = () => {
     const clientPhysiqueId = e.target.value;
     if (clientPhysiqueId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/clientPyh/one/18`
+        `https://src-api.onrender.com/clientPyh/one/18`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -74,6 +78,12 @@ const PassagerInvoice: React.FC = () => {
 
   // Mutation to create a new Client
   const [createClientPhysique] = useAddClientPhysiqueMutation();
+  const [selectedEtat, setSelectedEtat] = useState<string>("");
+  // This function is triggered when the select changes
+  const selectChangeEtat = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedEtat(value);
+  };
 
   const [clientValue, setClientValue] = useState<ClientPhysique | null>(
     clientPhysique[0]
@@ -116,6 +126,7 @@ const PassagerInvoice: React.FC = () => {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    formData["etat"] = parseInt(selectedEtat);
     e.preventDefault();
     createClientPhysique(formData).then(() => setFormData(formData));
   };
@@ -208,6 +219,8 @@ const PassagerInvoice: React.FC = () => {
   const [datePaiement, setDatePaiement] = useState("");
   const [modePaiement, setModePaiement] = useState("");
   const [statusFacture, setStatusFacture] = useState(0);
+  const [MontantTotal, setMontantTotal] = useState(0);
+  const [nomClient, setNomClient] = useState("");
   const [clientID, setClientID] = useState(18);
   const [addFacture, { isLoading }] = useAddFactureMutation();
 
@@ -220,6 +233,8 @@ const PassagerInvoice: React.FC = () => {
         datePaiement,
         modePaiement,
         statusFacture,
+        MontantTotal,
+        nomClient,
         clientID: clientValue?.idclient_p!,
       }).unwrap();
       // setDesignationFacture("");
@@ -241,6 +256,7 @@ const PassagerInvoice: React.FC = () => {
     datePaiement: "",
     modePaiement: "",
     statusFacture: 1,
+    MontantTotal: 1,
     clientID: 18,
   };
   const [createLigneVente] = useCreateNewLigneVenteMutation();
@@ -252,6 +268,7 @@ const PassagerInvoice: React.FC = () => {
       quantiteProduit: "",
       productName: "",
       numFacture: "",
+      subTtl: "",
     },
   ]);
   const [acValue, setACValue] = useState<ArrivageProduit | null>(
@@ -277,6 +294,7 @@ const PassagerInvoice: React.FC = () => {
       quantiteProduit: "",
       productName: acValue?.nomProduit!,
       numFacture: designationFacture,
+      subTtl: "",
     };
     setFormFields([...formFields, object]);
     // e.preventDefault();
@@ -294,13 +312,20 @@ const PassagerInvoice: React.FC = () => {
     setFormFields(data);
   };
 
-  const [count, setCount] = useState<number | undefined>();
-  const rem = 100 - (count! * 100) / montantTotal;
+  const total = formFields.reduce(
+    (sum, i) => (sum += parseInt(i.montantTtl)),
+    0
+  );
 
+  const [count, setCount] = useState<number | undefined>();
+  const [remise, setRemise] = useState<number | undefined>();
+  useEffect(() => {
+    setRemise(100 - (count! * 100) / total);
+  });
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     // addFacture(factureData).then(() => setFactureData(factureValue));
-    console.log(formFields);
+    // console.log(formFields);
   };
 
   // Modal to create a new client physique
@@ -349,7 +374,7 @@ const PassagerInvoice: React.FC = () => {
             > */}
             <Card.Body className="border-bottom border-bottom-dashed p-4">
               <Row>
-                <Col lg={4}>
+                <Col lg={4} sm={6}>
                   <div>
                     <div className="input-group d-flex gap-2 mb-4">
                       <Autocomplete
@@ -399,12 +424,17 @@ const PassagerInvoice: React.FC = () => {
                     value={designationFacture}
                     onChange={(e) => setDesignationFacture(e.target.value)}
                     sx={{ width: 320 }}
+                    className="mb-2"
                   />
                 </Col>
                 <Col lg={4} sm={6}>
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
-                    adapterLocale="de"
+                    adapterLocale="fr"
+                    localeText={
+                      frFR.components.MuiLocalizationProvider.defaultProps
+                        .localeText
+                    }
                   >
                     <DatePicker
                       defaultValue={now}
@@ -425,7 +455,7 @@ const PassagerInvoice: React.FC = () => {
             </Card.Body>
             <Card.Body className="p-4">
               <div>
-                <Row className="text-center">
+                <Row>
                   <Col lg={4}>
                     <Form.Label htmlFor="nomProduit">Détail Produit</Form.Label>
                   </Col>
@@ -447,10 +477,11 @@ const PassagerInvoice: React.FC = () => {
                   <Col lg={1}></Col>
                 </Row>
                 {formFields.map((form, index) => (
-                  <Row style={{ marginBottom: 20 }} key={index}>
+                  <Row key={index}>
                     <Col lg={4}>
                       <Autocomplete
                         id="nomProduit"
+                        className="mb-2"
                         sx={{ width: 380 }}
                         options={allArrivageProduit!}
                         autoHighlight
@@ -485,9 +516,10 @@ const PassagerInvoice: React.FC = () => {
                     </Col>
                     <Col lg={1} sm={6}>
                       <TextField
+                        className="mb-2"
                         sx={{ width: 80 }}
                         id="quantiteProduit"
-                        type="number"
+                        type="text"
                         size="small"
                         name="quantiteProduit"
                         placeholder="0.0"
@@ -497,6 +529,7 @@ const PassagerInvoice: React.FC = () => {
                     </Col>
                     <Col lg={2}>
                       <TextField
+                        className="mb-2"
                         id="PU"
                         type="text"
                         size="small"
@@ -508,12 +541,13 @@ const PassagerInvoice: React.FC = () => {
                     </Col>
                     <Col lg={2} sm={6}>
                       <TextField
+                        className="mb-2"
                         sx={{ width: 190 }}
                         id="montantTtl"
                         size="small"
                         type="number"
                         name="montantTtl"
-                        placeholder="0.0"
+                        placeholder="00.00"
                         onChange={(event) => handleFormChange(event, index)}
                         value={
                           (form.montantTtl = (
@@ -536,7 +570,7 @@ const PassagerInvoice: React.FC = () => {
                           placeholder="0.0"
                           value={(
                             parseInt(form.PU) -
-                            (parseInt(form.PU) * rem) / 100
+                            (parseInt(form.PU) * remise!) / 100
                           ).toFixed(3)}
                           onChange={(event) => handleFormChange(event, index)}
                           InputProps={{
@@ -547,7 +581,7 @@ const PassagerInvoice: React.FC = () => {
                     ) : (
                       ""
                     )}
-                    <Col lg={1} style={{ marginTop: 13 }}>
+                    <Col lg={1} className="mt-2">
                       <Link
                         to="#"
                         className="link-danger"
@@ -591,7 +625,7 @@ const PassagerInvoice: React.FC = () => {
                         </div>
                       </Col>
                       <Col lg={3} sm={6}>
-                        <Form.Label htmlFor="choices-payment-status">
+                        <Form.Label htmlFor="choices-reglement-status">
                           Status de Payement
                         </Form.Label>
                         <div>
@@ -660,48 +694,39 @@ const PassagerInvoice: React.FC = () => {
                           )}
                         </div>
                       </Col>
-                      {selectedReglement === "Paiement total en espèces" ? (
-                        <Col lg={3} sm={6}>
-                          <Form.Label htmlFor="choices-payment-status">
-                            Status de Payement
-                          </Form.Label>
-                          <div>
-                            <p className="fs-15 badge badge-soft-success">
-                              Payé
-                            </p>
-                          </div>
-                        </Col>
-                      ) : (
-                        ""
-                      )}
-                      {selectedReglement === "Paiement partiel espèces" ? (
-                        <Col lg={3} sm={6}>
-                          <Form.Label htmlFor="choices-payment-status">
-                            Status de Payement
-                          </Form.Label>
+                      <Col lg={3} sm={6}>
+                        <Form.Label htmlFor="choices-payment-status">
+                          Status de Payement
+                        </Form.Label>
+                        {!selectedReglement ? (
                           <div>
                             <p className="fs-15 badge badge-soft-danger">
                               Impayé
                             </p>
                           </div>
-                        </Col>
-                      ) : (
-                        ""
-                      )}
-                      {selectedReglement === "Paiement partiel chèque" ? (
-                        <Col lg={3} sm={6}>
-                          <Form.Label htmlFor="choices-payment-status">
-                            Status de Payement
-                          </Form.Label>
+                        ) : selectedReglement ===
+                          "Paiement total en espèces" ? (
+                          <div>
+                            <p className="fs-15 badge badge-soft-success">
+                              Payé
+                            </p>
+                          </div>
+                        ) : selectedReglement === "Paiement partiel espèces" ? (
+                          <div>
+                            <p className="fs-15 badge badge-soft-danger">
+                              Impayé
+                            </p>
+                          </div>
+                        ) : selectedReglement === "Paiement partiel chèque" ? (
                           <div>
                             <p className="fs-15 badge badge-soft-warning">
                               Semi-Payé
                             </p>
                           </div>
-                        </Col>
-                      ) : (
-                        ""
-                      )}
+                        ) : (
+                          ""
+                        )}
+                      </Col>
                     </Row>
                   )}
                 </Col>
@@ -718,12 +743,7 @@ const PassagerInvoice: React.FC = () => {
                     size="small"
                     type="number"
                     name="subTotal"
-                    value={
-                      formFields.reduce(
-                        (sum, i) => (sum += parseInt(i.montanttotal!)),
-                        0
-                      ) || (0).toString()
-                    }
+                    value={total}
                     id="cart-subtotal"
                     placeholder="0.00"
                   />
@@ -886,6 +906,7 @@ const PassagerInvoice: React.FC = () => {
                     className="form-select"
                     name="choices-single-default"
                     id="status-Field"
+                    onChange={selectChangeEtat}
                   >
                     <option value="">Choisir</option>
                     <option value="Active">Actif</option>

@@ -13,7 +13,7 @@ export interface Compte {
 export const compteSlice = createApi({
   reducerPath: "compte",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/user",
+    baseUrl: "http://localhost:8000/user/",
   }),
   tagTypes: ["Compte"],
   endpoints(builder) {

@@ -1,37 +1,16 @@
 import React from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Card, Col, Container, Form, Row } from "react-bootstrap";
 import CountUp from "react-countup";
-
+import { useLocation } from "react-router-dom";
 import profilebgImg from "../../../assets/images/fournissuer_cover.avif";
-import companyImg3 from "../../../assets/images/companies/img-3.png";
-
-import avatar1 from "../../../assets/images/users/avatar-1.jpg";
-
-import productsImg1 from "../../../assets/images/products/img-1.png";
-import productsImg4 from "../../../assets/images/products/img-4.png";
-import productsImg5 from "../../../assets/images/products/img-5.png";
-import productsImg6 from "../../../assets/images/products/img-6.png";
-import productsImg7 from "../../../assets/images/products/img-7.png";
-import productsImg8 from "../../../assets/images/products/img-8.png";
-import productsImg9 from "../../../assets/images/products/img-9.png";
-import productsImg11 from "../../../assets/images/products/img-11.png";
-import productsImg14 from "../../../assets/images/products/img-14.png";
-import productsImg15 from "../../../assets/images/products/img-15.png";
-import { Link, useLocation } from "react-router-dom";
-import {
-  ArrivageProduit,
-  useGetFournisseurProduitQuery,
-} from "features/arrivageProduit/arrivageProduitSlice";
 import { useGetArrivageByFournisseurQuery } from "features/arrivage/arrivageSlice";
 import ProductList from "./ProductList";
 
 const SellersOverview = () => {
   document.title = "Details Fournisseur | Radhouani";
   const LocationFournisseur = useLocation();
-
-  const { data = [] } = useGetFournisseurProduitQuery();
   const { data: fournisseurbyarrivage = [] } = useGetArrivageByFournisseurQuery(
-    LocationFournisseur.state.idfournisseur
+    LocationFournisseur.state?.idfournisseur
   );
   const dataLength = fournisseurbyarrivage!.length;
   const montantTotalFactures = fournisseurbyarrivage.reduce(
@@ -53,15 +32,13 @@ const SellersOverview = () => {
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
-                >
-                  {/* <div className="bg-primary bg-opacity-75 position-absolute start-0 end-0 top-0 bottom-0"></div> */}
-                </Card.Body>
+                ></Card.Body>
                 <Card.Body className="position-relative mt-n3">
                   <div className="mt-n5">
                     <div className="avatar-lg">
                       <div className="avatar-title bg-white shadow rounded">
                         <img
-                          src={`data:image/jpeg;base64, ${LocationFournisseur.state.logo}`}
+                          src={`data:image/jpeg;base64, ${LocationFournisseur.state?.logo}`}
                           alt=""
                           className="avatar-lg"
                         />
@@ -73,10 +50,10 @@ const SellersOverview = () => {
                   <Row className="justify-content-between gy-4">
                     <Col xl={5} md={7}>
                       <h4 className="mb-2">
-                        {LocationFournisseur.state.raison_sociale}
+                        {LocationFournisseur.state?.raison_sociale}
                       </h4>
                       <div className="text-muted mb-2 d-flex gap-2">
-                        {LocationFournisseur.state.type === 0 ? (
+                        {LocationFournisseur.state?.type === 0 ? (
                           <span className="badge badge-soft-info text-uppercase">
                             Morale
                           </span>
@@ -85,7 +62,7 @@ const SellersOverview = () => {
                             Physique
                           </span>
                         )}
-                        {LocationFournisseur.state.etat === 0 ? (
+                        {LocationFournisseur.state?.etat === 0 ? (
                           <span className="badge badge-soft-danger text-uppercase">
                             Inactif
                           </span>
@@ -99,26 +76,26 @@ const SellersOverview = () => {
                         <Form.Label htmlFor="matricule_fiscale">
                           Matricule Fiscale :
                         </Form.Label>
-                        {LocationFournisseur.state.matricule_fiscale}
+                        {LocationFournisseur.state?.matricule_fiscale}
                       </div>
                       <div className="mb-2">
                         <Form.Label htmlFor="descriptionCharge">
                           R.I.B :
                         </Form.Label>
-                        {LocationFournisseur.state.rib}
+                        {LocationFournisseur.state?.rib}
                       </div>
                       <div className="mb-2 text-muted">
                         <i className="bi bi-geo-alt align-middle me-1"></i>{" "}
-                        {LocationFournisseur.state.adresse}
+                        {LocationFournisseur.state?.adresse}
                       </div>
 
                       <div className="mb-2 text-muted">
                         <i className="bi bi-telephone align-middle me-1"></i>{" "}
-                        {LocationFournisseur.state.tel}
+                        {LocationFournisseur.state?.tel}
                       </div>
                       <div className="mb-2 text-muted ">
                         <i className="bi bi-globe align-middle me-1"></i>{" "}
-                        {LocationFournisseur.state.mail}
+                        {LocationFournisseur.state?.mail}
                       </div>
                     </Col>
                     <Col xl={3} md={6}>
@@ -269,11 +246,6 @@ const SellersOverview = () => {
                                 TOTAL DES Arrivages
                               </p>
                             </div>
-                            {/* <div className="flex-shrink-0">
-                                            <h5 className="text-success fs-14 mb-0">
-                                                <i className="ri-arrow-right-up-line fs-13 align-middle"></i> +89.24 %
-                                            </h5>
-                                        </div> */}
                           </div>
                           <div className="d-flex align-items-end justify-content-between mt-4">
                             <div>
@@ -438,19 +410,14 @@ const SellersOverview = () => {
                                 Total Achat
                               </p>
                             </div>
-                            {/* <div className="flex-shrink-0">
-                                            <h5 className="text-success fs-14 mb-0">
-                                                <i className="ri-arrow-right-up-line fs-13 align-middle"></i> +8.09 %
-                                            </h5>
-                                        </div> */}
                           </div>
                           <div className="d-flex align-items-end justify-content-between mt-4">
                             <div>
                               <h4 className="fs-24 fw-semibold mb-4">
                                 <CountUp
                                   end={montantTotalFactures}
-                                  decimals={2}
-                                />{" "}
+                                  separator=","
+                                />
                                 Dt
                               </h4>
                             </div>
@@ -466,10 +433,8 @@ const SellersOverview = () => {
                   </Row>
                 </Card.Body>
                 <Card.Footer>
-                  {/* <h2 className="fs-20">Listes des artciles:</h2>
-                  <p> En cours de développement !</p> */}
                   <ProductList
-                    idfournisseur={LocationFournisseur.state.idfournisseur}
+                    idfournisseur={LocationFournisseur.state?.idfournisseur}
                   />
                 </Card.Footer>
               </Card>

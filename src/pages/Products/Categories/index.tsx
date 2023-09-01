@@ -235,7 +235,7 @@ const Categories = () => {
                       <Col xxl={12} lg={6}>
                         <div className="text-center mb-3">
                           <label htmlFor="nom" className="form-label">
-                            Nom Catégorie<span className="text-danger">*</span>
+                            Nom Catégorie <span className="text-danger">*</span>
                           </label>
                           <input
                             type="text"
@@ -276,7 +276,7 @@ const Categories = () => {
                                 type="file"
                                 accept=".png, .gif, .jpeg, .jpg"
                                 onChange={(e) => handleFileUpload(e)}
-                                required={true}
+                                // required={true}
                               />
                             </div>
                             <div className="avatar-lg">
@@ -296,7 +296,7 @@ const Categories = () => {
                         </div>
                       </Col>
                       <Col xxl={12}>
-                        <div className="text-end">
+                        <div className="text-end mt-3">
                           <Button variant="success" type="submit">
                             Ajouter Categorie
                           </Button>

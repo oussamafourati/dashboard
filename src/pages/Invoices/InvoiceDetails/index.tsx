@@ -1,15 +1,21 @@
 import React from "react";
 import { Card, Col, Container, Row, Table } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
-
 // Import Images
 import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
 import { Link, useLocation } from "react-router-dom";
+import { useFetchAllLigneVenteQuery } from "features/ligneVente/ligneVenteSlice";
 
 const InvoiceDetails = () => {
-  document.title = "Invoice Details | Toner eCommerce + Admin React Template";
+  document.title = "Détails Facture | Radhouani";
   const locationDetail = useLocation();
+
+  const { data: allLigneVente } = useFetchAllLigneVenteQuery(
+    locationDetail.state.designationFacture
+  );
+
+  console.log("allLigneVente", allLigneVente);
   //Print the Invoice
   const printInvoice = () => {
     window.print();
@@ -19,8 +25,7 @@ const InvoiceDetails = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumb title="Invoice Details" pageTitle="Invoices" />
-
+          <Breadcrumb title="Détails Facture" pageTitle="Factures" />
           <Row className="justify-content-center">
             <Col xxl={9}>
               <Card id="demo">
@@ -191,19 +196,21 @@ const InvoiceDetails = () => {
                             </tr>
                           </thead>
                           <tbody id="products-list">
-                            <tr>
-                              <th scope="row">01</th>
-                              <td className="text-start">
-                                <span className="fw-medium">
-                                  {locationDetail.state.nomProduit}
-                                </span>
-                              </td>
-                              <td>{locationDetail.state.prixUnitaire}</td>
-                              <td>{locationDetail.state.quantiteProduit}</td>
-                              <td className="text-end">
-                                {locationDetail.state.MontantTotal}
-                              </td>
-                            </tr>
+                            {allLigneVente?.map((lignevente) => (
+                              <tr>
+                                <th scope="row">01</th>
+                                <td className="text-start">
+                                  <span className="fw-medium">
+                                    {lignevente.productName}
+                                  </span>
+                                </td>
+                                <td>{lignevente.PU}</td>
+                                <td>{lignevente.quantiteProduit}</td>
+                                <td className="text-end">
+                                  {lignevente.montantTtl}
+                                </td>
+                              </tr>
+                            ))}
                           </tbody>
                         </Table>
                       </div>

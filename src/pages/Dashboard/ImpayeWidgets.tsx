@@ -1,17 +1,7 @@
-import { useGetAllArrivagesQuery } from "features/arrivage/arrivageSlice";
-import {
-  useGetAllChargesQuery,
-  useGetChargeDayQuery,
-  useGetChargeLastYearQuery,
-  useGetChargeThreeMonthsQuery,
-} from "features/charge/chargeSlice";
-import { useFetchFacturePayeQuery } from "features/facture/factureSlice";
-import React, { useState } from "react";
+import React from "react";
 import { Card, Col } from "react-bootstrap";
 import CountUp from "react-countup";
-import ChargeWidgets from "./ChargeWidgets";
-import VenteWidgets from "./VenteWidgets";
-import AchatWidgets from "./AchatWidgets";
+import { useFetchFacturePayeQuery } from "features/facture/factureSlice";
 
 interface WidgetsProps {
   id: number;
@@ -22,24 +12,17 @@ interface WidgetsProps {
 }
 
 const ImpayeWidgets = () => {
-  const { data: allArrivage = [] } = useGetAllArrivagesQuery();
-  const { data: facturePaye = [] } = useFetchFacturePayeQuery();
-  const arrivageTotal = allArrivage.reduce(
-    (sum, i) => (sum += parseInt(i.montantTotal)),
+  const { data: allArrivages = [] } = useFetchFacturePayeQuery();
+  const arrivagesTotal = allArrivages.reduce(
+    (sum, i) => (sum += i.MontantTotal),
     0
   );
-
-  const [categoryid, setCategoryid] = useState<number>();
-  const handlesousCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const getstateid = e.target.value;
-    setCategoryid(parseInt(getstateid));
-  };
 
   const widgetsData: Array<WidgetsProps> = [
     {
       id: 3,
       name: "TOTAL Impayés",
-      amount: 123456,
+      amount: arrivagesTotal,
       icon: "ph-clock",
       iconColor: "danger",
     },
@@ -59,24 +42,11 @@ const ImpayeWidgets = () => {
                   <p className="text-uppercase fw-medium text-muted fs-14 text-truncate">
                     {item.name}
                   </p>
-                  <h4 className="fs-22 fw-semibold mb-3">
-                    {item.decimal ? "$" : ""}
+                  <h4 className="fs-18 fw-semibold mb-3">
                     <span className="counter-value" data-target="98851.35">
-                      <CountUp start={0} end={item.amount} />
+                      <CountUp start={0} end={item.amount} separator="," /> DT
                     </span>
                   </h4>
-                  <select
-                    className="form-select"
-                    id="choices-category-input"
-                    name="choices-category-input"
-                    onChange={handlesousCategory}
-                  >
-                    <option value=""></option>
-                    <option value="">Aujourd'hui</option>
-                    <option value=""> Mois Dernier</option>
-                    <option value="">Année en cours</option>
-                    <option value="">Année Dernière</option>
-                  </select>
                   {/* </div> */}
                 </div>
                 <div className="avatar-sm flex-shrink-0">

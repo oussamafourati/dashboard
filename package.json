@@ -1,5 +1,6 @@
 {
   "name": "toner-react-backend",
+  "homepage": "http://facture.smartschools.tn",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

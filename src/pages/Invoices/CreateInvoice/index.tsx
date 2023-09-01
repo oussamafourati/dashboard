@@ -1,13 +1,23 @@
 import React, { useState } from "react";
-import { Row, Col, ToggleButton } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Breadcrumb from "Common/BreadCrumb";
 import PassagerInvoice from "./PassagerInvoice";
 import ProInvoice from "./ProInvoice";
 
 const CreateInvoice = () => {
   document.title = "Créer Facture | Radhouani";
-  const [checked, setChecked] = useState<boolean>(true);
   const [show, setShow] = useState(true);
+
+  const [alignment, setAlignment] = React.useState("web");
+
+  const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string
+  ) => {
+    setAlignment(newAlignment);
+  };
 
   return (
     <div>
@@ -15,31 +25,30 @@ const CreateInvoice = () => {
         <div className="page-content">
           <Breadcrumb title="Créer Facture" pageTitle="Factures" />
           <Row>
-            <Col className="justify-content-center d-flex gap-2 mb-1">
-              <ToggleButton
-                className="mb-2"
-                id="toggle-check"
-                type="checkbox"
-                variant="outline-info"
-                checked={checked}
-                value={1}
-                onChange={(e) => setChecked(e.currentTarget.checked)}
-                onClick={() => setShow(true)}
+            <Col className="justify-content-center d-flex">
+              <ToggleButtonGroup
+                className="mb-2 gap-2"
+                color="primary"
+                value={alignment}
+                exclusive
+                onChange={handleChange}
+                aria-label="Platform"
               >
-                Passager
-              </ToggleButton>
-              <ToggleButton
-                className="mb-2"
-                id="toggle-check2"
-                type="checkbox"
-                variant="outline-info"
-                onClick={() => setShow(false)}
-                checked={!checked}
-                value={2}
-                onChange={(e) => setChecked(e.currentTarget.checked)}
-              >
-                Professionnel
-              </ToggleButton>
+                <ToggleButton
+                  value="Passager"
+                  onClick={() => setShow(true)}
+                  className="rounded"
+                >
+                  Passager
+                </ToggleButton>
+                <ToggleButton
+                  value="Professionnel"
+                  onClick={() => setShow(false)}
+                  className="rounded"
+                >
+                  Professionnel
+                </ToggleButton>
+              </ToggleButtonGroup>
             </Col>
           </Row>
           {show ? <PassagerInvoice /> : <ProInvoice />}

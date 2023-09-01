@@ -11,7 +11,8 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import "dayjs/locale/de";
+import "dayjs/locale/fr";
+import { frFR } from "@mui/x-date-pickers/locales";
 import dayjs from "dayjs";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
@@ -89,10 +90,9 @@ const ProInvoice: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "http://localhost:8000/clientMo/moraleclients"
+        "https://src-api.onrender.com/clientMo/moraleclients"
       );
       const resdata = await reqdata.json();
-      console.log(resdata);
       setClientMorale(resdata);
     };
     getClientMorale();
@@ -102,7 +102,7 @@ const ProInvoice: React.FC = () => {
     const clientMoraleid = e.target.value;
     if (clientMoraleid !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/clientMo/oneClientMorale/${clientMoraleid}`
+        `https://src-api.onrender.com/clientMo/oneClientMorale/${clientMoraleid}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -182,17 +182,11 @@ const ProInvoice: React.FC = () => {
     const fileLogo = (
       document.getElementById("logo") as HTMLInputElement
     ).files?.item(0) as File;
-    const filePJ = (
-      document.getElementById("piecejointes") as HTMLInputElement
-    ).files?.item(0) as File;
 
     const base64 = await convertToBase64(fileLogo);
-    const base64PJ = await convertToBase64(filePJ);
-
     setClientMData({
       ...clientMData,
       logo: base64 as string,
-      piecejointes: base64PJ as string,
     });
   };
 
@@ -200,11 +194,9 @@ const ProInvoice: React.FC = () => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
-
       fileReader.onload = () => {
         const base64String = fileReader.result as string;
         const base64Data = base64String.split(",")[1];
-
         resolve(base64Data);
       };
       fileReader.onerror = (error) => {
@@ -266,7 +258,7 @@ const ProInvoice: React.FC = () => {
   };
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formFields);
+    // console.log(formFields);
   };
   const montantTotal =
     formFields.reduce((sum, i) => (sum += parseInt(i.montanttotal!)), 0) || 0;
@@ -321,11 +313,11 @@ const ProInvoice: React.FC = () => {
               id="invoice_form"
               onSubmit={(event) => handleSubmit(event, acValue)}
             >
-              <Card.Body className="border-bottom border-bottom-dashed p-4">
+              <Card.Body className="border-bottom border-bottom-dashed p-3">
                 <Row>
                   <Col lg={4} sm={6}>
                     <div>
-                      <div className="input-group d-flex gap-2 mb-2">
+                      <div className="input-group d-flex gap-2 mb-4">
                         <Autocomplete
                           id="nomClient"
                           sx={{ width: 320 }}
@@ -374,12 +366,17 @@ const ProInvoice: React.FC = () => {
                       id="invoicenoInput"
                       placeholder="25000355"
                       sx={{ width: 320 }}
+                      className="mb-2"
                     />
                   </Col>
                   <Col lg={4} sm={6}>
                     <LocalizationProvider
                       dateAdapter={AdapterDayjs}
-                      adapterLocale="de"
+                      adapterLocale="fr"
+                      localeText={
+                        frFR.components.MuiLocalizationProvider.defaultProps
+                          .localeText
+                      }
                     >
                       <DatePicker
                         defaultValue={now}
@@ -398,7 +395,7 @@ const ProInvoice: React.FC = () => {
               </Card.Body>
               <Card.Body className="p-3">
                 <div>
-                  <Row className="text-center">
+                  <Row>
                     <Col lg={5}>
                       <Form.Label htmlFor="nomProduit">
                         Détail Produit
@@ -408,12 +405,10 @@ const ProInvoice: React.FC = () => {
                       <Form.Label htmlFor="Quantite">Quantité</Form.Label>
                     </Col>
                     <Col lg={2}>
-                      <Form.Label htmlFor="PrixUnitaire">
-                        Prix Unitaire
-                      </Form.Label>
+                      <Form.Label htmlFor="PU">Prix Unitaire</Form.Label>
                     </Col>
                     <Col lg={1}>
-                      <Form.Label htmlFor="Benifice">Benifice</Form.Label>
+                      <Form.Label htmlFor="benifice">Benifice</Form.Label>
                     </Col>
                     <Col lg={2}>
                       <Form.Label htmlFor="Montant">Montant</Form.Label>
@@ -425,7 +420,7 @@ const ProInvoice: React.FC = () => {
                       <Col lg={5} sm={6}>
                         <Autocomplete
                           id="nomProduit"
-                          sx={{ width: 495 }}
+                          sx={{ width: 460 }}
                           options={allArrivageProduit}
                           autoHighlight
                           onChange={(event, value) => {
@@ -445,6 +440,7 @@ const ProInvoice: React.FC = () => {
                               </span>
                             </li>
                           )}
+                          className="mb-2"
                           renderInput={(params) => (
                             <TextField
                               {...params}
@@ -460,10 +456,11 @@ const ProInvoice: React.FC = () => {
                       </Col>
                       <Col lg={1} sm={6}>
                         <TextField
+                          className="mb-2"
                           id="Quantite"
                           type="number"
                           size="small"
-                          name="qty"
+                          name="Quantite"
                           placeholder="0.0"
                           onChange={(event) => handleFormChange(event, index)}
                           value={form.qty}
@@ -478,6 +475,7 @@ const ProInvoice: React.FC = () => {
                           placeholder="00.00"
                           value={form.PU}
                           sx={{ width: 195 }}
+                          className="mb-2"
                         />
                       </Col>
                       <Col lg={1} sm={6}>
@@ -491,6 +489,7 @@ const ProInvoice: React.FC = () => {
                           placeholder="0.0"
                           onChange={(event) => handleFormChange(event, index)}
                           value={pourcentageBenifice}
+                          className="mb-2"
                         />
                       </Col>
                       <Col lg={2} sm={6}>
@@ -499,7 +498,7 @@ const ProInvoice: React.FC = () => {
                           id="Montant"
                           size="small"
                           type="number"
-                          name="montanttotal"
+                          name="Montant"
                           placeholder="0.0"
                           onChange={(event) => handleFormChange(event, index)}
                           value={
@@ -543,7 +542,7 @@ const ProInvoice: React.FC = () => {
                     </Col>
                   </Row>
                 </div>
-                <Row className="border-top border-top-dashed mt-2">
+                <Row className="border-top border-top-dashed mt-1">
                   <Col lg={9}></Col>
                   <Col lg={3} className="mt-3">
                     <TextField
@@ -553,10 +552,10 @@ const ProInvoice: React.FC = () => {
                       }}
                       size="small"
                       type="number"
-                      name="benifice"
+                      name="Benifice"
                       onChange={onChangePourcentageBenifice}
                       value={pourcentageBenifice}
-                      id="benifice"
+                      id="Benifice"
                       placeholder="0.00"
                     />
                   </Col>
@@ -566,14 +565,14 @@ const ProInvoice: React.FC = () => {
                     <Row className="mt-2">
                       <Col lg={9}>
                         <div className="mb-2">
-                          <Form.Label htmlFor="choices-payment-status">
+                          <Form.Label htmlFor="choices-reglement-status">
                             Reglement
                           </Form.Label>
                           <p>
                             <input
                               className="m-2"
                               type="radio"
-                              name="reglement"
+                              name="choices-reglement-status"
                               value="Paiement total en espèces"
                               id="Paiement total en espèces"
                               onChange={radioHandler}
@@ -584,7 +583,7 @@ const ProInvoice: React.FC = () => {
                             <input
                               className="m-2"
                               type="radio"
-                              name="reglement"
+                              name="choices-reglement-status"
                               value="Paiement partiel espèces"
                               id="Paiement partiel espèces"
                               onChange={radioHandler}
@@ -595,7 +594,7 @@ const ProInvoice: React.FC = () => {
                             <input
                               className="m-2"
                               type="radio"
-                              name="reglement"
+                              name="choices-reglement-status"
                               value="Paiement partiel chèque"
                               id="Paiement partiel chèque"
                               onChange={radioHandler}
@@ -625,48 +624,39 @@ const ProInvoice: React.FC = () => {
                           )}
                         </div>
                       </Col>
-                      {selectedReglement === "Paiement total en espèces" ? (
-                        <Col lg={3} sm={6}>
-                          <Form.Label htmlFor="choices-payment-status">
-                            Status de Payement
-                          </Form.Label>
-                          <div>
-                            <p className="fs-15 badge badge-soft-success">
-                              Payé
-                            </p>
-                          </div>
-                        </Col>
-                      ) : (
-                        ""
-                      )}
-                      {selectedReglement === "Paiement partiel espèces" ? (
-                        <Col lg={3} sm={6}>
-                          <Form.Label htmlFor="choices-payment-status">
-                            Status de Payement
-                          </Form.Label>
+                      <Col lg={3} sm={6}>
+                        <Form.Label htmlFor="choices-payment-status">
+                          Status de Payement
+                        </Form.Label>
+                        {!selectedReglement ? (
                           <div>
                             <p className="fs-15 badge badge-soft-danger">
                               Impayé
                             </p>
                           </div>
-                        </Col>
-                      ) : (
-                        ""
-                      )}
-                      {selectedReglement === "Paiement partiel chèque" ? (
-                        <Col lg={3} sm={6}>
-                          <Form.Label htmlFor="choices-payment-status">
-                            Status de Payement
-                          </Form.Label>
+                        ) : selectedReglement ===
+                          "Paiement total en espèces" ? (
+                          <div>
+                            <p className="fs-15 badge badge-soft-success">
+                              Payé
+                            </p>
+                          </div>
+                        ) : selectedReglement === "Paiement partiel espèces" ? (
+                          <div>
+                            <p className="fs-15 badge badge-soft-danger">
+                              Impayé
+                            </p>
+                          </div>
+                        ) : selectedReglement === "Paiement partiel chèque" ? (
                           <div>
                             <p className="fs-15 badge badge-soft-warning">
                               Semi-Payé
                             </p>
                           </div>
-                        </Col>
-                      ) : (
-                        ""
-                      )}
+                        ) : (
+                          ""
+                        )}
+                      </Col>
                     </Row>
                   </Col>
                   <Col lg={3} className="mt-3">
@@ -728,7 +718,7 @@ const ProInvoice: React.FC = () => {
       >
         <Modal.Header className="px-4 pt-4" closeButton>
           <h5 className="modal-title fs-18" id="exampleModalLabel">
-            Ajouter Client Morale
+            Ajouter Client
           </h5>
         </Modal.Header>
         <Modal.Body className="p-4">
@@ -792,7 +782,6 @@ const ProInvoice: React.FC = () => {
                     value={clientMData.raison_sociale}
                     onChange={onClientMoraleChange}
                     id="raison_sociale"
-                    placeholder="Taper Raison sociale"
                     required
                   />
                 </div>
@@ -805,7 +794,6 @@ const ProInvoice: React.FC = () => {
                     value={clientMData.mat}
                     onChange={onClientMoraleChange}
                     id="mat"
-                    placeholder="Taper matricule fiscale"
                     required
                   />
                 </div>
@@ -818,7 +806,6 @@ const ProInvoice: React.FC = () => {
                     value={clientMData.rib}
                     onChange={onClientMoraleChange}
                     id="rib"
-                    placeholder="Taper RIB "
                     required
                   />
                 </div>
@@ -831,7 +818,6 @@ const ProInvoice: React.FC = () => {
                     value={clientMData.tel}
                     onChange={onClientMoraleChange}
                     id="tel"
-                    placeholder="Taper numéro"
                     required
                   />
                 </div>
@@ -844,12 +830,11 @@ const ProInvoice: React.FC = () => {
                     value={clientMData.adresse}
                     onChange={onClientMoraleChange}
                     id="adresse"
-                    placeholder="Taper l'adresse du fournisseur"
                     required
                   />
                 </div>
               </Col>
-              <Col lg={5}>
+              <Col lg={3}>
                 <div className="mb-3">
                   <Form.Label htmlFor="mail">E-mail</Form.Label>
                   <Form.Control
@@ -857,7 +842,6 @@ const ProInvoice: React.FC = () => {
                     value={clientMData.mail}
                     onChange={onClientMoraleChange}
                     id="mail"
-                    placeholder="Taper e-mail"
                     required
                   />
                 </div>
@@ -872,13 +856,13 @@ const ProInvoice: React.FC = () => {
                     id="choices-payment-status"
                     required
                   >
-                    <option value="">Selectionner Etat</option>
+                    <option value=""></option>
                     <option value="Actif">Actif</option>
                     <option value="Inactif">Inactif</option>
                   </select>
                 </div>
               </Col>
-              <Col lg={4}>
+              {/* <Col lg={4}>
                 <div className="mb-3">
                   <Form.Label htmlFor="credit">Credit</Form.Label>
                   <Form.Control
@@ -890,7 +874,7 @@ const ProInvoice: React.FC = () => {
                     required
                   />
                 </div>
-              </Col>
+              </Col> */}
               <Col lg={6}>
                 <div className="mb-3">
                   <Form.Label htmlFor="remarque">Remarque</Form.Label>
@@ -899,53 +883,10 @@ const ProInvoice: React.FC = () => {
                     value={clientMData.remarque}
                     onChange={onClientMoraleChange}
                     id="remarque"
-                    placeholder="Taper remarque"
                     required
                   />
                 </div>
               </Col>
-              {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="ProductSelect">Product Type</Form.Label>
-                                            <select className="form-select" name="categorySelect" id="productType-field">
-                                                <option value="">Select Product</option>
-                                                <option value="Headphone">Headphone</option>
-                                                <option value="Watch">Watch</option>
-                                                <option value="Furniture">Furniture</option>
-                                                <option value="Clothing">Clothing</option>
-                                                <option value="Footwear">Footwear</option>
-                                                <option value="Lighting">Lighting</option>
-                                                <option value="Beauty & Personal Care">Beauty & Personal Care</option>
-                                                <option value="Books">Books</option>
-                                                <option value="Other Accessories">Other Accessories</option>
-                                            </select>
-                                        </div> */}
-              {/* </Col> */}
-              {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="startDate">Start Date</Form.Label>
-                                            {/* <Form.Control type="text" id="startdate-field" data-provider="flatpickr" data-date-format="d M, Y" placeholder="Select date" required/> */}
-              {/* <Flatpickr
-                                                className="form-control flatpickr-input"
-                                                placeholder='Select date'
-                                                options={{
-                                                    dateFormat: "d M, Y",
-                                                }}
-                                            />
-                                        </div>
-                                    </Col> */}
-              {/* <Col lg={6}>
-                                        <div className="mb-3">
-                                            <Form.Label htmlFor="endDate">END Date</Form.Label>
-                                            <Flatpickr
-                                                className="form-control flatpickr-input"
-                                                placeholder='Select date'
-                                                options={{
-                                                    dateFormat: "d M, Y",
-                                                }}
-                                            />
-                                        </div>
-                                    </Col> */}
               <Col lg={12} className="modal-footer">
                 <div className="hstack gap-2 justify-content-end">
                   <Button

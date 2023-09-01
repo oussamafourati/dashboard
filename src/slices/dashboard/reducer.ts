@@ -15,7 +15,7 @@ const dashboardslice = createSlice({
       state.chartData = action.payload;
     });
     builder.addCase(getChartData.rejected, (state: any, action: any) => {
-      state.error = action.payload!.error || null;
+      state.error = action!.payload!.error || null;
     });
   },
 });

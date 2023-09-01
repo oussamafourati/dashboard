@@ -3,18 +3,11 @@ import React, { useEffect, useState } from "react";
 const Navdata = () => {
   //state data
   const [isEcommerce, setIsEcommerce] = useState(false);
-  const [isOrder, setIsOrder] = useState(false);
   const [isSellers, setIsSellers] = useState(false);
   const [isInvoice, setIsInvoice] = useState(false);
   const [isDevis, setIsDevis] = useState(false);
   const [isShipping, setIsShipping] = useState(false);
-  const [isLocalization, setIsLocalization] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
-  const [isMultiLevel, setIsMultiLevel] = useState(false);
-
-  // Multi Level
-  const [isLevel1, setIsLevel1] = useState(false);
-  const [isLevel2, setIsLevel2] = useState(false);
 
   const [iscurrentState, setIscurrentState] = useState("Dashboard");
 
@@ -25,10 +18,6 @@ const Navdata = () => {
       let activeIconItems = [...iconItems];
       activeIconItems.forEach((item) => {
         item.classList.remove("active");
-        // var id: any = item.getAttribute("subitems");
-        // if (document.getElementById(id)){
-        //     document.getElementById(id).classList.remove("show");
-        // }
       });
     }
   }
@@ -37,9 +26,6 @@ const Navdata = () => {
     document.body.classList.remove("twocolumn-panel");
     if (iscurrentState !== "Ecommerce") {
       setIsEcommerce(false);
-    }
-    if (iscurrentState !== "Orders") {
-      setIsOrder(false);
     }
     if (iscurrentState !== "Sellers") {
       setIsSellers(false);
@@ -53,23 +39,10 @@ const Navdata = () => {
     if (iscurrentState !== "Shipping") {
       setIsShipping(false);
     }
-    if (iscurrentState !== "Localization") {
-      setIsLocalization(false);
-    }
     if (iscurrentState !== "Auth") {
       setIsAuth(false);
     }
-  }, [
-    iscurrentState,
-    isEcommerce,
-    isOrder,
-    isInvoice,
-    isDevis,
-    isShipping,
-    isLocalization,
-    isAuth,
-    isMultiLevel,
-  ]);
+  }, [iscurrentState, isEcommerce, isInvoice, isDevis, isShipping, isAuth]);
 
   const menuItems: any = [
     {
@@ -98,7 +71,7 @@ const Navdata = () => {
         {
           id: "createinvoice",
           label: "Créer facture",
-          link: "/invoices-create",
+          link: "/nouveau-facture",
           parentId: "invoice",
         },
         {
@@ -107,12 +80,6 @@ const Navdata = () => {
           link: "/invoices-list",
           parentId: "invoice",
         },
-        // {
-        //   id: "overview",
-        //   label: "Détail Facture",
-        //   link: "/invoices-details",
-        //   parentId: "invoice",
-        // },
       ],
     },
     {
@@ -131,7 +98,7 @@ const Navdata = () => {
         {
           id: "createdevis",
           label: "Créer Devis",
-          link: "/devis-create",
+          link: "/nouveau-devis",
           parentId: "devis",
         },
         {
@@ -140,12 +107,6 @@ const Navdata = () => {
           link: "/liste-devis",
           parentId: "devis",
         },
-        // {
-        //   id: "overview",
-        //   label: "Détail Devis",
-        //   link: "/devis-details",
-        //   parentId: "devis",
-        // },
       ],
     },
     {
@@ -154,33 +115,6 @@ const Navdata = () => {
       icon: "bi bi-currency-dollar",
       link: "/charges",
     },
-    // {
-    //     id: "orders",
-    //     label: "Stocks",
-    //     icon: "bi bi-cart4",
-    //     link: "/#",
-    //     click: function (e: any) {
-    //         e.preventDefault();
-    //         setIsOrder(!isOrder);
-    //         setIscurrentState('Orders');
-    //         updateIconSidebar(e);
-    //     },
-    //     stateVariables: isOrder,
-    //     subItems: [
-    //         {
-    //             id: "listview",
-    //             label: "List View",
-    //             link: "/orders-list-view",
-    //             parentId: "orders",
-    //         },
-    //         {
-    //             id: "overview",
-    //             label: "Overview",
-    //             link: "/orders-overview",
-    //             parentId: "orders",
-    //         },
-    //     ],
-    // },
     {
       id: "seller",
       label: "Fournisseur",
@@ -218,12 +152,6 @@ const Navdata = () => {
           link: "/nouveau-arrivage",
           parentId: "shipping",
         },
-        // {
-        //   id: "shipment",
-        //   // label: "Liste Produit",
-        //   link: "/shipment",
-        //   parentId: "shipping",
-        // },
         {
           id: "shipments",
           label: "Liste Arrivage",
@@ -251,18 +179,6 @@ const Navdata = () => {
           link: "/products-list",
           parentId: "products",
         },
-        // {
-        //     id: "gridview",
-        //     label: "Produits en cartes",
-        //     link: "/products-grid",
-        //     parentId: "products",
-        // },
-        // {
-        //     id: "overview",
-        //     label: "Overview",
-        //     link: "/product-overview",
-        //     parentId: "products",
-        // },
         {
           id: "createproduct",
           label: "Créer produit",
@@ -283,47 +199,6 @@ const Navdata = () => {
         },
       ],
     },
-
-    // {
-    //     id: "reviews-ratings",
-    //     label: "Reviews & Ratings",
-    //     icon: "bi bi-star",
-    //     link: "/reviews-ratings",
-    // },
-
-    // {
-    //     id: "statistics",
-    //     label: "Statistics",
-    //     icon: "bi bi-pie-chart",
-    //     link: "/statistics",
-    // },
-    // {
-    //     id: "localization",
-    //     label: "Localization",
-    //     icon: "bi bi-coin",
-    //     link: "/#",
-    //     click: function (e: any) {
-    //         e.preventDefault();
-    //         setIsLocalization(!isLocalization);
-    //         setIscurrentState('Localization');
-    //         updateIconSidebar(e);
-    //     },
-    //     stateVariables: isLocalization,
-    //     subItems: [
-    //         {
-    //             id: "transactions",
-    //             label: "Transactions",
-    //             link: "/transactions",
-    //             parentId: "localization",
-    //         },
-    //         {
-    //             id: "currency-rates",
-    //             label: "Currency Rates",
-    //             link: "/currency-rates",
-    //             parentId: "localization",
-    //         },
-    //     ],
-    // },
     {
       id: "calendar",
       label: "Calendrier",
@@ -356,113 +231,8 @@ const Navdata = () => {
           link: "/creer-compte",
           parentId: "account",
         },
-        // {
-        //   id: "signup",
-        //   label: "Sign Up",
-        //   link: "/auth-signup-basic",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "signin",
-        //   label: "Sign In",
-        //   link: "/connexion",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "password-reset",
-        //   label: "Password Reset",
-        //   link: "/auth-pass-reset-basic",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "password-create",
-        //   label: "Password Create",
-        //   link: "/auth-pass-change-basic",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "success-message",
-        //   label: "Success Message",
-        //   link: "/auth-success-msg-basic",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "two-step-verify",
-        //   label: "Two Step Verify",
-        //   link: "/auth-twostep-basic",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "logout",
-        //   label: "Logout",
-        //   link: "/auth-logout-basic",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "auth-404",
-        //   label: "Error 404",
-        //   link: "/auth-404",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "auth-500",
-        //   label: "Error 500",
-        //   link: "/auth-500",
-        //   parentId: "account",
-        // },
-        // {
-        //   id: "coming-soon",
-        //   label: "Coming Soon",
-        //   link: "/coming-soon",
-        //   parentId: "account",
-        // },
       ],
     },
-    // {
-    //     id: "multilevel",
-    //     label: "Multi Level",
-    //     icon: "bi bi-share",
-    //     link: "/#",
-    //     click: function (e: any) {
-    //         e.preventDefault();
-    //         setIsMultiLevel(!isMultiLevel);
-    //         setIscurrentState('MuliLevel');
-    //         updateIconSidebar(e);
-    //     },
-    //     stateVariables: isMultiLevel,
-    //     subItems: [
-    //         { id: "level1.1", label: "Level 1.1", link: "/#", parentId: "multilevel" },
-    //         {
-    //             id: "level1.2",
-    //             label: "Level 1.2",
-    //             link: "/#",
-    //             isChildItem: true,
-    //             click: function (e: any) {
-    //                 e.preventDefault();
-    //                 setIsLevel1(!isLevel1);
-    //             },
-    //             stateVariables: isLevel1,
-    //             childItems: [
-    //                 { id: 1, label: "Level 2.1", link: "/#" },
-    //                 {
-    //                     id: "level2.2",
-    //                     label: "Level 2.2",
-    //                     link: "/#",
-    //                     isChildItem: true,
-    //                     click: function (e: any) {
-    //                         e.preventDefault();
-    //                         setIsLevel2(!isLevel2);
-    //                     },
-    //                     stateVariables: isLevel2,
-    //                     childItems: [
-    //                         { id: 1, label: "Level 3.1", link: "/#" },
-    //                         { id: 2, label: "Level 3.2", link: "/#" },
-    //                     ]
-    //                 },
-    //             ]
-    //         },
-    //     ],
-    // },
   ];
   return <React.Fragment>{menuItems}</React.Fragment>;
 };

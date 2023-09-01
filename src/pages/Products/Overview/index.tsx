@@ -17,7 +17,7 @@ const Overview = () => {
   useEffect(() => {
     const getProduitState = async () => {
       const reqdata = await fetch(
-        `http://localhost:8000/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
+        `https://src-api.onrender.com/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
       );
       const resdata = await reqdata.json();
       setProduitState(resdata);
@@ -40,9 +40,8 @@ const Overview = () => {
                     Deals Of The Week
                   </Alert> */}
                 </Col>
-
-                <Col lg={10}>
-                  <div className="bg-light rounded-2 position-relative ribbon-box overflow-hidden">
+                <Col lg={10} className="text-center">
+                  <div className="rounded-4 position-relative ribbon-box overflow-hidden">
                     <img
                       src={`data:image/jpeg;base64,${LocationProduct.state.imageProduit}`}
                       alt=""

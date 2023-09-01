@@ -1,31 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Accordion, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-
-//Nouislider
-import Nouislider from "nouislider-react";
-import "../../../../node_modules/nouislider/distribute/nouislider.css";
-import ProductSelectColor from "./ProductSelectColor";
-import ProductSize from "./ProductSize";
-import ProductDiscount from "./ProductDiscount";
-import ProductRating from "./ProductRating";
 import { useFetchCategoriesQuery } from "features/category/categorySlice";
-import Categories from "./../Categories/index";
 
 const ProductCategoryFilter = () => {
   const { data = [] } = useFetchCategoriesQuery();
 
-  const [mincost, setMincost] = useState<number>(0);
-  const [maxcost, setMaxcost] = useState<number>(2000);
-
-  //Product Filter
-  const onUpdate = (value: any) => {
-    setMincost(value[0]);
-    setMaxcost(value[1]);
-  };
-  useEffect(() => {
-    onUpdate([0, 2000]);
-  }, []);
   return (
     <React.Fragment>
       <Accordion flush defaultActiveKey="0" className="filter-accordion">

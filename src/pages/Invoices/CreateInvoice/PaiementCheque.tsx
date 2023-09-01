@@ -43,22 +43,22 @@ const PaiementCheque = () => {
       <Card.Body className="p-4">
         <Row>
           <Col lg={3}>
-            <Form.Label htmlFor="invoicenoInput">Echéance</Form.Label>
+            <Form.Label htmlFor="echeance">Echéance</Form.Label>
           </Col>
           <Col lg={2}>
             <Form.Label htmlFor="date-field">Date</Form.Label>
           </Col>
           <Col lg={3}>
-            <Form.Label htmlFor="invoicenoInput">Numéro de Chèque</Form.Label>
+            <Form.Label htmlFor="numCheque">Numéro de Chèque</Form.Label>
           </Col>
           <Col lg={3}>
-            <Form.Label htmlFor="invoicenoInput">Banque (agence)</Form.Label>
+            <Form.Label htmlFor="banque">Banque (agence)</Form.Label>
           </Col>
         </Row>
         {inputFields.map((inputField, index) => (
-          <Row style={{ marginBottom: 20 }}>
+          <Row className="g-3" style={{ marginBottom: 15 }}>
             <Col lg={3}>
-              <Form.Control type="text" id="invoicenoInput" />
+              <Form.Control type="text" id="echeance" />
             </Col>
             <Col lg={2}>
               <div>
@@ -67,14 +67,15 @@ const PaiementCheque = () => {
                   options={{
                     dateFormat: "d M, Y",
                   }}
+                  id="date-field"
                 />
               </div>
             </Col>
             <Col lg={3}>
-              <Form.Control type="text" id="invoicenoInput" />
+              <Form.Control type="text" id="numCheque" />
             </Col>
             <Col lg={3}>
-              <Form.Control type="text" id="invoicenoInput" />
+              <Form.Control type="text" id="banque" />
             </Col>
             <Col lg={1}>
               <Button
