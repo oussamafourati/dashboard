@@ -6,6 +6,7 @@ export interface Produit {
   imageProduit: string;
   marque: string;
   remarqueProduit: string;
+  seuil?: number | number[];
   categoryID?: number;
   nom?: string;
   sousCategoryID?: number;

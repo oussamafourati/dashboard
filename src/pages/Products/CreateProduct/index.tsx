@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -21,9 +21,21 @@ import {
   useCreateSubCategoryMutation,
 } from "features/subCategory/subCategorySlice";
 import Swal from "sweetalert2";
-
+import Slider from "@mui/material/Slider";
+import { debounce } from "@mui/material/utils";
+import { lime, purple } from "@mui/material/colors";
 const CreateProduct = () => {
   document.title = "Créer produit | Radhouani";
+
+  const [value, setValue] = useState<number>(0);
+  const handleSliderChange = useCallback((event: Event, value: any) => {
+    debounceSliderChange(value);
+  }, []);
+
+  const debounceSliderChange = debounce((val: number) => {
+    console.log(val);
+    setValue(val);
+  }, 200);
 
   const [category, setCategory] = useState<Category[]>([]);
   const [categoryid, setCategoryid] = useState("");
@@ -31,7 +43,7 @@ const CreateProduct = () => {
   const [sousCategoryid, setSousCategoryid] = useState("");
   useEffect(() => {
     const getCategory = async () => {
-      const reqdata = await fetch("https://src-api.onrender.com/category/all");
+      const reqdata = await fetch("http://localhost:8000/category/all");
       const resdata = await reqdata.json();
       setCategory(resdata);
     };
@@ -41,7 +53,7 @@ const CreateProduct = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `https://src-api.onrender.com/subCategory/onesubcategory?idcategory=${categoryId}`
+        `http://localhost:8000/subCategory/onesubcategory?idcategory=${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSousCategory(resstatedata);
@@ -64,6 +76,7 @@ const CreateProduct = () => {
     imageProduit: "",
     marque: "",
     remarqueProduit: "",
+    seuil: 0,
     sousCategoryID: 1,
     categoryID: 1,
   });
@@ -77,6 +90,7 @@ const CreateProduct = () => {
   const onSubmitProduct = (e: React.FormEvent<HTMLFormElement>) => {
     formData["categoryID"] = parseInt(categoryid);
     formData["sousCategoryID"] = parseInt(sousCategoryid);
+    formData["seuil"] = value;
     e.preventDefault();
     createProduct(formData).then(() => setFormData(formData));
     notify();
@@ -265,6 +279,22 @@ const CreateProduct = () => {
                             value={formData.marque}
                             onChange={onChange}
                           />
+                        </div>
+                      </Col>
+                      <Col lg={6} style={{ marginBottom: 15 }}>
+                        <div className="mb-3">
+                          <Form.Label htmlFor="marque">Seuil</Form.Label>
+                          <Card.Body>
+                            <Slider
+                              disabled={false}
+                              marks={false}
+                              max={100}
+                              min={0}
+                              size="medium"
+                              valueLabelDisplay="auto"
+                              onChange={(e, v) => handleSliderChange(e, v)}
+                            />
+                          </Card.Body>
                         </div>
                       </Col>
                     </Row>

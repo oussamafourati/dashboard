@@ -180,6 +180,7 @@ const SubCategories = () => {
                             type="submit"
                             id="addNewCategory"
                           >
+                            <i className="ri-add-line align-bottom me-1"></i>{" "}
                             Ajouter
                           </Button>
                         </div>

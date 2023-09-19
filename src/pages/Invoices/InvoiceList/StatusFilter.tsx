@@ -11,33 +11,17 @@ const StatusFilter: React.FC<StatusProps> = ({ status, setStatus }) => {
     <React.Fragment>
       <Row>
         <div className="mb-3">
-          <p className="text-muted text-uppercase fs-14 mb-3">Status</p>
+          <p className="text-muted text-uppercase fs-16 mb-3">Status</p>
           <div className="form-check">
             <input
               className="form-check-input"
               type="checkbox"
               checked={status === 2}
               onChange={() => setStatus(2)}
+              id="flexChec"
             />
-            <label
-              className="form-check-label fs-18"
-              htmlFor="flexCheckDefault"
-            >
+            <label className="form-check-label fs-14" htmlFor="flexChec">
               Payé
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              checked={status === 1}
-              onChange={() => setStatus(1)}
-            />
-            <label
-              className="form-check-label fs-18"
-              htmlFor="flexCheckChecked"
-            >
-              Semi-Payé
             </label>
           </div>
           <div className="form-check">
@@ -46,11 +30,9 @@ const StatusFilter: React.FC<StatusProps> = ({ status, setStatus }) => {
               type="checkbox"
               checked={status === 0}
               onChange={() => setStatus(0)}
+              id="heckChecked"
             />
-            <label
-              className="form-check-label fs-18"
-              htmlFor="flexCheckChecked"
-            >
+            <label className="form-check-label fs-14" htmlFor="heckChecked">
               Impayé
             </label>
           </div>

@@ -3,6 +3,7 @@ import { Card, Col, Row, Table } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { useGetAllArrivagesProduitQuery } from "features/arrivageProduit/arrivageProduitSlice";
 import { useFetchFournisseurQuery } from "features/fournisseur/fournisseurSlice";
+import CountUp from "react-countup";
 
 const ShippingDetails = () => {
   const locationDetail = useLocation();
@@ -43,10 +44,15 @@ const ShippingDetails = () => {
                         </span>
                       </p>
                       <p className="mb-1">
-                        Montant Total:
+                        Montant Total:{" "}
                         <span className="fw-medium">
-                          <strong>{locationDetail.state.montantTotal}</strong>{" "}
-                          dt
+                          <strong>
+                            <CountUp
+                              end={locationDetail.state.montantTotal}
+                              separator=","
+                            />
+                          </strong>
+                          DT
                         </span>
                       </p>
                       <p className="mb-0">
@@ -80,7 +86,7 @@ const ShippingDetails = () => {
                     </div>
                     <div className="avatar-sm flex-shrink-0">
                       <div className="avatar-title bg-warning-subtle text-warning rounded fs-3">
-                        <i className="ph-map-pin"></i>
+                        <i className="bi bi-box-seam"></i>
                       </div>
                     </div>
                   </div>
@@ -113,7 +119,7 @@ const ShippingDetails = () => {
                       </p>
                     </div>
                     <div className="avatar-sm flex-shrink-0">
-                      <div className="avatar-title bg-warning-subtle text-warning rounded fs-3">
+                      <div className="avatar-title bg-success-subtle text-warning rounded fs-3">
                         {fournisseurDetail.map((fournisseur) => (
                           <img
                             src={`data:image/jpeg;base64,${fournisseur.logo}`}
@@ -148,12 +154,29 @@ const ShippingDetails = () => {
                 {result.map((item, i) => (
                   <tr key={item.idArrivageProduit}>
                     <td>{item.nomProduit}</td>
-                    <td>{item.quantite}</td>
-                    <td>{item.prixAchatHt}</td>
-                    <td>{item.prixAchatTtc}</td>
-                    <td>{item.prixVente}</td>
-                    <td>{item.Benifice}</td>
-                    <td>{item.PrixRemise}</td>
+                    <td>
+                      <CountUp end={item.quantite} separator="," />
+                    </td>
+                    <td>
+                      {" "}
+                      <CountUp end={item?.prixAchatHt!} separator="," />{" "}
+                    </td>
+                    <td>
+                      {" "}
+                      <CountUp end={item.prixAchatTtc!} separator="," />{" "}
+                    </td>
+                    <td>
+                      {" "}
+                      <CountUp end={item.prixVente!} separator="," />
+                    </td>
+                    <td>
+                      {" "}
+                      <CountUp end={item.Benifice!} separator="," />
+                    </td>
+                    <td>
+                      {" "}
+                      <CountUp end={item.PrixRemise!} separator="," />
+                    </td>
                   </tr>
                 ))}
               </tbody>

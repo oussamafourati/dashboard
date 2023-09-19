@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "Common/ChartsDynamicColor";
 import {
@@ -47,6 +47,7 @@ import {
   useGetAllChargesOctQuery,
   useGetAllChargesSepQuery,
 } from "features/charge/chargeSlice";
+import { useFetchTopCategoriesQuery } from "features/ligneVente/ligneVenteSlice";
 
 const RevenueCharts = ({ dataColors, chartData }: any) => {
   var revenueChartColors = getChartColorsArray(dataColors);
@@ -94,62 +95,62 @@ const RevenueCharts = ({ dataColors, chartData }: any) => {
 
   // Vente ou bien Facture
   const venteTotalMonthJanvier = TotalfactureJanvier.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthFeb = TotalfactureFeb.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthMar = TotalfactureMar.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthApr = TotalfactureApr.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthMay = TotalfactureMay.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthJuin = TotalfactureJuin.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthJuly = TotalfactureJuly.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthAug = TotalfactureAug.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthSep = TotalfactureSep.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthOct = TotalfactureOct.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthNov = TotalfactureNov.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonthDec = TotalfactureDec.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
@@ -352,16 +353,16 @@ const RevenueCharts = ({ dataColors, chartData }: any) => {
       enabled: false,
     },
     stroke: {
-      width: [2, 2, 2],
+      width: [3, 3, 3],
       curve: "smooth",
     },
     fill: {
-      type: ["solid", "gradient", "solid"],
+      type: ["solid", "solid", "solid"],
       gradient: {
-        shadeIntensity: 1,
+        shadeIntensity: 0,
         type: "vertical",
         inverseColors: false,
-        opacityFrom: 0.3,
+        opacityFrom: 0.8,
         opacityTo: 0.0,
         stops: [20, 80, 100, 100],
       },
@@ -390,11 +391,12 @@ const RevenueCharts = ({ dataColors, chartData }: any) => {
       ],
     },
     legend: {
-      position: "top",
-      horizontalAlign: "right",
-      floating: true,
-      offsetY: -25,
-      offsetX: -5,
+      show: true,
+      position: "bottom",
+      horizontalAlign: "center",
+      floating: false,
+      offsetY: 5,
+      offsetX: 35,
     },
     responsive: [
       {
@@ -515,7 +517,27 @@ const SatisfactionChart = ({ dataColors }: any) => {
 
 const TopCategoriesChart = ({ dataColors }: any) => {
   const topCategoriesChartsColors = getChartColorsArray(dataColors);
-  const series = [85, 69, 45, 78];
+
+  const { data: TopCategory = [] } = useFetchTopCategoriesQuery();
+
+  let sumTotalVente = TopCategory.reduce(
+    (sum, i) => (sum += i?.total_sold!),
+    0
+  );
+
+  const firstPourcentage = (
+    (TopCategory[0]?.total_sold! / sumTotalVente) *
+    100
+  ).toFixed(2);
+  const secondPourcentage = (
+    (TopCategory[1]?.total_sold! / sumTotalVente) *
+    100
+  ).toFixed(2);
+  const thirdPourcentage = (
+    (TopCategory[2]?.total_sold! / sumTotalVente) *
+    100
+  ).toFixed(2);
+  const series = [firstPourcentage, secondPourcentage, thirdPourcentage];
   var options = {
     chart: {
       height: 300,
@@ -529,6 +551,7 @@ const TopCategoriesChart = ({ dataColors }: any) => {
         startAngle: -90,
         endAngle: 90,
         dataLabels: {
+          show: true,
           name: {
             fontSize: "22px",
           },
@@ -539,13 +562,13 @@ const TopCategoriesChart = ({ dataColors }: any) => {
             show: true,
             label: "Ventes",
             formatter: function (w: any) {
-              return 2922;
+              return sumTotalVente;
             },
           },
         },
       },
     },
-    labels: ["Outillage", "Peinture", "Menuiserie", "Autres"],
+    labels: ["Outillage", "Peinture", "Menuiserie"],
     colors: topCategoriesChartsColors,
     legend: {
       show: false,

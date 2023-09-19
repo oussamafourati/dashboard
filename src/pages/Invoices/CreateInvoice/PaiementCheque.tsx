@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 
 import Flatpickr from "react-flatpickr";
+import { Link } from "react-router-dom";
 
 const PaiementCheque = () => {
   const [inputFields, setInputFields] = useState<string[]>([""]);
@@ -40,7 +41,7 @@ const PaiementCheque = () => {
 
   return (
     <div>
-      <Card.Body className="p-4">
+      <Card.Body className="p-1">
         <Row>
           <Col lg={3}>
             <Form.Label htmlFor="echeance">Echéance</Form.Label>
@@ -54,6 +55,7 @@ const PaiementCheque = () => {
           <Col lg={3}>
             <Form.Label htmlFor="banque">Banque (agence)</Form.Label>
           </Col>
+          <Col lg={1}></Col>
         </Row>
         {inputFields.map((inputField, index) => (
           <Row className="g-3" style={{ marginBottom: 15 }}>
@@ -77,21 +79,25 @@ const PaiementCheque = () => {
             <Col lg={3}>
               <Form.Control type="text" id="banque" />
             </Col>
-            <Col lg={1}>
-              <Button
+            <Col lg={1} sm={6} className="mt-4">
+              {/* <Button onClick={() => handleRemoveFields(index)}>
+                <i className="ri-close-fill ri-xl align-bottom me-1"></i>{" "}
+              </Button> */}
+              <Link
+                to="#"
+                className="link-danger"
                 onClick={() => handleRemoveFields(index)}
-                className="btn btn-soft-danger w-10"
               >
-                <i className="mdi mdi-archive-remove-outline align-bottom me-1"></i>{" "}
-              </Button>
+                <i className="ri-close-fill ri-xl" />
+              </Link>
             </Col>
           </Row>
         ))}
       </Card.Body>
       <Button
         onClick={handleAddFields}
-        variant="soft-primary"
-        className="w-10"
+        variant="primary"
+        className="p-1"
         id="btn-new-event"
       >
         <i className="mdi mdi-plus"></i>{" "}

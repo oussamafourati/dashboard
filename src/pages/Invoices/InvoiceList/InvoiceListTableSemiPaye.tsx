@@ -166,7 +166,7 @@ const InvoiceListTableSemiPaye = () => {
             <ul className="hstack gap-2 list-unstyled mb-0">
               <li>
                 <Link
-                  to="/invoices-details"
+                  to="/details-factures"
                   state={facture}
                   className="link-primary"
                   data-bs-toggle="modal"
@@ -203,12 +203,8 @@ const InvoiceListTableSemiPaye = () => {
                   <i className="ri-delete-bin-2-line"></i>
                 </Button>
               )}
-              <Link
-                to="/invoices-create"
-                className="btn btn-primary"
-                onClick={tog_AddUserModals}
-              >
-                <i className="ri-add-line align-bottom me-1"></i> Créer Facture
+              <Link to="/nouveau-facture-passager" className="btn btn-primary">
+                <i className="ri-add-line align-bottom me-1"></i> Créer
               </Link>
             </div>
           </div>
@@ -273,16 +269,6 @@ const InvoiceListTableSemiPaye = () => {
               theadClassName="text-muted table-light"
               SearchPlaceholder="Recherche..."
             />
-            <div className="noresult" style={{ display: "none" }}>
-              <div className="text-center">
-                {/* <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon> */}
-                <h5 className="mt-2">Sorry! No Result Found</h5>
-                <p className="text-muted mb-0">
-                  We've searched more than 150+ invoices We did not find any
-                  invoices for you search.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </Card.Body>

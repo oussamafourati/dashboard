@@ -6,10 +6,10 @@ export interface LigneVente {
   quantiteProduit: string;
   productName: string;
   numFacture: string;
-  TotalQuantity: number;
-  TotalVente: number;
-  nom: string;
-  total_sold: number;
+  TotalQuantity?: number;
+  TotalVente?: number;
+  nom?: string;
+  total_sold?: number;
 }
 
 export const LigneVenteSlice = createApi({
@@ -31,13 +31,13 @@ export const LigneVenteSlice = createApi({
       }),
       fetchTopSelling: builder.query<LigneVente[], number | void>({
         query() {
-          return `/topcategories`;
+          return `/topselling`;
         },
         providesTags: ["LigneVente"],
       }),
       fetchTopCategories: builder.query<LigneVente[], number | void>({
         query() {
-          return `/topselling`;
+          return `/topcategories`;
         },
         providesTags: ["LigneVente"],
       }),

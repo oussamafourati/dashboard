@@ -15,7 +15,7 @@ const PayeWidgets = () => {
   const { data: AllArrivages = [] } = useFetchFactureImpayeQuery();
 
   const arrivageTotal = AllArrivages.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
@@ -29,46 +29,42 @@ const PayeWidgets = () => {
     },
   ];
   return (
-    <React.Fragment>
+    <Col lg={4}>
       {(widgetsData || []).map((item: any, key: number) => (
-        <Col key={key}>
-          <Card className="card-animate mb-5">
-            <Card.Body>
-              <div className="d-flex justify-content-between">
-                <div
-                  className={"vr rounded bg-" + item.iconColor + " opacity-50"}
-                  style={{ width: "4px" }}
-                ></div>
-                <div className="flex-grow-1 ms-3">
-                  <p className="text-uppercase fw-medium text-muted fs-14 text-truncate">
-                    {item.name}
-                  </p>
-                  <h4 className="fs-18 fw-semibold mb-3">
-                    <span className="counter-value" data-target="98851.35">
-                      <CountUp start={0} end={item.amount} separator="," /> DT
-                    </span>
-                  </h4>
-                  {/* </div> */}
-                </div>
-                <div className="avatar-sm flex-shrink-0">
-                  <span
-                    className={
-                      "avatar-title bg-" +
-                      item.iconColor +
-                      "-subtle text-" +
-                      item.iconColor +
-                      " rounded fs-3"
-                    }
-                  >
-                    <i className={item.icon}></i>
+        <Card className="card-animate mb-3 bg-success bg-opacity-25 border-0">
+          <Card.Body key={key}>
+            <div className="d-flex justify-content-between">
+              <div
+                className={"vr rounded bg-" + item.iconColor + " opacity-50"}
+                style={{ width: "6px" }}
+              ></div>
+              <div className="flex-grow-1 ms-2">
+                <p className="text-uppercase fw-medium text-dark fs-15 text-truncate">
+                  {item.name}
+                </p>
+                <h4 className="fs-15 fw-semibold mb-3">
+                  <span className="counter-value" data-target="98851.35">
+                    <CountUp start={0} end={item.amount} separator="," /> DT
                   </span>
-                </div>
+                </h4>
+                {/* </div> */}
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      ))}
-    </React.Fragment>
+              <div className="avatar-sm flex-shrink-0">
+                <span
+                  className={
+                    "avatar-title bg-success bg-opacity-25 text-" +
+                    item.iconColor +
+                    " rounded fs-3"
+                  }
+                >
+                  <i className={item.icon}></i>
+                </span>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+      ))}{" "}
+    </Col>
   );
 };
 

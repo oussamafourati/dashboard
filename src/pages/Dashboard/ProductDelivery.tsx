@@ -9,7 +9,7 @@ const ProductDelivery = () => {
   return (
     <React.Fragment>
       <Col xxl={4} lg={6}>
-        <Card>
+        <Card className="card-height-100">
           <Card.Header className="d-flex">
             <h5 className="card-title flex-grow-1 mb-0">Meilleures Ventes</h5>
           </Card.Header>

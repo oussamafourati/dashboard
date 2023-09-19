@@ -23,7 +23,7 @@ import {
 import { useFetchFournisseurQuery } from "../../../features/fournisseur/fournisseurSlice";
 import Swal from "sweetalert2";
 import dayjs, { Dayjs } from "dayjs";
-
+import CountUp from "react-countup";
 const Shipments = () => {
   const navigate = useNavigate();
 
@@ -136,7 +136,15 @@ const Shipments = () => {
       },
       {
         Header: "Montant Total",
-        accessor: "montantTotal",
+        accessor: (arrivageProd: Arrivage) => {
+          return (
+            <CountUp
+              end={parseInt(arrivageProd.montantTotal)}
+              separator=","
+              duration={1}
+            />
+          );
+        },
         disableFilters: true,
         filterable: true,
       },
@@ -225,24 +233,23 @@ const Shipments = () => {
                     className="add-btn"
                   >
                     <i className="bi bi-plus-circle me-1 align-middle"></i>
-                    Ajouter Arrivage
+                    Ajouter
                   </Button>
                 </Col>
               </Row>
-              <div className="table-responsive table-card">
-                <TableContainer
-                  columns={columns || []}
-                  data={data || []}
-                  isGlobalFilter={true}
-                  iscustomPageSize={false}
-                  isBordered={false}
-                  customPageSize={10}
-                  className="custom-header-css table align-middle table-nowrap"
-                  tableClassName="table-centered align-middle table-nowrap mb-0"
-                  theadClassName="text-muted table-light"
-                  SearchPlaceholder="Rechercher Arrivage..."
-                />
-              </div>
+
+              <TableContainer
+                columns={columns || []}
+                data={data || []}
+                isGlobalFilter={true}
+                iscustomPageSize={false}
+                isBordered={false}
+                customPageSize={10}
+                className="custom-header-css table align-middle table-nowrap"
+                tableClassName="table-centered align-middle table-nowrap mb-0"
+                theadClassName="text-muted table-light"
+                SearchPlaceholder="Rechercher Arrivage..."
+              />
             </Card.Body>
           </Card>
           <Modal

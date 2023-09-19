@@ -22,9 +22,11 @@ import {
 } from "features/subCategory/subCategorySlice";
 import { useCreateCategoryMutation } from "features/category/categorySlice";
 import Swal from "sweetalert2";
+import Loading from "Common/Loading";
+import Error from "Common/Error";
 
 const Categories = () => {
-  // Toast Notification
+  // sweetalert Notification
   const notify = () => {
     Swal.fire({
       position: "center",
@@ -35,7 +37,7 @@ const Categories = () => {
     });
   };
   // Fetch Category
-  const { data } = useFetchCategoriesQuery();
+  const { data, error, isLoading } = useFetchCategoriesQuery();
   const [createCategory] = useCreateCategoryMutation();
   const { data: subdata = [] } = useFetchSubCategoriesQuery();
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -89,7 +91,6 @@ const Categories = () => {
     title: "",
   });
   const { nom, image } = categoryData;
-
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategoryData((prevState) => ({
       ...prevState,
@@ -133,7 +134,6 @@ const Categories = () => {
       fileReader.onload = () => {
         const base64String = fileReader.result as string;
         const base64Data = base64String.split(",")[1];
-
         resolve(base64Data);
       };
       fileReader.onerror = (error) => {
@@ -298,7 +298,8 @@ const Categories = () => {
                       <Col xxl={12}>
                         <div className="text-end mt-3">
                           <Button variant="success" type="submit">
-                            Ajouter Categorie
+                            <i className="ri-add-line align-bottom me-1"></i>{" "}
+                            Ajouter
                           </Button>
                         </div>
                       </Col>
@@ -307,130 +308,130 @@ const Categories = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xxl={9}>
-              {/* <Row className="justify-content-between mb-4">
-                <Col xxl={3} lg={6}>
-                  <div className="search-box mb-3 mb-lg-0">
-                    <Form.Control
-                      type="text"
-                      id="searchInputList"
-                      placeholder="Rechercher Catégorie..."
-                      onChange={(e) => searchTeamMember(e)}
-                    />
-                    <i className="ri-search-line search-icon"></i>
-                  </div>
-                </Col>
-              </Row> */}
-              <Row id="categories-list">
-                {(currentpages || data)?.map((item: Category, key: number) => (
-                  <Col xxl={4} md={6} key={key}>
-                    <Card className="categrory-widgets overflow-hidden">
-                      <Card.Body className="p-4">
-                        <div className="d-flex align-items-center mb-3">
-                          <h5 className="flex-grow-1 mb-0">{item.nom}</h5>
-                          <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
-                            <li>
-                              <Link
-                                to="#"
-                                className="link-danger"
-                                onClick={() => AlertDelete(item.idcategory)}
-                              >
-                                <i className="ri-delete-bin-5-line ri-xl" />
-                              </Link>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="mt-3">
-                          <Link
-                            to="#"
-                            className="fw-medium link-effect"
-                            onClick={() => {
-                              setShow(true);
-                              setInfo(item);
-                            }}
+            {error ? (
+              <Error />
+            ) : isLoading ? (
+              <Loading />
+            ) : data ? (
+              <>
+                <Col xxl={9}>
+                  <Row id="categories-list">
+                    {(currentpages || data)?.map(
+                      (item: Category, key: number) => (
+                        <Col xxl={4} md={6} key={key}>
+                          <Card className="categrory-widgets overflow-hidden">
+                            <Card.Body className="p-4">
+                              <div className="d-flex align-items-center mb-3">
+                                <h5 className="flex-grow-1 mb-0">{item.nom}</h5>
+                                <ul className="flex-shrink-0 list-unstyled hstack gap-1 mb-0">
+                                  <li>
+                                    <Link
+                                      to="#"
+                                      className="link-danger"
+                                      onClick={() =>
+                                        AlertDelete(item.idcategory)
+                                      }
+                                    >
+                                      <i className="ri-delete-bin-5-line ri-xl" />
+                                    </Link>
+                                  </li>
+                                </ul>
+                              </div>
+                              <div className="mt-3">
+                                <Link
+                                  to="#"
+                                  className="fw-medium link-effect"
+                                  onClick={() => {
+                                    setShow(true);
+                                    setInfo(item);
+                                  }}
+                                >
+                                  Détails
+                                  <i className="ri-arrow-right-line align-bottom ms-1"></i>
+                                </Link>
+                              </div>
+                              <img
+                                src={`data:image/jpeg;base64,${item.image}`}
+                                alt={item.nom}
+                                className="img-fluid category-img object-fit-cover"
+                              />
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      )
+                    )}
+                  </Row>
+                  {pagination && (
+                    <Row id="pagination-element" className="mb-4">
+                      <Col lg={12}>
+                        <div className="pagination-block pagination pagination-separated justify-content-center justify-content-sm-end mb-sm-0">
+                          <div
+                            className={
+                              currentPage <= 1
+                                ? "page-item disabled"
+                                : "page-item"
+                            }
                           >
-                            Détails
-                            <i className="ri-arrow-right-line align-bottom ms-1"></i>
-                          </Link>
-                        </div>
-                        <img
-                          src={`data:image/jpeg;base64,${item.image}`}
-                          alt={item.nom}
-                          className="img-fluid category-img object-fit-cover"
-                        />
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-              {pagination && (
-                <Row id="pagination-element" className="mb-4">
-                  <Col lg={12}>
-                    <div className="pagination-block pagination pagination-separated justify-content-center justify-content-sm-end mb-sm-0">
-                      <div
-                        className={
-                          currentPage <= 1 ? "page-item disabled" : "page-item"
-                        }
-                      >
-                        <Button
-                          variant="link"
-                          href="#"
-                          className="page-link"
-                          id="page-prev"
-                          onClick={() => handleprevPage()}
-                        >
-                          ←
-                        </Button>
-                      </div>
-                      <span id="page-num" className="pagination">
-                        {pageNumbers.map((item: any, key: any) => (
-                          <React.Fragment key={key}>
-                            <div
-                              className={
-                                currentPage === item
-                                  ? "page-item active"
-                                  : "page-item"
-                              }
+                            <Button
+                              variant="link"
+                              href="#"
+                              className="page-link"
+                              id="page-prev"
+                              onClick={() => handleprevPage()}
                             >
-                              <Link
-                                className="page-link clickPageNumber"
-                                to="#"
-                                key={key}
-                                id={item}
-                                onClick={(e) => handleClick(e)}
-                              >
-                                {item}
-                              </Link>
-                            </div>
-                          </React.Fragment>
-                        ))}
-                      </span>
-                      <div
-                        className={
-                          currentPage >= pageNumbers.length
-                            ? "page-item disabled"
-                            : "page-item"
-                        }
-                      >
-                        <Button
-                          variant="link"
-                          href="#"
-                          className="page-link"
-                          id="page-next"
-                          onClick={() => handlenextPage()}
-                        >
-                          →
-                        </Button>
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
-              )}
-            </Col>
+                              ←
+                            </Button>
+                          </div>
+                          <span id="page-num" className="pagination">
+                            {pageNumbers.map((item: any, key: any) => (
+                              <React.Fragment key={key}>
+                                <div
+                                  className={
+                                    currentPage === item
+                                      ? "page-item active"
+                                      : "page-item"
+                                  }
+                                >
+                                  <Link
+                                    className="page-link clickPageNumber"
+                                    to="#"
+                                    key={key}
+                                    id={item}
+                                    onClick={(e) => handleClick(e)}
+                                  >
+                                    {item}
+                                  </Link>
+                                </div>
+                              </React.Fragment>
+                            ))}
+                          </span>
+                          <div
+                            className={
+                              currentPage >= pageNumbers.length
+                                ? "page-item disabled"
+                                : "page-item"
+                            }
+                          >
+                            <Button
+                              variant="link"
+                              href="#"
+                              className="page-link"
+                              id="page-next"
+                              onClick={() => handlenextPage()}
+                            >
+                              →
+                            </Button>
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
+                </Col>
+              </>
+            ) : null}
           </Row>
         </Container>
       </div>
-
       <Offcanvas show={show} onHide={() => setShow(false)} placement="end">
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>#{info.idcategory}</Offcanvas.Title>

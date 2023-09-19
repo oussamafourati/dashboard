@@ -31,27 +31,27 @@ const VenteWidgets = () => {
   };
 
   const venteTotal = Totalfacture.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalDay = TotalfactureDay.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalMonth = TotalfactureMonth.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalYear = TotalfactureYear.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
   const venteTotalLastYear = TotalfactureLastYear.reduce(
-    (sum, i) => (sum += i.MontantTotal),
+    (sum, i) => (sum += i.MontantTotal!),
     0
   );
 
@@ -59,76 +59,74 @@ const VenteWidgets = () => {
     {
       id: 1,
       name: "TOTAL VENTE",
-      defaultamount: venteTotal,
+      defaultamount: venteTotalDay,
       amount: selectedValeur!,
       icon: "ph-wallet",
       iconColor: "secondary",
     },
   ];
   return (
-    <React.Fragment>
+    <Col>
       {(widgetsData || []).map((item: any, key: number) => (
-        <Col key={key}>
-          <Card className="card-animate mb-3">
-            <Card.Body>
-              <div className="d-flex justify-content-between">
-                <div
-                  className={"vr rounded bg-" + item.iconColor + " opacity-50"}
-                  style={{ width: "3px" }}
-                ></div>
-                <div className="flex-grow-1 ms-3">
-                  <p className="text-uppercase fw-medium text-muted fs-12 text-truncate">
-                    {item.name}
-                  </p>
-                  <h4 className="fs-14 fw-semibold mb-2">
-                    {!selectedValeur ? (
-                      <span className="counter-value" data-target="98851.35">
-                        <CountUp
-                          start={0}
-                          end={item.defaultamount}
-                          separator=","
-                        />{" "}
-                        DT
-                      </span>
-                    ) : (
-                      <span className="counter-value" data-target="98851.35">
-                        <CountUp start={0} end={item.amount} separator="," /> DT
-                      </span>
-                    )}
-                  </h4>
-                  <select
-                    className="form-select"
-                    id="choices-vente-input"
-                    name="choices-vente-input"
-                    onChange={handleSelectedValue}
-                  >
-                    <option value=""></option>
-                    <option value={venteTotalDay}>Aujourd'hui</option>
-                    <option value={venteTotalMonth}> Mois en cours</option>
-                    <option value={venteTotalYear}>Année en cours</option>
-                    <option value={venteTotalLastYear}>Année Dernière</option>
-                  </select>
-                  {/* </div> */}
-                </div>
-                <div className="avatar-sm flex-shrink-0">
-                  <span
-                    className={
-                      "avatar-title bg-" +
-                      item.iconColor +
-                      "-subtle text-" +
-                      item.iconColor +
-                      " rounded fs-2"
-                    }
-                  >
-                    <i className={item.icon}></i>
-                  </span>
-                </div>
+        <Card className="card-animate mb-2 bg-secondary bg-opacity-25 border-0">
+          <Card.Body key={key}>
+            <div className="d-flex justify-content-between">
+              <div
+                className={"vr rounded bg-" + item.iconColor + " opacity-50"}
+                style={{ width: "6px" }}
+              ></div>
+              <div className="flex-grow-1 ms-2">
+                <p className="text-uppercase fw-medium text-dark fs-15 text-truncate">
+                  {item.name}
+                </p>
+                <h4 className="fs-14 fw-bold mb-2">
+                  {!selectedValeur ? (
+                    <span className="counter-value" data-target="98851.35">
+                      <CountUp
+                        start={0}
+                        end={item.defaultamount}
+                        separator=","
+                      />{" "}
+                      DT
+                    </span>
+                  ) : (
+                    <span className="counter-value" data-target="98851.35">
+                      <CountUp start={0} end={item.amount} separator="," /> DT
+                    </span>
+                  )}
+                </h4>
+                <select
+                  className="form-select"
+                  id="choices-vente-input"
+                  name="choices-vente-input"
+                  onChange={handleSelectedValue}
+                >
+                  <option value=""></option>
+                  <option value={venteTotalDay} selected>
+                    Aujourd'hui
+                  </option>
+                  <option value={venteTotalMonth}> Mois en cours</option>
+                  <option value={venteTotalYear}>Année en cours</option>
+                  <option value={venteTotalLastYear}>Année Dernière</option>
+                </select>
+                {/* </div> */}
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
+              <div className="avatar-sm flex-shrink-0">
+                <span
+                  className={
+                    "avatar-title bg-secondary bg-opacity-25 text-" +
+                    item.iconColor +
+                    " rounded fs-2"
+                  }
+                >
+                  <i className={item.icon}></i>
+                </span>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
       ))}
-    </React.Fragment>
+    </Col>
   );
 };
 

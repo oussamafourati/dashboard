@@ -4,8 +4,15 @@ import TableContainer from "Common/TableContainer";
 import { ListView } from "Common/data";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import {
+  Devis,
+  useDeleteDevisMutation,
+  useGetDevisQuery,
+} from "features/devis/devisSlice";
 
 const InvoiceListTable = () => {
+  const { data: AllDevis = [] } = useGetDevisQuery();
+  const [deleteDevis] = useDeleteDevisMutation();
   const [modal_AddUserModals, setmodal_AddUserModals] =
     useState<boolean>(false);
   const [isMultiDeleteButton, setIsMultiDeleteButton] =
@@ -60,9 +67,10 @@ const InvoiceListTable = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
+          deleteDevis(id);
           swalWithBootstrapButtons.fire(
             "Supprimé !",
-            "Le Charge a été supprimé.",
+            "Le Devis a été supprimé.",
             "success"
           );
         } else if (
@@ -71,7 +79,7 @@ const InvoiceListTable = () => {
         ) {
           swalWithBootstrapButtons.fire(
             "Annulé",
-            "Le Charge est en sécurité :)",
+            "Le Devis est en sécurité :)",
             "error"
           );
         }
@@ -82,10 +90,10 @@ const InvoiceListTable = () => {
     () => [
       {
         Header: "Numéro",
-        accessor: (cellProps: any) => {
+        accessor: (devis: Devis) => {
           return (
-            <Link to="#" className="fw-medium">
-              {cellProps.id}
+            <Link to="/details-devis" className="fw-medium" state={devis}>
+              {devis.designationDevis}
             </Link>
           );
         },
@@ -96,32 +104,17 @@ const InvoiceListTable = () => {
         Header: "Client",
         disableFilters: true,
         filterable: true,
-        accessor: (cellProps: any) => {
-          return (
-            <div className="d-flex align-items-center gap-2">
-              <div className="flex-shrink-0">
-                <img
-                  src={cellProps.img}
-                  alt=""
-                  className="avatar-xs rounded-circle user-profile-img"
-                />
-              </div>
-              <div className="flex-grow-1 ms-2 user_name">
-                {cellProps.customer}
-              </div>
-            </div>
-          );
-        },
+        accessor: "nomclient",
       },
       {
         Header: "Date",
-        accessor: "date",
+        accessor: "dateDevis",
         disableFilters: true,
         filterable: true,
       },
       {
         Header: "Montant",
-        accessor: "amt",
+        accessor: "montantDevis",
         disableFilters: true,
         filterable: true,
       },
@@ -129,18 +122,18 @@ const InvoiceListTable = () => {
         Header: "Action",
         disableFilters: true,
         filterable: true,
-        accessor: (cellProps: any) => {
+        accessor: (devis: Devis) => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
-              <li>
+              {/* <li>
                 <Link to="#" className="link-primary" data-bs-toggle="modal">
                   <i className="ri-eye-line ri-xl" />
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   to="#"
-                  onClick={() => AlertDelete(cellProps.id)}
+                  onClick={() => AlertDelete(devis.idDevis)}
                   data-bs-toggle="modal"
                   className="link-danger"
                 >
@@ -184,7 +177,7 @@ const InvoiceListTable = () => {
               <div className="table-responsive table-card">
                 <TableContainer
                   columns={columns || []}
-                  data={ListView || []}
+                  data={AllDevis || []}
                   isGlobalFilter={true}
                   iscustomPageSize={false}
                   isBordered={false}

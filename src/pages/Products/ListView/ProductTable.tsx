@@ -77,7 +77,11 @@ const ProductTable = () => {
           );
         },
       },
-
+      {
+        Header: "Seuil",
+        accessor: "seuil",
+        Filter: true,
+      },
       {
         Header: "Marque",
         accessor: "marque",
@@ -127,16 +131,21 @@ const ProductTable = () => {
   );
   return (
     <React.Fragment>
-      <Row className="mb-4 justify-content-end">
-        <Col xxl={2} sm={6}>
-          <Link
-            to="/product-create"
-            className="btn btn-success"
-            id="addproduct-btn"
-          >
-            {" "}
-            <i className="ri-add-line align-bottom me-1"></i> Ajouter Produit
-          </Link>
+      <Row>
+        <Col xxl={12}>
+          <Row className="align-items-center">
+            <Col xxl={3} md={5}></Col>
+            <Col className="col-md-auto ms-auto">
+              <Link
+                to="/product-create"
+                className="btn btn-success"
+                id="addproduct-btn"
+              >
+                {" "}
+                <i className="ri-add-line align-bottom me-1"></i> Ajouter
+              </Link>
+            </Col>
+          </Row>
         </Col>
       </Row>
       <div>

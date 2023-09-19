@@ -7,6 +7,7 @@ import {
   useGetChargeLastYearQuery,
   useGetChargeThreeMonthsQuery,
   useGetChargeAnneeQuery,
+  useGetChargeMonthQuery,
 } from "features/charge/chargeSlice";
 
 interface WidgetsProps {
@@ -23,7 +24,7 @@ const ChargeWidgets = () => {
   const { data: YearCharge = [] } = useGetChargeAnneeQuery();
   const { data: DayCharge = [] } = useGetChargeDayQuery();
   const { data: LastYear = [] } = useGetChargeLastYearQuery();
-  const { data: ThreeMonths = [] } = useGetChargeThreeMonthsQuery();
+  const { data: allChargesMois = [] } = useGetChargeMonthQuery();
 
   const chargeTotal = AllCharge.reduce(
     (sum, i) => (sum += parseInt(i.montantCharges)),
@@ -45,15 +46,10 @@ const ChargeWidgets = () => {
     0
   );
 
-  const chargeTotalLastThreeMonths = ThreeMonths.reduce(
+  const chargeTotalThisMonth = allChargesMois.reduce(
     (sum, i) => (sum += parseInt(i.montantCharges)),
     0
   );
-
-  // const montantTotalPaye = facturePaye.reduce(
-  //   (sum, i) => (sum += i.MontantTotal),
-  //   0
-  // );
 
   const [categoryid, setCategoryid] = useState<number>();
   const handlesousCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -65,79 +61,73 @@ const ChargeWidgets = () => {
     {
       id: 4,
       name: "TOTAL CHARGE",
-      defaultamount: chargeYear,
+      defaultamount: chargeDay!,
       amount: categoryid!,
       icon: "bi bi-currency-dollar",
       iconColor: "warning",
     },
   ];
   return (
-    <React.Fragment>
+    <Col>
       {(widgetsData || []).map((item: any, key: number) => (
-        <Col key={key}>
-          <Card className="card-animate mb-3">
-            <Card.Body>
-              <div className="d-flex justify-content-between">
-                <div
-                  className={"vr rounded bg-" + item.iconColor + " opacity-50"}
-                  style={{ width: "3px" }}
-                ></div>
-                <div className="flex-grow-1 ms-3">
-                  <p className="text-uppercase fw-medium text-muted fs-12 text-truncate">
-                    {item.name}
-                  </p>
-                  <h4 className="fs-14 fw-semibold mb-2">
-                    {!categoryid ? (
-                      <span className="counter-value" data-target="98851.35">
-                        <CountUp
-                          start={0}
-                          end={item.defaultamount}
-                          separator=","
-                        />{" "}
-                        DT
-                      </span>
-                    ) : (
-                      <span className="counter-value" data-target="98851.35">
-                        <CountUp start={0} end={item.amount} separator="," /> DT
-                      </span>
-                    )}
-                  </h4>
-                  <select
-                    className="form-select"
-                    id="choices-charge-input"
-                    name="choices-charge-input"
-                    onChange={handlesousCategory}
-                  >
-                    <option value=""></option>
-                    <option value={chargeDay}>Aujourd'hui</option>
-                    <option value={chargeTotalLastThreeMonths}>
-                      {" "}
-                      Mois en cours
-                    </option>
-                    <option value={chargeYear}>Année en cours</option>
-                    <option value={chargeTotalLastYear}>Année Dernière</option>
-                  </select>
-                  {/* </div> */}
-                </div>
-                <div className="avatar-sm flex-shrink-0">
-                  <span
-                    className={
-                      "avatar-title bg-" +
-                      item.iconColor +
-                      "-subtle text-" +
-                      item.iconColor +
-                      " rounded fs-2"
-                    }
-                  >
-                    <i className={item.icon}></i>
-                  </span>
-                </div>
+        <Card className="card-animate mb-3 bg-warning bg-opacity-25 border-0">
+          <Card.Body key={key}>
+            <div className="d-flex justify-content-between">
+              <div
+                className={"vr rounded bg-" + item.iconColor + " opacity-50"}
+                style={{ width: "6px" }}
+              ></div>
+              <div className="flex-grow-1 ms-2">
+                <p className="text-uppercase fw-medium text-dark fs-15 text-truncate">
+                  {item.name}
+                </p>
+                <h4 className="fs-14 fw-bold mb-2">
+                  {!categoryid ? (
+                    <span className="counter-value" data-target="98851.35">
+                      <CountUp
+                        start={0}
+                        end={item.defaultamount}
+                        separator=","
+                      />{" "}
+                      DT
+                    </span>
+                  ) : (
+                    <span className="counter-value" data-target="98851.35">
+                      <CountUp start={0} end={item.amount} separator="," /> DT
+                    </span>
+                  )}
+                </h4>
+                <select
+                  className="form-select"
+                  id="choices-charge-input"
+                  name="choices-charge-input"
+                  onChange={handlesousCategory}
+                >
+                  <option value=""></option>
+                  <option value={chargeDay} selected>
+                    Aujourd'hui
+                  </option>
+                  <option value={chargeTotalThisMonth}>Mois en cours</option>
+                  <option value={chargeYear}>Année en cours</option>
+                  <option value={chargeTotalLastYear}>Année Dernière</option>
+                </select>
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
+              <div className="avatar-sm flex-shrink-0">
+                <span
+                  className={
+                    "avatar-title bg-warning bg-opacity-25 text-" +
+                    item.iconColor +
+                    " rounded fs-2"
+                  }
+                >
+                  <i className={item.icon}></i>
+                </span>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
       ))}
-    </React.Fragment>
+    </Col>
   );
 };
 

@@ -6,6 +6,7 @@ const Navdata = () => {
   const [isSellers, setIsSellers] = useState(false);
   const [isInvoice, setIsInvoice] = useState(false);
   const [isDevis, setIsDevis] = useState(false);
+  const [isBL, setIsBL] = useState(false);
   const [isShipping, setIsShipping] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
 
@@ -35,6 +36,9 @@ const Navdata = () => {
     }
     if (iscurrentState !== "Devis") {
       setIsDevis(false);
+    }
+    if (iscurrentState !== "bl") {
+      setIsBL(false);
     }
     if (iscurrentState !== "Shipping") {
       setIsShipping(false);
@@ -70,15 +74,48 @@ const Navdata = () => {
       subItems: [
         {
           id: "createinvoice",
-          label: "Créer facture",
-          link: "/nouveau-facture",
+          label: "Créer facture Passager",
+          link: "/nouveau-facture-passager",
+          parentId: "invoice",
+        },
+        {
+          id: "createinvoice",
+          label: "Créer facture Pro",
+          link: "/nouveau-facture-pro",
           parentId: "invoice",
         },
         {
           id: "listview",
           label: "Liste des factures",
-          link: "/invoices-list",
+          link: "/liste-factures",
           parentId: "invoice",
+        },
+      ],
+    },
+    {
+      id: "bl",
+      label: "Bon de livraison",
+      icon: "bi bi-boxes",
+      link: "/#",
+      click: function (e: any) {
+        e.preventDefault();
+        setIsBL(!isBL);
+        setIscurrentState("bl");
+        updateIconSidebar(e);
+      },
+      stateVariables: isBL,
+      subItems: [
+        {
+          id: "createbl",
+          label: "Créer bon de livraison",
+          link: "/nouveau-bl",
+          parentId: "bl",
+        },
+        {
+          id: "listview",
+          label: "Liste des BL",
+          link: "/liste-bl",
+          parentId: "bl",
         },
       ],
     },
@@ -199,13 +236,18 @@ const Navdata = () => {
         },
       ],
     },
+    // {
+    //   id: "calendar",
+    //   label: "Calendrier",
+    //   icon: "bi bi-calendar-week",
+    //   link: "/calendrier",
+    // },
     {
-      id: "calendar",
-      label: "Calendrier",
-      icon: "bi bi-calendar-week",
-      link: "/calendrier",
+      id: "statistics",
+      label: "Echéances",
+      icon: "bi bi-pie-chart",
+      link: "/echeances",
     },
-
     {
       id: "accounts",
       label: "Compte",

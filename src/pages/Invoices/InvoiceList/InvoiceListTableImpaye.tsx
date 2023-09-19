@@ -167,7 +167,7 @@ const InvoiceListTableImpaye = () => {
             <ul className="hstack gap-2 list-unstyled mb-0">
               <li>
                 <Link
-                  to="/invoices-details"
+                  to="/details-factures"
                   state={facture}
                   className="link-primary"
                   data-bs-toggle="modal"
@@ -204,12 +204,8 @@ const InvoiceListTableImpaye = () => {
                   <i className="ri-delete-bin-2-line"></i>
                 </Button>
               )}
-              <Link
-                to="/invoices-create"
-                className="btn btn-primary"
-                onClick={tog_AddUserModals}
-              >
-                <i className="ri-add-line align-bottom me-1"></i> Créer Facture
+              <Link to="/nouveau-facture-passager" className="btn btn-primary">
+                <i className="ri-add-line align-bottom me-1"></i> Créer
               </Link>
             </div>
           </div>

@@ -59,75 +59,77 @@ const AchatWidgets = () => {
     {
       id: 2,
       name: "TOTAL ACHAT",
-      defaultamount: arrivageTotal,
+      defaultamount: toDayTotal,
       amount: selectedValeur!,
       icon: "ph-storefront",
-      iconColor: "info",
+      iconColor: "dark",
     },
   ];
   return (
-    <React.Fragment>
+    <Col>
       {(widgetsData || []).map((item: any, key: number) => (
-        <Col key={key}>
-          <Card className="card-animate mb-3">
-            <Card.Body>
-              <div className="d-flex justify-content-between">
-                <div
-                  className={"vr rounded bg-" + item.iconColor + " opacity-50"}
-                  style={{ width: "3px" }}
-                ></div>
-                <div className="flex-grow-1 ms-3">
-                  <p className="text-uppercase fw-medium text-muted fs-12 text-truncate">
-                    {item.name}
-                  </p>
-                  <h4 className="fs-14 fw-semibold mb-2">
-                    {!selectedValeur ? (
-                      <span className="counter-value" data-target="98851.35">
-                        <CountUp
-                          start={0}
-                          end={item.defaultamount}
-                          separator=","
-                        />{" "}
-                        DT
-                      </span>
-                    ) : (
-                      <span className="counter-value" data-target="98851.35">
-                        <CountUp start={0} end={item.amount} separator="," /> DT
-                      </span>
-                    )}
-                  </h4>
-                  <select
-                    className="form-select"
-                    id="choices-achat-input"
-                    name="choices-achat-input"
-                    onChange={handleSelectedValue}
-                  >
-                    <option value=""></option>
-                    <option value={toDayTotal}>Aujourd'hui</option>
-                    <option value={thisMonthTotal}>Mois en cours</option>
-                    <option value={arrivageTotal}>Année en cours</option>
-                    <option value={LastArrivageTotal}>Année Dernière</option>
-                  </select>
-                </div>
-                <div className="avatar-sm flex-shrink-0">
-                  <span
-                    className={
-                      "avatar-title bg-" +
-                      item.iconColor +
-                      "-subtle text-" +
-                      item.iconColor +
-                      " rounded fs-2"
-                    }
-                  >
-                    <i className={item.icon}></i>
-                  </span>
-                </div>
+        <Card className="card-animate mb-3 bg-dark bg-opacity-25 rounded-9">
+          <Card.Body key={key}>
+            {/* <div className="p-1 bg-white rounded"> */}
+            <div className="d-flex justify-content-between">
+              <div
+                className={"vr rounded bg-" + item.iconColor + " opacity-50"}
+                style={{ width: "6px" }}
+              ></div>
+              <div className="flex-grow-1 ms-2">
+                <p className="text-uppercase fw-medium text-dark fs-15 text-truncate">
+                  {item.name}
+                </p>
+                <h4 className="fs-14 fw-bold mb-2">
+                  {!selectedValeur ? (
+                    <span className="counter-value" data-target="98851.35">
+                      <CountUp
+                        start={0}
+                        end={item.defaultamount}
+                        separator=","
+                      />{" "}
+                      DT
+                    </span>
+                  ) : (
+                    <span className="counter-value" data-target="98851.35">
+                      <CountUp start={0} end={item.amount} separator="," /> DT
+                    </span>
+                  )}
+                </h4>
+                <select
+                  className="form-select"
+                  id="choices-achat-input"
+                  name="choices-achat-input"
+                  onChange={handleSelectedValue}
+                >
+                  <option value=""></option>
+                  <option value={toDayTotal} selected>
+                    Aujourd'hui
+                  </option>
+                  <option value={thisMonthTotal}>Mois en cours</option>
+                  <option value={arrivageTotalYear}>Année en cours</option>
+                  <option value={LastArrivageTotal}>Année Dernière</option>
+                </select>
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
+              <div className="avatar-sm flex-shrink-0">
+                <span
+                  className={
+                    "avatar-title bg-" +
+                    item.iconColor +
+                    "-subtle text-" +
+                    item.iconColor +
+                    " rounded fs-2"
+                  }
+                >
+                  <i className={item.icon}></i>
+                </span>
+              </div>
+            </div>
+            {/* </div> */}
+          </Card.Body>
+        </Card>
       ))}
-    </React.Fragment>
+    </Col>
   );
 };
 

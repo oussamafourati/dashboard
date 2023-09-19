@@ -138,6 +138,12 @@ export const arrivageSlice = createApi({
         },
         providesTags: ["Arrivage"],
       }),
+      getArrivageWeek: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/allweekArrivage`;
+        },
+        providesTags: ["Arrivage"],
+      }),
       addArrivage: builder.mutation<void, Arrivage>({
         query(payload) {
           return {
@@ -168,6 +174,7 @@ export const arrivageSlice = createApi({
 });
 
 export const {
+  useGetArrivageWeekQuery,
   useGetArrivagesSixMonthsQuery,
   useGetArrivageAprQuery,
   useGetArrivageAugQuery,

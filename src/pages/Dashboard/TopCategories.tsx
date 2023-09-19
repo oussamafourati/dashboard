@@ -23,43 +23,32 @@ const TopCategories = () => {
 
             <Row className="g-3">
               <Col md={6}>
-                {TopCategories.map((categories, key) => (
-                  <Card className="text-center border-dashed mb-0" key={key}>
-                    <Card.Body>
-                      <h6 className="fs-16">{categories.total_sold}</h6>
-                      <i className="bi bi-square-fill text-primary me-1 fs-11"></i>{" "}
-                      {categories.nom}
-                    </Card.Body>
-                  </Card>
-                ))}
-              </Col>
-              {/* <Col md={6}>
                 <Card className="text-center border-dashed mb-0">
                   <Card.Body>
-                    <h6 className="fs-16">874</h6>
+                    <h6 className="fs-16">{TopCategories[0]?.total_sold!}</h6>
+                    <i className="bi bi-square-fill text-primary me-1 fs-11"></i>{" "}
+                    {TopCategories[0]?.nom!}
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={6}>
+                <Card className="text-center border-dashed mb-0">
+                  <Card.Body>
+                    <h6 className="fs-16">{TopCategories[1]?.total_sold!}</h6>
                     <i className="bi bi-square-fill text-danger me-1 fs-11"></i>{" "}
-                    Peinture
+                    {TopCategories[1]?.nom!}
                   </Card.Body>
                 </Card>
               </Col>
               <Col md={6}>
                 <Card className="text-center border-dashed mb-0">
                   <Card.Body>
-                    <h6 className="fs-16">321</h6>
+                    <h6 className="fs-16">{TopCategories[2]?.total_sold!}</h6>
                     <i className="bi bi-square-fill text-success me-1 fs-11"></i>{" "}
-                    Menuiserie
+                    {TopCategories[2]?.nom!}
                   </Card.Body>
                 </Card>
               </Col>
-              <Col md={6}>
-                <Card className="text-center border-dashed mb-0">
-                  <Card.Body>
-                    <h6 className="fs-16">741</h6>
-                    <i className="bi bi-square-fill text-secondary me-1 fs-11"></i>{" "}
-                    Autres
-                  </Card.Body>
-                </Card>
-              </Col> */}
             </Row>
           </Card.Body>
         </Card>

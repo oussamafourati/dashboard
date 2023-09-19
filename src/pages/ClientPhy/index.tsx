@@ -1,13 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Modal,
-  Row,
-} from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
 import { Link } from "react-router-dom";
@@ -197,6 +189,12 @@ const ClientPhy = () => {
         filterable: true,
       },
       {
+        Header: "RIB",
+        accessor: "rib",
+        disableFilters: true,
+        filterable: true,
+      },
+      {
         Header: "Adresse",
         accessor: "adresse",
         disableFilters: true,
@@ -211,12 +209,6 @@ const ClientPhy = () => {
       {
         Header: "E-mail",
         accessor: "mail",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "RIB",
-        accessor: "rib",
         disableFilters: true,
         filterable: true,
       },
@@ -295,46 +287,38 @@ const ClientPhy = () => {
           <div id="couponsList">
             <Row>
               <Col xxl={12}>
-                <Card>
-                  <Card.Body>
-                    <Row className="align-items-center">
-                      <Col xxl={3} md={5}></Col>
-                      <Col className="col-md-auto ms-auto">
-                        <Button
-                          variant="success"
-                          onClick={() => tog_AddCouponsModals()}
-                          className="add-btn"
-                        >
-                          <i className="bi bi-plus-circle me-1 align-middle"></i>
-                          Ajouter
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                </Card>
+                <Row className="align-items-center">
+                  <Col xxl={3} md={5}></Col>
+                  <Col className="col-md-auto ms-auto">
+                    <Button
+                      variant="success"
+                      onClick={() => tog_AddCouponsModals()}
+                      className="add-btn"
+                    >
+                      <i className="bi bi-plus-circle me-1 align-middle"></i>
+                      Ajouter
+                    </Button>
+                  </Col>
+                </Row>
               </Col>
             </Row>
 
             <Row>
               <Col lg={12}>
-                <Card>
-                  <Card.Body>
-                    <div className="table-responsive table-card">
-                      <TableContainer
-                        columns={columns || []}
-                        data={data || []}
-                        isGlobalFilter={true}
-                        iscustomPageSize={false}
-                        isBordered={false}
-                        customPageSize={10}
-                        className="custom-header-css table align-middle table-nowrap"
-                        tableClassName="table-centered align-middle table-nowrap mb-0"
-                        theadClassName="text-muted table-light"
-                        SearchPlaceholder="Rechercher Client Physique..."
-                      />
-                    </div>
-                  </Card.Body>
-                </Card>
+                <div>
+                  <TableContainer
+                    columns={columns || []}
+                    data={data || []}
+                    isGlobalFilter={true}
+                    iscustomPageSize={false}
+                    isBordered={false}
+                    customPageSize={10}
+                    className="custom-header-css table align-middle table-nowrap"
+                    tableClassName="gridjs-table"
+                    theadClassName="gridjs-thead"
+                    SearchPlaceholder="Rechercher Client Physique..."
+                  />
+                </div>
               </Col>
             </Row>
           </div>

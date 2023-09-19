@@ -22,6 +22,10 @@ import { arrivageProduitSlice } from "features/arrivageProduit/arrivageProduitSl
 import { compteSlice } from "features/compte/compteSlice";
 import { LigneVenteSlice } from "features/ligneVente/ligneVenteSlice";
 import { echanceSlice } from "features/Echance/echanceSlice";
+import { devisSlice } from "features/devis/devisSlice";
+import { notesSlice } from "features/notes/notesSlice";
+import counterReducer from "features/counter/counterSlice";
+import { blSlice } from "features/bl/bondeLSlice";
 
 export const store = configureStore({
   reducer: {
@@ -38,8 +42,11 @@ export const store = configureStore({
     [compteSlice.reducerPath]: compteSlice.reducer,
     [LigneVenteSlice.reducerPath]: LigneVenteSlice.reducer,
     [echanceSlice.reducerPath]: echanceSlice.reducer,
+    [devisSlice.reducerPath]: devisSlice.reducer,
+    [notesSlice.reducerPath]: notesSlice.reducer,
+    [blSlice.reducerPath]: blSlice.reducer,
+    counter: counterReducer,
     Layout: LayoutReducer,
-    Calendar: CalendarReducer,
     Login: LoginReducer,
     Account: AccountReducer,
     ForgetPassword: ForgetPasswordReducer,
@@ -61,6 +68,9 @@ export const store = configureStore({
       compteSlice.middleware,
       LigneVenteSlice.middleware,
       echanceSlice.middleware,
+      devisSlice.middleware,
+      notesSlice.middleware,
+      blSlice.middleware,
     ]);
   },
 });

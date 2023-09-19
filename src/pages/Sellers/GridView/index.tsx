@@ -718,16 +718,18 @@ const SellersGridView = () => {
           </Row>
 
           <Row className="mb-4 justify-content-end">
-            <Col lg={1} sm={6}>
+            {" "}
+            <Col className="col-md-auto ms-auto">
+              {" "}
               <Button
-                onClick={() => tog_AddSellerModals()}
                 variant="success"
-                data-bs-toggle="modal"
-                data-bs-target="#createModal"
+                onClick={() => tog_AddSellerModals()}
+                className="add-btn"
               >
-                Ajouter
-              </Button>
-            </Col>
+                {" "}
+                <i className="bi bi-plus-circle me-1 align-middle"></i> Ajouter{" "}
+              </Button>{" "}
+            </Col>{" "}
           </Row>
 
           <Modal

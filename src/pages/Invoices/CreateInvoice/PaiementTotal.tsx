@@ -12,7 +12,6 @@ const PaiementTotal: React.FC<ChildProps> = ({ setCount }) => {
 
   return (
     <div>
-      <br />
       <Row>
         <Col lg={4}>
           <Form.Label htmlFor="amountTotalPay">Montant Encaissé</Form.Label>

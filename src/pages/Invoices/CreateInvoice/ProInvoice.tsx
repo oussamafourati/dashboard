@@ -8,12 +8,14 @@ import {
   Row,
   Modal,
 } from "react-bootstrap";
+import CountUp from "react-countup";
+import Breadcrumb from "Common/BreadCrumb";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/fr";
 import { frFR } from "@mui/x-date-pickers/locales";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
 import PaiementCheque from "./PaiementCheque";
@@ -32,6 +34,11 @@ import {
   useAddClientMoraleMutation,
   useFetchClientMoralesQuery,
 } from "features/clientMoral/clientMoralSlice";
+import {
+  incremented,
+  amountAdded,
+} from "../../../features/counter/counterSlice";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 
 interface FormFields {
   PU: string;
@@ -39,12 +46,18 @@ interface FormFields {
   productName: string;
   montantTtl: string;
   numFacture: string;
+  benifice: string;
   [key: string]: string;
 }
 
 const ProInvoice: React.FC = () => {
   document.title = "Créer Facture | Radhouani";
+  const counter = useAppSelector((state) => state.counter.value);
+  const dispatch = useAppDispatch();
 
+  function handleClick() {
+    dispatch(incremented());
+  }
   const [pourcentageBenifice, setPourcentageBenifice] = useState<number>();
   const onChangePourcentageBenifice = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -90,7 +103,7 @@ const ProInvoice: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "https://src-api.onrender.com/clientMo/moraleclients"
+        "http://localhost:8000/clientMo/moraleclients"
       );
       const resdata = await reqdata.json();
       setClientMorale(resdata);
@@ -102,7 +115,7 @@ const ProInvoice: React.FC = () => {
     const clientMoraleid = e.target.value;
     if (clientMoraleid !== "") {
       const reqstatedata = await fetch(
-        `https://src-api.onrender.com/clientMo/oneClientMorale/${clientMoraleid}`
+        `http://localhost:8000/clientMo/oneClientMorale/${clientMoraleid}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -237,6 +250,10 @@ const ProInvoice: React.FC = () => {
   );
 
   let now = dayjs();
+  const [valueDate, setValueDate] = React.useState<Dayjs | null>(now);
+  const newDate = `${valueDate?.year()}-${
+    valueDate!.month() + 1
+  }-${valueDate!.date()}`;
 
   const [formFields, setFormFields] = useState<FormFields[]>([
     {
@@ -245,6 +262,7 @@ const ProInvoice: React.FC = () => {
       quantiteProduit: "",
       productName: "",
       numFacture: "",
+      benifice: "",
     },
   ]);
 
@@ -255,11 +273,16 @@ const ProInvoice: React.FC = () => {
     let data = [...formFields];
     data[index][event.target.name] = event.target.value;
     setFormFields(data);
+    // setFactureData((prevState) => ({
+    //   ...prevState,
+    //   [event.target.id]: event.target.value,
+    // }));
   };
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     // console.log(formFields);
   };
+
   const montantTotal =
     formFields.reduce((sum, i) => (sum += parseInt(i.montanttotal!)), 0) || 0;
 
@@ -270,6 +293,7 @@ const ProInvoice: React.FC = () => {
       quantiteProduit: "",
       productName: "",
       numFacture: "",
+      benifice: "",
     };
     setFormFields([...formFields, object]);
   };
@@ -302,567 +326,639 @@ const ProInvoice: React.FC = () => {
     setDisplayText(codeClient);
     tog_AddCodeUser();
   };
-
+  let numDevis = `${counter}/${valueDate?.year()}`;
   return (
-    <Container fluid={true}>
-      <Row className="justify-content-center">
-        <Col xxl={12}>
-          <Card>
-            <Form
-              className="needs-validation"
-              id="invoice_form"
-              onSubmit={(event) => handleSubmit(event, acValue)}
-            >
-              <Card.Body className="border-bottom border-bottom-dashed p-3">
-                <Row>
-                  <Col lg={4} sm={6}>
-                    <div>
-                      <div className="input-group d-flex gap-2 mb-4">
-                        <Autocomplete
-                          id="nomClient"
-                          sx={{ width: 320 }}
-                          options={clientMorale!}
-                          autoHighlight
-                          onChange={(event, value) => setClientValue(value)}
-                          getOptionLabel={(option) => option.raison_sociale!}
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.idclient_m}>
-                              {option.raison_sociale}
-                            </li>
-                          )}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Nom Client"
-                              inputProps={{
-                                ...params.inputProps,
-                              }}
-                              size="small"
+    <React.Fragment>
+      <div className="page-content">
+        <Container fluid={true}>
+          <Breadcrumb
+            title="Créer Facture Professionnel"
+            pageTitle="Factures"
+          />
+          <Row className="justify-content-center">
+            <Col xxl={12}>
+              <Card>
+                <Form
+                  className="needs-validation"
+                  id="invoice_form"
+                  onSubmit={(event) => handleSubmit(event, acValue)}
+                >
+                  <Card.Body className="border-bottom border-bottom-dashed p-3">
+                    <Row>
+                      <Col lg={4} sm={6}>
+                        <div>
+                          <div className="input-group d-flex gap-2 mb-2">
+                            <Autocomplete
+                              id="nomClient"
+                              sx={{ width: 320 }}
+                              options={clientMorale!}
+                              autoHighlight
+                              onChange={(event, value) => setClientValue(value)}
+                              getOptionLabel={(option) =>
+                                option.raison_sociale!
+                              }
+                              renderOption={(props, option) => (
+                                <li {...props} key={option.idclient_m}>
+                                  {option.raison_sociale}
+                                </li>
+                              )}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Nom Client"
+                                  inputProps={{
+                                    ...params.inputProps,
+                                  }}
+                                  size="small"
+                                />
+                              )}
                             />
-                          )}
-                        />
-                        <Button
-                          onClick={() => tog_AddClientMoraleModals()}
-                          variant="soft-info"
-                          size="sm"
-                          className="rounded"
-                        >
-                          <i className="ri-user-add-line ri-xl"></i>
-                        </Button>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={4} sm={6}>
-                    <TextField
-                      label=" Numero Facture"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      size="small"
-                      type="text"
-                      id="invoicenoInput"
-                      placeholder="25000355"
-                      sx={{ width: 320 }}
-                      className="mb-2"
-                    />
-                  </Col>
-                  <Col lg={4} sm={6}>
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                      adapterLocale="fr"
-                      localeText={
-                        frFR.components.MuiLocalizationProvider.defaultProps
-                          .localeText
-                      }
-                    >
-                      <DatePicker
-                        defaultValue={now}
-                        slotProps={{
-                          textField: {
-                            size: "small",
-                            inputProps: { ["placeholder"]: "DD-MM-YYYY" },
-                          },
-                        }}
-                        format="DD-MM-YYYY"
-                        sx={{ width: 320 }}
-                      />
-                    </LocalizationProvider>
-                  </Col>
-                </Row>
-              </Card.Body>
-              <Card.Body className="p-3">
-                <div>
-                  <Row>
-                    <Col lg={5}>
-                      <Form.Label htmlFor="nomProduit">
-                        Détail Produit
-                      </Form.Label>
-                    </Col>
-                    <Col lg={1}>
-                      <Form.Label htmlFor="Quantite">Quantité</Form.Label>
-                    </Col>
-                    <Col lg={2}>
-                      <Form.Label htmlFor="PU">Prix Unitaire</Form.Label>
-                    </Col>
-                    <Col lg={1}>
-                      <Form.Label htmlFor="benifice">Benifice</Form.Label>
-                    </Col>
-                    <Col lg={2}>
-                      <Form.Label htmlFor="Montant">Montant</Form.Label>
-                    </Col>
-                    <Col lg={1}></Col>
-                  </Row>
-                  {formFields.map((form, index) => (
-                    <Row style={{ marginBottom: 20 }} key={index}>
-                      <Col lg={5} sm={6}>
-                        <Autocomplete
-                          id="nomProduit"
-                          sx={{ width: 460 }}
-                          options={allArrivageProduit}
-                          autoHighlight
-                          onChange={(event, value) => {
-                            setACValue(value);
-                            const updatedPU = [...formFields];
-                            updatedPU[index].PU = value!.prixVente!.toString();
-                            setFormFields(updatedPU);
-                          }}
-                          getOptionLabel={(option) => option.nomProduit!}
-                          renderOption={(props, option) => (
-                            <li {...props} key={option.idArrivageProduit}>
-                              {option.nomProduit}
-                              ---
-                              <strong>{option.dateArrivage}</strong>---
-                              <span style={{ color: "red" }}>
-                                ({option.quantite})
-                              </span>
-                            </li>
-                          )}
-                          className="mb-2"
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Référence"
-                              inputProps={{
-                                ...params.inputProps,
-                              }}
-                              size="small"
-                              fullWidth
-                            />
-                          )}
-                        />
-                      </Col>
-                      <Col lg={1} sm={6}>
-                        <TextField
-                          className="mb-2"
-                          id="Quantite"
-                          type="number"
-                          size="small"
-                          name="Quantite"
-                          placeholder="0.0"
-                          onChange={(event) => handleFormChange(event, index)}
-                          value={form.qty}
-                        />
-                      </Col>
-                      <Col lg={2} sm={6}>
-                        <TextField
-                          id="PU"
-                          type="number"
-                          size="small"
-                          name="PU"
-                          placeholder="00.00"
-                          value={form.PU}
-                          sx={{ width: 195 }}
-                          className="mb-2"
-                        />
-                      </Col>
-                      <Col lg={1} sm={6}>
-                        <TextField
-                          sx={{ width: 95 }}
-                          id="benifice"
-                          type="number"
-                          size="small"
-                          name="benifice"
-                          defaultValue={form.benifice}
-                          placeholder="0.0"
-                          onChange={(event) => handleFormChange(event, index)}
-                          value={pourcentageBenifice}
-                          className="mb-2"
-                        />
-                      </Col>
-                      <Col lg={2} sm={6}>
-                        <TextField
-                          sx={{ width: 195 }}
-                          id="Montant"
-                          size="small"
-                          type="number"
-                          name="Montant"
-                          placeholder="0.0"
-                          onChange={(event) => handleFormChange(event, index)}
-                          value={
-                            (form.montanttotal = (
-                              (parseInt(form.prixunitaire) +
-                                parseInt(form.prixunitaire) *
-                                  (pourcentageBenifice! / 100)) *
-                              parseInt(form.qty)
-                            ).toString())
-                          }
-                        />
-                      </Col>
-                      <Col lg={1} className="mt-2" sm={6}>
-                        <Link
-                          to="#"
-                          className="link-danger"
-                          onClick={() => removeFields(index)}
-                        >
-                          <i className="ri-delete-bin-5-line ri-xl" />
-                        </Link>
-                      </Col>
-                    </Row>
-                  ))}
-                  <Row>
-                    <Col id="newForm" style={{ display: "none" }}>
-                      <div className="d-none">
-                        <p>Add New Form</p>
-                      </div>
-                    </Col>
-                    <Col>
-                      <div>
-                        <Link
-                          to="#"
-                          id="add-item"
-                          className="btn btn-soft-info fw-medium"
-                          onClick={addFields}
-                        >
-                          <i className="ri-add-fill me-1 align-bottom"></i>
-                        </Link>
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-                <Row className="border-top border-top-dashed mt-1">
-                  <Col lg={9}></Col>
-                  <Col lg={3} className="mt-3">
-                    <TextField
-                      label="% Bénifice"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      size="small"
-                      type="number"
-                      name="Benifice"
-                      onChange={onChangePourcentageBenifice}
-                      value={pourcentageBenifice}
-                      id="Benifice"
-                      placeholder="0.00"
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col lg={9}>
-                    <Row className="mt-2">
-                      <Col lg={9}>
-                        <div className="mb-2">
-                          <Form.Label htmlFor="choices-reglement-status">
-                            Reglement
-                          </Form.Label>
-                          <p>
-                            <input
-                              className="m-2"
-                              type="radio"
-                              name="choices-reglement-status"
-                              value="Paiement total en espèces"
-                              id="Paiement total en espèces"
-                              onChange={radioHandler}
-                            />
-                            <label htmlFor="Paiement total en espèces">
-                              Total en espèces
-                            </label>
-                            <input
-                              className="m-2"
-                              type="radio"
-                              name="choices-reglement-status"
-                              value="Paiement partiel espèces"
-                              id="Paiement partiel espèces"
-                              onChange={radioHandler}
-                            />
-                            <label htmlFor="Paiement partiel espèces">
-                              Partiel espèces
-                            </label>
-                            <input
-                              className="m-2"
-                              type="radio"
-                              name="choices-reglement-status"
-                              value="Paiement partiel chèque"
-                              id="Paiement partiel chèque"
-                              onChange={radioHandler}
-                            />
-                            <label htmlFor="Paiement partiel chèque">
-                              Partiel chèque
-                            </label>
-                          </p>
-                          {selectedReglement === "Paiement total en espèces" ? (
-                            <>
-                              <PaiementTotal setCount={setCount} />
-                            </>
-                          ) : (
-                            ""
-                          )}
-
-                          {selectedReglement === "Paiement partiel espèces" ? (
-                            <PaiementEspece />
-                          ) : (
-                            ""
-                          )}
-
-                          {selectedReglement === "Paiement partiel chèque" ? (
-                            <PaiementCheque />
-                          ) : (
-                            ""
-                          )}
+                            <Button
+                              onClick={() => tog_AddClientMoraleModals()}
+                              variant="soft-info"
+                              size="sm"
+                              className="rounded"
+                            >
+                              <i className="ri-user-add-line ri-xl"></i>
+                            </Button>
+                          </div>
                         </div>
                       </Col>
-                      <Col lg={3} sm={6}>
-                        <Form.Label htmlFor="choices-payment-status">
-                          Status de Payement
-                        </Form.Label>
-                        {!selectedReglement ? (
-                          <div>
-                            <p className="fs-15 badge badge-soft-danger">
-                              Impayé
-                            </p>
-                          </div>
-                        ) : selectedReglement ===
-                          "Paiement total en espèces" ? (
-                          <div>
-                            <p className="fs-15 badge badge-soft-success">
-                              Payé
-                            </p>
-                          </div>
-                        ) : selectedReglement === "Paiement partiel espèces" ? (
-                          <div>
-                            <p className="fs-15 badge badge-soft-danger">
-                              Impayé
-                            </p>
-                          </div>
-                        ) : selectedReglement === "Paiement partiel chèque" ? (
-                          <div>
-                            <p className="fs-15 badge badge-soft-warning">
-                              Semi-Payé
-                            </p>
-                          </div>
-                        ) : (
-                          ""
-                        )}
+                      <Col lg={4} sm={6}>
+                        <TextField
+                          label=" Numero Facture"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          size="small"
+                          value={numDevis}
+                          type="text"
+                          id="invoicenoInput"
+                          placeholder="25000355"
+                          sx={{ width: 320 }}
+                          className="mb-2"
+                        />
+                      </Col>
+                      <Col lg={4} sm={6}>
+                        <LocalizationProvider
+                          dateAdapter={AdapterDayjs}
+                          adapterLocale="fr"
+                          localeText={
+                            frFR.components.MuiLocalizationProvider.defaultProps
+                              .localeText
+                          }
+                        >
+                          <DatePicker
+                            defaultValue={now}
+                            slotProps={{
+                              textField: {
+                                size: "small",
+                                inputProps: { ["placeholder"]: "DD-MM-YYYY" },
+                              },
+                            }}
+                            format="DD-MM-YYYY"
+                            sx={{ width: 320 }}
+                          />
+                        </LocalizationProvider>
                       </Col>
                     </Row>
-                  </Col>
-                  <Col lg={3} className="mt-3">
-                    <TextField
-                      label="Total"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      size="small"
-                      type="number"
-                      name="subTotal"
-                      value={
-                        formFields.reduce(
-                          (sum, i) => (sum += parseInt(i.montanttotal!)),
-                          0
-                        ) || (0).toString()
-                      }
-                      id="cart-subtotal"
-                      placeholder="0.00"
-                    />
-                  </Col>
-                </Row>
-                <div className="hstack gap-2 justify-content-end d-print-none mt-0">
-                  <Button
-                    variant="soft-success"
-                    type="submit"
-                    onClick={() => tog_AddCodeUser()}
-                  >
-                    <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
-                    Paiement
-                  </Button>
-                  <Button variant="soft-secondary" type="submit">
-                    <i className="ri-printer-line align-bottom me-1"></i>{" "}
-                    Enregister
-                  </Button>
-                  <Link to="#" className="btn btn-soft-primary">
-                    <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                    Telecharger
-                  </Link>
-                </div>
-              </Card.Body>
-            </Form>
-          </Card>
-        </Col>
-      </Row>
-      {/* ******Modal For Client Physique****** */}
-      <Modal
-        id="showModal"
-        className="fade zoomIn"
-        size="lg"
-        show={modal_AddClientMoraleModals}
-        onHide={() => {
-          tog_AddClientMoraleModals();
-        }}
-        centered
-      >
-        <Modal.Header className="px-4 pt-4" closeButton>
-          <h5 className="modal-title fs-18" id="exampleModalLabel">
-            Ajouter Client
-          </h5>
-        </Modal.Header>
-        <Modal.Body className="p-4">
-          <Form className="tablelist-form">
-            <Row>
-              <div
-                id="alert-error-msg"
-                className="d-none alert alert-danger py-2"
-              ></div>
-              <input type="hidden" id="id-field" />
-              <Col lg={12}>
-                <div className="text-center mb-3">
-                  <div className="position-relative d-inline-block">
-                    <div className="position-absolute top-100 start-100 translate-middle">
-                      <label
-                        htmlFor="logo"
-                        className="mb-0"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="Select Client Physique Avatar"
+                  </Card.Body>
+                  <Card.Body className="p-3">
+                    <div>
+                      <Row>
+                        <Col lg={4}>
+                          <Form.Label htmlFor="nomProduit">
+                            Détail Produit
+                          </Form.Label>
+                        </Col>
+                        <Col lg={1}>
+                          <Form.Label htmlFor="quantiteProduit">
+                            Quantité
+                          </Form.Label>
+                        </Col>
+                        <Col lg={2} className="text-center">
+                          <Form.Label htmlFor="PU">Prix Unitaire</Form.Label>
+                        </Col>
+                        <Col lg={1} className="text-center">
+                          <Form.Label htmlFor="benifice">Benifice</Form.Label>
+                        </Col>
+                        <Col lg={2} className="text-center">
+                          <Form.Label htmlFor="montantTtl">Montant</Form.Label>
+                        </Col>
+                        <Col lg={1}></Col>
+                      </Row>
+                      {formFields.map((form, index) => (
+                        <Row key={index}>
+                          <Col lg={4} sm={6} className="mb-2">
+                            <Autocomplete
+                              id="nomProduit"
+                              sx={{ width: 320 }}
+                              options={allArrivageProduit}
+                              autoHighlight
+                              onChange={(event, value) => {
+                                setACValue(value);
+                                const updatedPU = [...formFields];
+                                updatedPU[index].PU =
+                                  value!.prixVente!.toString();
+                                setFormFields(updatedPU);
+                              }}
+                              getOptionLabel={(option) => option.nomProduit!}
+                              renderOption={(props, option) => (
+                                <li {...props} key={option.idArrivageProduit}>
+                                  {option.nomProduit}
+                                  ---
+                                  <strong>{option.dateArrivage}</strong>---
+                                  <span style={{ color: "red" }}>
+                                    ({option.quantite})
+                                  </span>
+                                </li>
+                              )}
+                              className="mb-2"
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Référence"
+                                  inputProps={{
+                                    ...params.inputProps,
+                                  }}
+                                  size="small"
+                                  fullWidth
+                                />
+                              )}
+                            />
+                          </Col>
+                          <Col lg={1} sm={6}>
+                            <TextField
+                              className="mb-2"
+                              sx={{ width: 80 }}
+                              id="quantiteProduit"
+                              type="number"
+                              size="small"
+                              name="quantiteProduit"
+                              placeholder="0.0"
+                              onChange={(event) =>
+                                handleFormChange(event, index)
+                              }
+                              value={form.quantiteProduit}
+                            />
+                          </Col>
+                          <Col lg={2} sm={6} className="text-center mt-2">
+                            {/* <TextField
+                              id="PU"
+                              type="number"
+                              size="small"
+                              name="PU"
+                              placeholder="00.00"
+                              value={form.PU}
+                              sx={{ width: 195 }}
+                              className="mb-2"
+                            />   */}
+                            <CountUp end={parseInt(form.PU)} separator="," />
+                          </Col>
+                          <Col lg={1} sm={6} className="text-center mt-2">
+                            {/* <TextField
+                              sx={{ width: 95 }}
+                              id="benifice"
+                              type="number"
+                              size="small"
+                              name="benifice"
+                              placeholder="0.0"
+                              onChange={() => onChangePourcentageBenifice}
+                              value={pourcentageBenifice}
+                              className="mb-2"
+                            />{" "} */}
+                            <CountUp
+                              end={pourcentageBenifice!}
+                              separator=","
+                              duration={1}
+                            />
+                          </Col>
+                          <Col lg={2} sm={6} className="text-center mt-2">
+                            {/* <TextField
+                              className="mb-2"
+                              sx={{ width: 190 }}
+                              id="montantTtl"
+                              size="small"
+                              type="number"
+                              name="montantTtl"
+                              placeholder="00.00"
+                              onChange={(event) =>
+                                handleFormChange(event, index)
+                              }
+                              value={
+                                
+                              }
+                              InputProps={{
+                                readOnly: true,
+                              }}
+                               
+                            /> */}
+                            <CountUp
+                              end={parseInt(
+                                (form.montantTtl = (
+                                  (parseInt(form.PU) / 1.19) *
+                                    parseInt(form.quantiteProduit) +
+                                  ((parseInt(form.PU) / 1.19) *
+                                    parseInt(form.quantiteProduit) *
+                                    pourcentageBenifice!) /
+                                    100
+                                ).toString())
+                              )}
+                              duration={1}
+                              separator=","
+                            />
+                          </Col>
+                          <Col lg={1} className="mt-2" sm={6}>
+                            <Link
+                              to="#"
+                              className="link-danger"
+                              onClick={() => removeFields(index)}
+                            >
+                              <i className="ri-delete-bin-5-line ri-xl" />
+                            </Link>
+                          </Col>
+                        </Row>
+                      ))}
+                      {/* <Row>
+                        <Col id="newForm" style={{ display: "none" }}>
+                          <div className="d-none">
+                            <p>Add New Form</p>
+                          </div>
+                        </Col>
+                        <Col>
+                          <div>
+                            <Link
+                              to="#"
+                              id="add-item"
+                              className="btn btn-info p-1"
+                              onClick={addFields}
+                            >
+                              <i className="ri-add-fill me-1 align-bottom"></i>
+                            </Link>
+                          </div>
+                        </Col>
+                      </Row> */}
+                      <Button
+                        onClick={addFields}
+                        variant="primary"
+                        className="p-1"
+                        id="btn-new-event"
                       >
-                        <span className="avatar-xs d-inline-block">
-                          <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                            <i className="ri-image-fill"></i>
-                          </span>
-                        </span>
-                      </label>
-                      <input
-                        className="form-control d-none"
-                        type="file"
-                        name="logo"
-                        id="logo"
-                        accept="image/*"
-                        onChange={(e) => handleClientMoraleFileUpload(e)}
-                      />
+                        <i className="mdi mdi-plus"></i>{" "}
+                      </Button>
+                      <Row className="mt-1">
+                        <Col lg={11}></Col>
+                        <Col lg={1} className="mt-1">
+                          <TextField
+                            sx={{ width: 88 }}
+                            label="% Bénifice"
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            size="small"
+                            type="number"
+                            name="pourcentageBenifice"
+                            onChange={onChangePourcentageBenifice}
+                            value={pourcentageBenifice}
+                            id="pourcentageBenifice"
+                            placeholder="0.00"
+                          />
+                        </Col>
+                      </Row>
+                      <Row className="mt-1">
+                        <Col lg={9}></Col>
+                        <Col className="col-md-auto ms-auto mt-2">
+                          <Form.Label htmlFor="total" className="fs-18 fw-bold">
+                            Total:{" "}
+                          </Form.Label>
+                        </Col>
+                        <Col className="col-md-auto ms-auto pb-2 mt-2">
+                          <CountUp
+                            className="fs-18 fw-meduim"
+                            end={
+                              formFields.reduce(
+                                (sum, i) => (sum += parseInt(i.montantTtl!)),
+                                0
+                              ) || 0
+                            }
+                            separator=","
+                            startVal={0}
+                          />
+                        </Col>
+                      </Row>
                     </div>
-                    <div className="avatar-lg">
-                      <div className="avatar-title bg-light rounded-3">
-                        <img
-                          src={`data:image/jpeg;base64, ${clientMData.logo}`}
-                          alt=""
-                          id="category-img"
-                          className="avatar-md h-auto rounded-3 object-fit-cover"
+                    <Row className="border-top border-top-dashed mt-1">
+                      <Col lg={9}>
+                        <Row className="mt-2">
+                          <Col lg={9}>
+                            <div className="mb-2">
+                              <Form.Label htmlFor="choices-reglement-status">
+                                Reglement
+                              </Form.Label>
+                              <p>
+                                <input
+                                  className="m-2"
+                                  type="radio"
+                                  name="choices-reglement-status"
+                                  value="Paiement total en espèces"
+                                  id="Paiement total en espèces"
+                                  onChange={radioHandler}
+                                />
+                                <label htmlFor="Paiement total en espèces">
+                                  Total en espèces
+                                </label>
+                                <input
+                                  className="m-2"
+                                  type="radio"
+                                  name="choices-reglement-status"
+                                  value="Paiement partiel espèces"
+                                  id="Paiement partiel espèces"
+                                  onChange={radioHandler}
+                                />
+                                <label htmlFor="Paiement partiel espèces">
+                                  Partiel espèces
+                                </label>
+                                <input
+                                  className="m-2"
+                                  type="radio"
+                                  name="choices-reglement-status"
+                                  value="Paiement partiel chèque"
+                                  id="Paiement partiel chèque"
+                                  onChange={radioHandler}
+                                />
+                                <label htmlFor="Paiement partiel chèque">
+                                  Partiel chèque
+                                </label>
+                              </p>
+                              {selectedReglement ===
+                              "Paiement total en espèces" ? (
+                                <>
+                                  <PaiementTotal setCount={setCount} />
+                                </>
+                              ) : (
+                                ""
+                              )}
+
+                              {selectedReglement ===
+                              "Paiement partiel espèces" ? (
+                                <PaiementEspece />
+                              ) : (
+                                ""
+                              )}
+
+                              {selectedReglement ===
+                              "Paiement partiel chèque" ? (
+                                <PaiementCheque />
+                              ) : (
+                                ""
+                              )}
+                            </div>
+                          </Col>
+                          <Col lg={3} sm={6}>
+                            <Form.Label htmlFor="choices-payment-status">
+                              Status de Payement
+                            </Form.Label>
+                            {!selectedReglement ? (
+                              <div>
+                                <p className="fs-15 badge badge-soft-danger">
+                                  Impayé
+                                </p>
+                              </div>
+                            ) : selectedReglement ===
+                              "Paiement total en espèces" ? (
+                              <div>
+                                <p className="fs-15 badge badge-soft-success">
+                                  Payé
+                                </p>
+                              </div>
+                            ) : selectedReglement ===
+                              "Paiement partiel espèces" ? (
+                              <div>
+                                <p className="fs-15 badge badge-soft-danger">
+                                  Impayé
+                                </p>
+                              </div>
+                            ) : selectedReglement ===
+                              "Paiement partiel chèque" ? (
+                              <div>
+                                <p className="fs-15 badge badge-soft-danger">
+                                  Impayé
+                                </p>
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                          </Col>
+                        </Row>
+                      </Col>
+                      {/* <Col lg={3} className="mt-3">
+                        <TextField
+                          label="Total"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                          sx={{ width: 280 }}
+                          size="small"
+                          type="number"
+                          name="subTotal"
+                          value={
+                            formFields.reduce(
+                              (sum, i) => (sum += parseInt(i.montantTtl!)),
+                              0
+                            ) || (0).toString()
+                          }
+                          id="cart-subtotal"
+                          placeholder="0.00"
                         />
+                      </Col> */}
+                    </Row>
+                    <div className="hstack gap-2 justify-content-end d-print-none mt-0">
+                      <Button
+                        variant="success"
+                        type="submit"
+                        onClick={() => tog_AddCodeUser()}
+                      >
+                        <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
+                        Paiement
+                      </Button>
+                      <Button variant="secondary" type="submit">
+                        <i className="ri-save-3-fill align-bottom me-1"></i>{" "}
+                        Enregister
+                      </Button>
+                      <Link to="#" className="btn btn-primary">
+                        <i className="ri-download-2-line align-bottom me-1"></i>{" "}
+                        Telecharger
+                      </Link>
+                    </div>
+                  </Card.Body>
+                </Form>
+              </Card>
+            </Col>
+          </Row>
+          {/* ******Modal For Client Physique****** */}
+          <Modal
+            id="showModal"
+            className="fade zoomIn"
+            size="lg"
+            show={modal_AddClientMoraleModals}
+            onHide={() => {
+              tog_AddClientMoraleModals();
+            }}
+            centered
+          >
+            <Modal.Header className="px-4 pt-4" closeButton>
+              <h5 className="modal-title fs-18" id="exampleModalLabel">
+                Ajouter Client
+              </h5>
+            </Modal.Header>
+            <Modal.Body className="p-4">
+              <Form className="tablelist-form">
+                <Row>
+                  <div
+                    id="alert-error-msg"
+                    className="d-none alert alert-danger py-2"
+                  ></div>
+                  <input type="hidden" id="id-field" />
+                  <Col lg={12}>
+                    <div className="text-center mb-3">
+                      <div className="position-relative d-inline-block">
+                        <div className="position-absolute top-100 start-100 translate-middle">
+                          <label
+                            htmlFor="logo"
+                            className="mb-0"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="right"
+                            title="Select Client Physique Avatar"
+                          >
+                            <span className="avatar-xs d-inline-block">
+                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
+                                <i className="ri-image-fill"></i>
+                              </span>
+                            </span>
+                          </label>
+                          <input
+                            className="form-control d-none"
+                            type="file"
+                            name="logo"
+                            id="logo"
+                            accept="image/*"
+                            onChange={(e) => handleClientMoraleFileUpload(e)}
+                          />
+                        </div>
+                        <div className="avatar-lg">
+                          <div className="avatar-title bg-light rounded-3">
+                            <img
+                              src={`data:image/jpeg;base64, ${clientMData.logo}`}
+                              alt=""
+                              id="category-img"
+                              className="avatar-md h-auto rounded-3 object-fit-cover"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="error-msg mt-1">
+                        Please add a category images.
                       </div>
                     </div>
-                  </div>
-
-                  <div className="error-msg mt-1">
-                    Please add a category images.
-                  </div>
-                </div>
-              </Col>
-              <Col lg={6} className="mt-2">
-                <div className="mb-3">
-                  <Form.Label htmlFor="raison_sociale">
-                    Raison Sociale
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.raison_sociale}
-                    onChange={onClientMoraleChange}
-                    id="raison_sociale"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={6} className="mt-2">
-                <div className="mb-3">
-                  <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.mat}
-                    onChange={onClientMoraleChange}
-                    id="mat"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={4}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="rib">RIB</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.rib}
-                    onChange={onClientMoraleChange}
-                    id="rib"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={3}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="tel">Telephone</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.tel}
-                    onChange={onClientMoraleChange}
-                    id="tel"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={5}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="adresse">Adresse</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.adresse}
-                    onChange={onClientMoraleChange}
-                    id="adresse"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={3}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="mail">E-mail</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.mail}
-                    onChange={onClientMoraleChange}
-                    id="mail"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={3}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="etat">Etat</Form.Label>
-                  <select
-                    className="form-select"
-                    data-choices
-                    data-choices-search-false
-                    id="choices-payment-status"
-                    required
-                  >
-                    <option value=""></option>
-                    <option value="Actif">Actif</option>
-                    <option value="Inactif">Inactif</option>
-                  </select>
-                </div>
-              </Col>
-              {/* <Col lg={4}>
+                  </Col>
+                  <Col lg={6} className="mt-2">
+                    <div className="mb-3">
+                      <Form.Label htmlFor="raison_sociale">
+                        Raison Sociale
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={clientMData.raison_sociale}
+                        onChange={onClientMoraleChange}
+                        id="raison_sociale"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={6} className="mt-2">
+                    <div className="mb-3">
+                      <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={clientMData.mat}
+                        onChange={onClientMoraleChange}
+                        id="mat"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={4}>
+                    <div className="mb-3">
+                      <Form.Label htmlFor="rib">RIB</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={clientMData.rib}
+                        onChange={onClientMoraleChange}
+                        id="rib"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={3}>
+                    <div className="mb-3">
+                      <Form.Label htmlFor="tel">Telephone</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={clientMData.tel}
+                        onChange={onClientMoraleChange}
+                        id="tel"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={5}>
+                    <div className="mb-3">
+                      <Form.Label htmlFor="adresse">Adresse</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={clientMData.adresse}
+                        onChange={onClientMoraleChange}
+                        id="adresse"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={3}>
+                    <div className="mb-3">
+                      <Form.Label htmlFor="mail">E-mail</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={clientMData.mail}
+                        onChange={onClientMoraleChange}
+                        id="mail"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={3}>
+                    <div className="mb-3">
+                      <Form.Label htmlFor="etat">Etat</Form.Label>
+                      <select
+                        className="form-select"
+                        data-choices
+                        data-choices-search-false
+                        id="choices-payment-status"
+                        required
+                      >
+                        <option value=""></option>
+                        <option value="Actif">Actif</option>
+                        <option value="Inactif">Inactif</option>
+                      </select>
+                    </div>
+                  </Col>
+                  {/* <Col lg={4}>
                 <div className="mb-3">
                   <Form.Label htmlFor="credit">Credit</Form.Label>
                   <Form.Control
@@ -875,100 +971,103 @@ const ProInvoice: React.FC = () => {
                   />
                 </div>
               </Col> */}
-              <Col lg={6}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="remarque">Remarque</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.remarque}
-                    onChange={onClientMoraleChange}
-                    id="remarque"
-                    required
-                  />
-                </div>
-              </Col>
-              <Col lg={12} className="modal-footer">
-                <div className="hstack gap-2 justify-content-end">
-                  <Button
-                    className="btn-ghost-danger"
-                    onClick={() => {
-                      tog_AddClientMoraleModals();
-                    }}
-                  >
-                    <i className="ri-close-line align-bottom me-1"></i> Fermer
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      tog_AddClientMoraleModals();
-                    }}
-                    type={"submit"}
-                    variant="primary"
-                    id="add-btn"
-                  >
-                    Ajouter
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </Modal.Body>
-      </Modal>
-      {/* ******Modal For User****** */}
-      <Modal
-        id="showModal"
-        className="fade zoomIn"
-        size="sm"
-        show={modal_AddCodeUser}
-        onHide={() => {
-          tog_AddCodeUser();
-        }}
-        centered
-      >
-        <Modal.Header className="px-4 pt-4" closeButton>
-          <h5 className="modal-title fs-18" id="exampleModalLabel">
-            Ajouter Code
-          </h5>
-        </Modal.Header>
-        <Modal.Body className="text-center p-4">
-          <Form className="tablelist-form">
-            <Row>
-              <div
-                id="alert-error-msg"
-                className="d-none alert alert-danger py-2"
-              ></div>
-              <input type="hidden" id="id-field" />
-              <Col lg={6}>
-                <TextField
-                  label="Code"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  inputProps={{ maxLength: 3 }}
-                  size="small"
-                  type="text"
-                  id="codeInput"
-                  placeholder="185"
-                  onChange={onChangeCodeClient}
-                />
-              </Col>
-              <Col lg={6}>
-                <div className="gap-2">
-                  <Button
-                    type={"submit"}
-                    variant="primary"
-                    id="add-btn"
-                    onClick={handleSubmitCodeClient}
-                  >
-                    <i className="ri-add-box-line"></i>
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </Modal.Body>
-      </Modal>
-      <ToastContainer />
-    </Container>
+                  <Col lg={6}>
+                    <div className="mb-3">
+                      <Form.Label htmlFor="remarque">Remarque</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={clientMData.remarque}
+                        onChange={onClientMoraleChange}
+                        id="remarque"
+                        required
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={12} className="modal-footer">
+                    <div className="hstack gap-2 justify-content-end">
+                      <Button
+                        className="btn-ghost-danger"
+                        onClick={() => {
+                          tog_AddClientMoraleModals();
+                        }}
+                      >
+                        <i className="ri-close-line align-bottom me-1"></i>{" "}
+                        Fermer
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          tog_AddClientMoraleModals();
+                        }}
+                        type={"submit"}
+                        variant="primary"
+                        id="add-btn"
+                      >
+                        Ajouter
+                      </Button>
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </Modal.Body>
+          </Modal>
+          {/* ******Modal For User****** */}
+          <Modal
+            id="showModal"
+            className="fade zoomIn"
+            size="sm"
+            show={modal_AddCodeUser}
+            onHide={() => {
+              tog_AddCodeUser();
+            }}
+            centered
+          >
+            <Modal.Header className="px-4 pt-4" closeButton>
+              <h5 className="modal-title fs-18" id="exampleModalLabel">
+                Ajouter Code
+              </h5>
+            </Modal.Header>
+            <Modal.Body className="text-center p-4">
+              <Form className="tablelist-form">
+                <Row>
+                  <div
+                    id="alert-error-msg"
+                    className="d-none alert alert-danger py-2"
+                  ></div>
+                  <input type="hidden" id="id-field" />
+                  <Col lg={6}>
+                    <TextField
+                      label="Code"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      inputProps={{ maxLength: 3 }}
+                      size="small"
+                      type="text"
+                      id="codeInput"
+                      placeholder="185"
+                      onChange={onChangeCodeClient}
+                    />
+                  </Col>
+                  <Col lg={6}>
+                    <div className="gap-2">
+                      <Button
+                        type={"submit"}
+                        variant="primary"
+                        id="add-btn"
+                        onClick={handleSubmitCodeClient}
+                      >
+                        <i className="ri-add-box-line"></i>
+                      </Button>
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </Modal.Body>
+          </Modal>
+          <ToastContainer />
+        </Container>
+      </div>
+    </React.Fragment>
   );
 };
 

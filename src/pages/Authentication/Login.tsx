@@ -26,15 +26,8 @@ import { useFormik } from "formik";
 import { loginUser, socialLogin, resetLoginFlag } from "slices/thunk";
 import withRouter from "Common/withRouter";
 
-//Social Media Imports
-import { GoogleLogin } from "react-google-login";
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
-
-//Import config
-import { facebook, google } from "../../config";
-
 const Login = (props: any) => {
-  document.title = "Login | Toner eCommerce + Admin React Template";
+  document.title = "Login | Radhouani";
 
   const dispatch = useDispatch<any>();
   const { user, error } = useSelector((state: any) => ({
@@ -132,37 +125,6 @@ const Login = (props: any) => {
                   />
                 </Link>
               </Col>
-              <Col className="col-auto">
-                <ul className="list-unstyled hstack gap-2 mb-0">
-                  <li className="me-md-3">
-                    <Link to="#" className="text-body fw-medium fs-15">
-                      Become a Selling
-                    </Link>
-                  </li>
-                  <li className="d-none d-md-block">
-                    <Link
-                      to="#"
-                      className="btn btn-soft-secondary"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <i className="bi bi-google-play align-middle me-1"></i>{" "}
-                      Download App
-                    </Link>
-                  </li>
-                  <li className="d-none d-md-block">
-                    <Link
-                      to="#"
-                      className="btn btn-soft-primary"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <i className="bi bi-apple align-middle me-1"></i> Download
-                      App
-                    </Link>
-                  </li>
-                </ul>
-              </Col>
             </Row>
           </Container>
         </div>
@@ -179,15 +141,12 @@ const Login = (props: any) => {
                         </Col>
                         <Col lg={8} className="col-9">
                           <h1 className="text-white lh-base fw-lighter">
-                            Join Our Toner Store
+                            Rejoignez notre magasin
                           </h1>
                         </Col>
                       </Row>
                     </Card.Header>
                     <Card.Body>
-                      <p className="text-muted fs-15">
-                        Sign in to continue to Toner.
-                      </p>
                       <div className="p-2">
                         {error && error ? (
                           <Alert variant="danger">
@@ -205,7 +164,9 @@ const Login = (props: any) => {
                           }}
                         >
                           <div className="mb-3">
-                            <Form.Label htmlFor="username">Username</Form.Label>
+                            <Form.Label htmlFor="username">
+                              Nom Utilisateur
+                            </Form.Label>
                             <Form.Control
                               name="email"
                               type="email"
@@ -231,16 +192,8 @@ const Login = (props: any) => {
                           </div>
 
                           <div className="mb-3">
-                            <div className="float-end">
-                              <Link
-                                to="/forgot-password"
-                                className="text-muted"
-                              >
-                                Forgot password?
-                              </Link>
-                            </div>
                             <Form.Label htmlFor="password-input">
-                              Password
+                              Mot de passe
                             </Form.Label>
                             <div className="position-relative auth-pass-inputgroup mb-3">
                               <Form.Control
@@ -277,17 +230,6 @@ const Login = (props: any) => {
                             </div>
                           </div>
 
-                          <div className="form-check">
-                            <Form.Check
-                              type="checkbox"
-                              value=""
-                              id="auth-remember-check"
-                            />
-                            <Form.Label htmlFor="auth-remember-check">
-                              Remember me
-                            </Form.Label>
-                          </div>
-
                           <div className="mt-4">
                             <Button
                               variant="primary"
@@ -304,72 +246,10 @@ const Login = (props: any) => {
                                     />
                                   )
                                 : ""}
-                              Sign In
+                              Se connecter
                             </Button>
                           </div>
-
-                          <div className="mt-4 pt-2 text-center">
-                            <div className="signin-other-title">
-                              <h5 className="fs-13 mb-4 title">Sign In with</h5>
-                            </div>
-                            <div className="pt-2 hstack gap-2 justify-content-center">
-                              <FacebookLogin
-                                appId={facebook.APP_ID}
-                                autoLoad={false}
-                                callback={facebookResponse}
-                                render={(renderProps: any) => (
-                                  <Button
-                                    variant="soft-primary"
-                                    className="btn-icon"
-                                    onClick={renderProps.onClick}
-                                  >
-                                    <i className="ri-facebook-fill fs-16" />
-                                  </Button>
-                                )}
-                              />
-
-                              <GoogleLogin
-                                clientId={
-                                  google.CLIENT_ID ? google.CLIENT_ID : ""
-                                }
-                                render={(renderProps) => (
-                                  <Button
-                                    variant="soft-danger"
-                                    className="btn-icon me-1"
-                                    onClick={renderProps.onClick}
-                                  >
-                                    <i className="ri-google-fill fs-16" />
-                                  </Button>
-                                )}
-                                onSuccess={googleResponse}
-                                onFailure={(error) => {
-                                  console.log("fail", error);
-                                }}
-                              />
-                              {/* <Button variant='soft-primary' className="btn-icon"><i className="ri-facebook-fill fs-16"></i></Button> */}
-                              {/* <Button variant='soft-danger' className="btn-icon"><i className="ri-google-fill fs-16"></i></Button> */}
-                              <Button variant="soft-dark" className="btn-icon">
-                                <i className="ri-github-fill fs-16"></i>
-                              </Button>
-                              <Button variant="soft-info" className="btn-icon">
-                                <i className="ri-twitter-fill fs-16"></i>
-                              </Button>
-                            </div>
-                          </div>
                         </Form>
-
-                        <div className="text-center mt-5">
-                          <p className="mb-0">
-                            Don't have an account ?{" "}
-                            <Link
-                              to="/register"
-                              className="fw-semibold text-secondary text-decoration-underline"
-                            >
-                              {" "}
-                              SignUp
-                            </Link>{" "}
-                          </p>
-                        </div>
                       </div>
                     </Card.Body>
                   </Card>
@@ -384,9 +264,7 @@ const Login = (props: any) => {
                 <Col lg={12}>
                   <div className="text-center">
                     <p className="mb-0 text-muted">
-                      ©{new Date().getFullYear()} Toner. Crafted with{" "}
-                      <i className="mdi mdi-heart text-danger"></i> by
-                      Themesbrand
+                      {new Date().getFullYear()} Radhouani. © Réaliser par 3S
                     </p>
                   </div>
                 </Col>

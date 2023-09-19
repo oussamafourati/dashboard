@@ -63,7 +63,7 @@ const ComingSoon = () => {
                             <Row className="justify-content-center mt-5">
                               <Col lg={10}>
                                 <Countdown
-                                  date="2023/08/31"
+                                  date="2023/09/30"
                                   renderer={renderer}
                                 />
                               </Col>

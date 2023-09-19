@@ -1,28 +1,23 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { Button, Card, Col, Dropdown, Form, Modal, Row } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import TableContainer from "Common/TableContainer";
-import { ListView } from "Common/data";
-import Flatpickr from "react-flatpickr";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Facture,
   useDeleteFactureMutation,
   useFetchAllFactureQuery,
+  useFetchOneFactureQuery,
+  useUpdateFactureMutation,
 } from "features/facture/factureSlice";
 import Swal from "sweetalert2";
+import dayjs, { Dayjs } from "dayjs";
 
 const InvoiceListTable = () => {
   const { data = [] } = useFetchAllFactureQuery();
   const [deleteFacture] = useDeleteFactureMutation();
 
-  const [modal_AddUserModals, setmodal_AddUserModals] =
-    useState<boolean>(false);
   const [isMultiDeleteButton, setIsMultiDeleteButton] =
     useState<boolean>(false);
-
-  function tog_AddUserModals() {
-    setmodal_AddUserModals(!modal_AddUserModals);
-  }
 
   // Checked All
   const checkedAll = useCallback(() => {
@@ -40,6 +35,25 @@ const InvoiceListTable = () => {
     }
     checkedbox();
   }, []);
+  let now = dayjs();
+
+  const [value, setValue] = React.useState<Dayjs | null>(now);
+  const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
+
+  const [newStatus, setNewStatus] = useState<number>(0);
+  const [newDateP, setNewDateP] = useState<string>("");
+
+  const [updateFacture] = useUpdateFactureMutation();
+
+  function btnClick() {
+    const linkTag = document.getElementById("link_cp");
+    linkTag!.replaceWith(newDate);
+    const span = document.createElement("span");
+    span.className = "badge badge-soft-success";
+    span.textContent = "Payé";
+    const statusTag = document.getElementById("status_impaye");
+    statusTag!.replaceWith(span);
+  }
 
   const checkedbox = () => {
     const ele = document.querySelectorAll(".invoiceCheckBox:checked");
@@ -56,6 +70,31 @@ const InvoiceListTable = () => {
     buttonsStyling: false,
   });
 
+  const ConfirmerPaiement = async (id: number) => {
+    swalWithBootstrapButtons
+      .fire({
+        title: "Confirmer Paiement",
+        text: "Êtes-vous sûr de confirmer le paiement ?",
+        icon: "question",
+        showCancelButton: true,
+        cancelButtonText: "Annuler",
+        confirmButtonText: "Confirmer",
+      })
+      .then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          btnClick();
+          updateFacture({
+            idFacture: id,
+            datePaiement: newDate,
+            statusFacture: 2,
+          });
+          Swal.fire("Confirmer!", "", "success");
+        } else if (result.isDenied) {
+          Swal.fire("Changement non enregistrer!", "", "info");
+        }
+      });
+  };
   const AlertDelete = async (id: number) => {
     swalWithBootstrapButtons
       .fire({
@@ -75,7 +114,7 @@ const InvoiceListTable = () => {
             "La Facture a été supprimée.",
             "success"
           );
-          navigate("/invoices-list");
+          navigate("/liste-factures");
         } else if (
           /* Read more about handling dismissals below */
           result.dismiss === Swal.DismissReason.cancel
@@ -88,23 +127,17 @@ const InvoiceListTable = () => {
         }
       });
   };
-
   const columns = useMemo(
     () => [
-      // {
-      //     Header: (<div className="form-check">
-      //         <input className="form-check-input" type="checkbox" id="checkAll" onClick={() => checkedAll()} />
-      //     </div>),
-      //     Cell: (cellProps: any) => {
-      //         return (<div className="form-check">
-      //             <input className="invoiceCheckBox form-check-input" type="checkbox" name="chk_child" value={cellProps.row.original.id} onChange={() => checkedbox()} />
-      //         </div>);
-      //     },
-      //     id: '#',
-      // },
       {
         Header: "Numéro Facture",
         accessor: "designationFacture",
+        disableFilters: true,
+        filterable: true,
+      },
+      {
+        Header: "Nom Client",
+        accessor: "nomClient",
         disableFilters: true,
         filterable: true,
       },
@@ -122,15 +155,40 @@ const InvoiceListTable = () => {
       },
       {
         Header: "Date Paiement",
-        accessor: "datePaiement",
         disableFilters: true,
         filterable: true,
-      },
-      {
-        Header: "Nom Client",
-        accessor: "nomClient",
-        disableFilters: true,
-        filterable: true,
+        accessor: (facture: Facture) => {
+          switch (facture.statusFacture) {
+            case 2:
+              return <p>{facture.datePaiement}</p>;
+            case 0:
+              return (
+                <div className="flex-shrink-0">
+                  <Link
+                    id="link_cp"
+                    to="#"
+                    onClick={() => ConfirmerPaiement(facture.idFacture)}
+                    className="btn btn-sm btn-soft-info"
+                  >
+                    Confirmation
+                  </Link>
+                </div>
+              );
+            default:
+              return (
+                <div className="flex-shrink-0">
+                  <Link
+                    id="link_cp"
+                    to="#"
+                    onClick={() => ConfirmerPaiement(facture.idFacture)}
+                    className="btn btn-sm btn-soft-info"
+                  >
+                    C.P
+                  </Link>
+                </div>
+              );
+          }
+        },
       },
       {
         Header: "Status",
@@ -142,11 +200,13 @@ const InvoiceListTable = () => {
               return <span className="badge badge-soft-success">{"Payé"}</span>;
             case 0:
               return (
-                <span className="badge badge-soft-danger">{"Impayé"}</span>
+                <span id="status_impaye" className="badge badge-soft-danger">
+                  {"Impayé"}
+                </span>
               );
             case 1:
               return (
-                <span className="badge badge-soft-warning">{"Semi-Payé"}</span>
+                <span className="badge badge-soft-danger">{"Impayé"}</span>
               );
             default:
               return (
@@ -164,12 +224,12 @@ const InvoiceListTable = () => {
             <ul className="hstack gap-2 list-unstyled mb-0">
               <li>
                 <Link
-                  to="/invoices-details"
+                  to="/details-factures"
                   state={facture}
                   className="link-primary"
                   data-bs-toggle="modal"
                 >
-                  <i className="ri-eye-line ri-xl" />
+                  <i className="ri-eye-line ri-lg" />
                 </Link>
               </li>
               <li>
@@ -179,7 +239,7 @@ const InvoiceListTable = () => {
                   data-bs-toggle="modal"
                   className="link-danger"
                 >
-                  <i className="ri-delete-bin-5-line ri-xl" />
+                  <i className="ri-delete-bin-5-line ri-lg" />
                 </Link>
               </li>
             </ul>
@@ -192,70 +252,6 @@ const InvoiceListTable = () => {
 
   return (
     <React.Fragment>
-      <Card.Header className="border-0">
-        <div className="d-flex align-items-center justify-content-end">
-          <div className="flex-shrink-0">
-            <div className="d-flex gap-2 flex-wrap">
-              {isMultiDeleteButton && (
-                <Button variant="danger" className="btn-icon">
-                  <i className="ri-delete-bin-2-line"></i>
-                </Button>
-              )}
-              <Link
-                to="/invoices-create"
-                className="btn btn-primary"
-                onClick={tog_AddUserModals}
-              >
-                <i className="ri-add-line align-bottom me-1"></i> Créer Facture
-              </Link>
-            </div>
-          </div>
-        </div>
-      </Card.Header>
-      {/* <Card.Body className="bg-soft-light border border-dashed border-start-0 border-end-0">
-              <form>
-                <Row className="g-3">
-                  <Col xxl={5} sm={12}>
-                    <div className="search-box">
-                      <input
-                        type="text"
-                        className="form-control search bg-light border-light"
-                        placeholder="rechercher facture par date, client, status..."
-                      />
-                      <i className="ri-search-line search-icon"></i>
-                    </div>
-                  </Col>
-                  <Col xxl={3} sm={4}>
-                    <Flatpickr
-                      className="form-control bg-light border-light"
-                      placeholder="Selectionner Date"
-                      options={{
-                        mode: "range",
-                        dateFormat: "d M, Y",
-                      }}
-                    />
-                  </Col>
-                  <Col xxl={3} sm={4}>
-                    <div className="input-light">
-                      <select
-                        className="form-control"
-                        data-choices
-                        data-choices-search-false
-                        name="choices-single-default"
-                        id="idStatus"
-                      >
-                        <option value="">Status</option>
-                        <option defaultValue="all">Tous</option>
-                        <option value="Unpaid">Payée</option>
-                        <option value="Paid">Impayée</option>
-                        <option value="Cancel">Annulée</option>
-                        <option value="Refund">Remboursée</option>
-                      </select>
-                    </div>
-                  </Col>
-                </Row>
-              </form>
-            </Card.Body> */}
       <Card.Body>
         <div>
           <div className="table-responsive table-card">
@@ -271,135 +267,9 @@ const InvoiceListTable = () => {
               theadClassName="text-muted table-light"
               SearchPlaceholder="Recherche..."
             />
-            <div className="noresult" style={{ display: "none" }}>
-              <div className="text-center">
-                {/* <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon> */}
-                <h5 className="mt-2">Sorry! No Result Found</h5>
-                <p className="text-muted mb-0">
-                  We've searched more than 150+ invoices We did not find any
-                  invoices for you search.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </Card.Body>
-
-      <Modal
-        className="fade"
-        show={modal_AddUserModals}
-        onHide={() => {
-          tog_AddUserModals();
-        }}
-      >
-        <Modal.Header className="px-4 pt-4" closeButton>
-          <h5 className="modal-title" id="exampleModalLabel">
-            Add User
-          </h5>
-        </Modal.Header>
-        <Form className="tablelist-form">
-          <Modal.Body className="p-4">
-            <div
-              id="alert-error-msg"
-              className="d-none alert alert-danger py-2"
-            ></div>
-            <input type="hidden" id="id-field" />
-
-            <div className="text-center">
-              <div className="position-relative d-inline-block">
-                <div className="position-absolute  bottom-0 end-0">
-                  <label
-                    htmlFor="customer-image-input"
-                    className="mb-0"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="right"
-                    title="Select Image"
-                  >
-                    <div className="avatar-xs cursor-pointer">
-                      <div className="avatar-title bg-light border rounded-circle text-muted">
-                        <i className="ri-image-fill"></i>
-                      </div>
-                    </div>
-                  </label>
-                  <Form.Control
-                    className="d-none"
-                    value=""
-                    id="users-image-input"
-                    type="file"
-                    accept="image/png, image/gif, image/jpeg"
-                  />
-                </div>
-                <div className="avatar-lg p-1">
-                  <div className="avatar-title bg-light rounded-circle">
-                    {/* <img src="../assets/images/users/user-dummy-img.jpg" id="users-img-field" className="avatar-md rounded-circle object-cover" /> */}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <Form.Label htmlFor="user-name">User Name</Form.Label>
-              <Form.Control
-                type="text"
-                id="user-name-field"
-                placeholder="Enter Name"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <Form.Label htmlFor="email-field">User Email</Form.Label>
-              <Form.Control
-                type="email"
-                id="email-field"
-                placeholder="Enter Email"
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <Form.Label htmlFor="date-field">Date</Form.Label>
-              <Flatpickr
-                className="form-control flatpickr-input"
-                placeholder="Select Date"
-                options={{
-                  mode: "range",
-                  dateFormat: "d M, Y",
-                }}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="account-status" className="form-label">
-                Account Status
-              </label>
-              <select
-                className="form-control"
-                required
-                id="account-status-field"
-              >
-                <option value="">Account Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">inactive</option>
-              </select>
-            </div>
-          </Modal.Body>
-          <div className="modal-footer">
-            <div className="hstack gap-2 justify-content-end">
-              <Button
-                className="btn-ghost-danger"
-                onClick={() => {
-                  tog_AddUserModals();
-                }}
-              >
-                Close
-              </Button>
-              <Button variant="success" id="add-btn">
-                Add User
-              </Button>
-            </div>
-          </div>
-        </Form>
-      </Modal>
     </React.Fragment>
   );
 };

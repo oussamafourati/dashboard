@@ -19,6 +19,9 @@ export interface ArrivageProduit {
   montantTotal?: number;
   dateArrivage?: string;
   fournisseurID?: number;
+  TotalQuantity?: number;
+  SUMTOTAL?: number;
+  seuil_product?: number;
 }
 
 export const arrivageProduitSlice = createApi({
@@ -32,6 +35,12 @@ export const arrivageProduitSlice = createApi({
       getAllArrivagesProduit: builder.query<ArrivageProduit[], number | void>({
         query() {
           return "/allArrivageProduit";
+        },
+        providesTags: ["ArrivageProduit"],
+      }),
+      getQtyProduit: builder.query<ArrivageProduit[], number | void>({
+        query() {
+          return "/qtyProduit";
         },
         providesTags: ["ArrivageProduit"],
       }),
@@ -89,6 +98,7 @@ export const arrivageProduitSlice = createApi({
 });
 
 export const {
+  useGetQtyProduitQuery,
   useGetFournisseurProduitQuery,
   useGetOneArrivProduitQuery,
   useGetAllArrivagesProduitQuery,

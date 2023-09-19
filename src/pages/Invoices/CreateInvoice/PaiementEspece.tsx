@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import Flatpickr from "react-flatpickr";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const PaiementEspece = () => {
   const [inputFields, setInputFields] = useState<string[]>([""]);
@@ -31,7 +32,7 @@ const PaiementEspece = () => {
 
   return (
     <div>
-      <Card.Body className="p-4">
+      <Card.Body className="p-1">
         <Row>
           <Col lg={6}>
             <Form.Label htmlFor="invoicenoInput">Echéance</Form.Label>
@@ -61,21 +62,22 @@ const PaiementEspece = () => {
                 />
               </div>
             </Col>
-            <Col lg={1}>
-              <Button
+            <Col lg={1} sm={6} className="mt-4">
+              <Link
+                to="#"
+                className="link-danger"
                 onClick={() => handleRemoveFields(index)}
-                className="btn btn-soft-danger w-10"
               >
-                <i className="mdi mdi-archive-remove-outline align-bottom me-1"></i>{" "}
-              </Button>
+                <i className="ri-close-fill ri-xl" />
+              </Link>
             </Col>
           </Row>
         ))}
       </Card.Body>
       <Button
         onClick={handleAddFields}
-        variant="soft-primary"
-        className="w-10"
+        variant="primary"
+        className="p-1"
         id="btn-new-event"
       >
         <i className="mdi mdi-plus"></i>{" "}

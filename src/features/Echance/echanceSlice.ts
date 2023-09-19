@@ -48,6 +48,12 @@ export const echanceSlice = createApi({
         },
         providesTags: ["Echance"],
       }),
+      getLastMonthEchances: builder.query<Echance[], number | void>({
+        query() {
+          return "/lastmonth";
+        },
+        providesTags: ["Echance"],
+      }),
       getOneEchance: builder.query<Echance, number | void>({
         query(idEchance) {
           return `/oneEchance/${idEchance}`;
@@ -69,6 +75,7 @@ export const echanceSlice = createApi({
 });
 
 export const {
+  useGetLastMonthEchancesQuery,
   useGetDayEchancesQuery,
   useGetMonthEchancesQuery,
   useGetNextMonthEchancesQuery,

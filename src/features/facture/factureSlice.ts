@@ -2,14 +2,21 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface Facture {
   idFacture: number;
-  designationFacture: string;
-  dateFacturation: string;
+  designationFacture?: string;
+  dateFacturation?: string;
   datePaiement: string;
-  modePaiement: string;
+  modePaiement?: string;
   statusFacture: number;
-  MontantTotal: number;
-  nomClient: string;
-  clientID: number;
+  MontantTotal?: number;
+  nomClient?: string;
+  clientID?: number;
+  adresse?: string;
+  tel?: string;
+  raison_sociale?: string;
+  PU?: string;
+  montantTtl?: string;
+  quantiteProduit?: string;
+  productName?: string;
 }
 
 export const facturetSlice = createApi({
@@ -169,6 +176,42 @@ export const facturetSlice = createApi({
         },
         providesTags: ["Facture"],
       }),
+      fetchFactureWeek: builder.query<Facture[], number | void>({
+        query() {
+          return "/facturesweek";
+        },
+        providesTags: ["Facture"],
+      }),
+      getFactureImpayeToDay: builder.query<Facture[], number | void>({
+        query() {
+          return "/factureimpayetoday";
+        },
+        providesTags: ["Facture"],
+      }),
+      getFactureImpayeThisMonth: builder.query<Facture[], number | void>({
+        query() {
+          return "/factureimpayethismonth";
+        },
+        providesTags: ["Facture"],
+      }),
+      getFactureImpayeThisYear: builder.query<Facture[], number | void>({
+        query() {
+          return "/factureimpayethisyear";
+        },
+        providesTags: ["Facture"],
+      }),
+      getFactureImpayeLastYear: builder.query<Facture[], number | void>({
+        query() {
+          return "/factureimpayelastyear";
+        },
+        providesTags: ["Facture"],
+      }),
+      getLigneVente: builder.query<Facture[], number | void>({
+        query(idFacture) {
+          return `/ligneventedufacture/${idFacture}`;
+        },
+        providesTags: ["Facture"],
+      }),
       addFacture: builder.mutation<void, Facture>({
         query(payload) {
           return {
@@ -182,7 +225,7 @@ export const facturetSlice = createApi({
       updateFacture: builder.mutation<void, Facture>({
         query: ({ idFacture, ...rest }) => ({
           url: `/editFacture/${idFacture}`,
-          method: "PATCH",
+          method: "PUT",
           body: rest,
         }),
         invalidatesTags: ["Facture"],
@@ -199,6 +242,12 @@ export const facturetSlice = createApi({
 });
 
 export const {
+  useGetLigneVenteQuery,
+  useGetFactureImpayeLastYearQuery,
+  useGetFactureImpayeThisMonthQuery,
+  useGetFactureImpayeThisYearQuery,
+  useGetFactureImpayeToDayQuery,
+  useFetchFactureWeekQuery,
   useFetchFacturesSixMonthsQuery,
   useFetchFacturesJanuaryQuery,
   useFetchfacturesDecemberQuery,

@@ -1,13 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Modal,
-  Row,
-} from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
 import { Link } from "react-router-dom";
@@ -297,55 +289,36 @@ const ClientMor = () => {
           <div id="couponsList">
             <Row>
               <Col xxl={12}>
-                <Card>
-                  <Card.Body>
-                    <Row className="align-items-center">
-                      <Col className="col-md-auto ms-auto">
-                        <Button
-                          variant="success"
-                          onClick={() => tog_AddCouponsModals()}
-                          className="add-btn"
-                        >
-                          <i className="bi bi-plus-circle me-1 align-middle"></i>
-                          Ajouter
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                </Card>
+                <Row className="align-items-center">
+                  <Col className="col-md-auto ms-auto">
+                    <Button
+                      variant="success"
+                      onClick={() => tog_AddCouponsModals()}
+                      className="add-btn"
+                    >
+                      <i className="bi bi-plus-circle me-1 align-middle"></i>
+                      Ajouter
+                    </Button>
+                  </Col>
+                </Row>
               </Col>
             </Row>
-
             <Row>
               <Col lg={12}>
-                <Card>
-                  <Card.Body>
-                    <div className="table-responsive table-card">
-                      <TableContainer
-                        columns={columns || []}
-                        data={data || []}
-                        isGlobalFilter={true}
-                        iscustomPageSize={false}
-                        isBordered={false}
-                        customPageSize={10}
-                        className="custom-header-css table align-middle table-nowrap"
-                        tableClassName="table-centered align-middle table-nowrap mb-0"
-                        theadClassName="text-muted table-light"
-                        SearchPlaceholder="Rechercher Client Morale..."
-                      />
-                      <div className="noresult" style={{ display: "none" }}>
-                        <div className="text-center">
-                          {/* <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon> */}
-                          <h5 className="mt-2">Sorry! No Result Found</h5>
-                          <p className="text-muted mb-0">
-                            We've searched more than 150+ Orders We did not find
-                            any orders for you search.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card.Body>
-                </Card>
+                <div>
+                  <TableContainer
+                    columns={columns || []}
+                    data={data || []}
+                    isGlobalFilter={true}
+                    iscustomPageSize={false}
+                    isBordered={false}
+                    customPageSize={10}
+                    className="custom-header-css table align-middle table-nowrap"
+                    tableClassName="table-centered align-middle table-nowrap mb-0"
+                    theadClassName="text-muted table-light"
+                    SearchPlaceholder="Rechercher Client Morale..."
+                  />
+                </div>
               </Col>
             </Row>
           </div>

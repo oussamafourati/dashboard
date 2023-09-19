@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row, Table } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 // Import Images
@@ -6,16 +6,89 @@ import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
 import { Link, useLocation } from "react-router-dom";
 import { useFetchAllLigneVenteQuery } from "features/ligneVente/ligneVenteSlice";
+import {
+  ClientPhysique,
+  useGetOneClientQuery,
+} from "features/clientPhysique/clientPhysiqueSlice";
+import {
+  Facture,
+  useFetchOneFactureQuery,
+  useGetLigneVenteQuery,
+} from "features/facture/factureSlice";
+
+// PDF
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import HeaderInvoice from "./HeaderInvoice";
+import ClientFacture from "./ClientFacture";
+import Amount from "./Amount";
+import ProposalSignature from "pages/Devis/DevisDetails/ProposalSignature";
+import TableFacture from "./TableFacture";
+import MontantTotalFacture from "./MontantTotalFacture";
+
+const styles = StyleSheet.create({
+  body: {
+    backgroundColor: "#ffffff",
+    fontFamiy: "Source Sans",
+    fontSize: 12,
+    lineHeight: 1.4,
+    paddingTop: 32,
+    paddingBottom: 16,
+    paddingHorizontal: 32,
+    height: "100vh",
+  },
+  top: {
+    flex: 1,
+  },
+});
+const PDF_REPORT_Facture = (props: Facture) => {
+  const {
+    designationFacture,
+    dateFacturation,
+    raison_sociale,
+    nomClient,
+    adresse,
+    tel,
+    MontantTotal,
+    idFacture,
+  } = props;
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.body}>
+        <View style={styles.top}>
+          <HeaderInvoice date={dateFacturation!} numero={designationFacture!} />
+          <ClientFacture nom={nomClient!} adr={adresse!} tel={tel!} />
+        </View>
+        <View style={{ flex: 2 }}>
+          <TableFacture id={idFacture} />
+          <MontantTotalFacture mnt={MontantTotal!} />
+        </View>
+        <View>
+          <Amount amount={MontantTotal!} />
+          <ProposalSignature />
+        </View>
+      </Page>
+    </Document>
+  );
+};
 
 const InvoiceDetails = () => {
   document.title = "Détails Facture | Radhouani";
   const locationDetail = useLocation();
 
-  const { data: allLigneVente } = useFetchAllLigneVenteQuery(
-    locationDetail.state.designationFacture
+  const { data: allLigneVente } = useGetLigneVenteQuery(
+    locationDetail.state.idFacture
   );
 
-  console.log("allLigneVente", allLigneVente);
+  console.log(allLigneVente);
   //Print the Invoice
   const printInvoice = () => {
     window.print();
@@ -61,10 +134,12 @@ const InvoiceDetails = () => {
                               </span>
                             </label>
                           </div>
-                          <span>
-                            <strong>Matricule Fiscale:</strong>{" "}
-                            <span>147852369</span>
-                          </span>
+                          <div className="mb-2">
+                            <span>
+                              <strong>Matricule Fiscale:</strong>{" "}
+                              <span>147852369</span>
+                            </span>
+                          </div>
                           <div className="mb-2">
                             <span>
                               <strong>Adresse:</strong>{" "}
@@ -162,17 +237,17 @@ const InvoiceDetails = () => {
                             Client
                           </h6>
                           <p className="fw-medium mb-2 fs-16" id="billing-name">
-                            {locationDetail.state.nomClient}
+                            {locationDetail.state?.nomClient}
                           </p>
                           <p
                             className="text-muted mb-1"
                             id="billing-address-line-1"
                           >
-                            Cité Ennour, Gafsa
+                            Gafsa
                           </p>
                           <p className="text-muted mb-1">
-                            <span>Téléphone: </span>
-                            <span id="billing-phone-no">96003004</span>
+                            <span>Téléphone: 26823569</span>
+                            <span id="billing-phone-no"></span>
                           </p>
                         </Col>
                       </Row>
@@ -196,8 +271,8 @@ const InvoiceDetails = () => {
                             </tr>
                           </thead>
                           <tbody id="products-list">
-                            {allLigneVente?.map((lignevente) => (
-                              <tr>
+                            {allLigneVente?.map((lignevente, key) => (
+                              <tr key={key}>
                                 <th scope="row">01</th>
                                 <td className="text-start">
                                   <span className="fw-medium">
@@ -233,15 +308,21 @@ const InvoiceDetails = () => {
                         <Link
                           onClick={printInvoice}
                           to="#"
-                          className="btn btn-success"
+                          className="btn btn-soft-secondary"
                         >
                           <i className="ri-printer-line align-bottom me-1"></i>{" "}
                           Imprimer
                         </Link>
-                        <Link to="#" className="btn btn-primary">
-                          <i className="ri-download-2-line align-bottom me-1"></i>{" "}
+                        <PDFDownloadLink
+                          document={
+                            <PDF_REPORT_Facture {...locationDetail.state} />
+                          }
+                          className="btn btn-soft-primary"
+                          fileName={`facture_numero_${locationDetail.state.designationFacture}`}
+                        >
+                          <i className="ri-download-2-line align-bottom me-1"></i>
                           Télécharger
-                        </Link>
+                        </PDFDownloadLink>
                       </div>
                     </Card.Body>
                   </Col>

@@ -138,49 +138,6 @@ const PersonalInformation = () => {
           <Card.Body>
             <Form onSubmit={formik.handleSubmit}>
               <Row className="g-3">
-                {/* <Col lg={12} className="text-center">
-                  <div className="mb-3">
-                    <div className="position-relative d-inline-block">
-                      <div className="position-absolute top-100 start-100 translate-middle">
-                        <label
-                          htmlFor="avatar"
-                          className="mb-0"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="right"
-                          title="Select Client Physique Avatar"
-                        >
-                          <span className="avatar-xs d-inline-block">
-                            <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                              <i className="ri-image-fill"></i>
-                            </span>
-                          </span>
-                        </label>
-                        <input
-                          className="form-control d-none"
-                          type="file"
-                          name="avatar"
-                          id="avatar"
-                          accept="image/*"
-                          onChange={(e) => handleFileUpload(e)}
-                        />
-                      </div>
-                      <div className="avatar-lg">
-                        <div className="avatar-title bg-light rounded-3">
-                          <img
-                            src={`data:image/jpeg;base64, ${compteData.avatar}`}
-                            alt=""
-                            id="category-img"
-                            className="avatar-md h-auto rounded-3 object-fit-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="error-msg mt-1">
-                      Please add a category images.
-                    </div>
-                  </div>
-                </Col> */}
                 <Col lg={6}>
                   <div>
                     <Form.Label htmlFor="fullname">
@@ -236,15 +193,6 @@ const PersonalInformation = () => {
                     Mot de passe <span className="text-danger">*</span>
                   </Form.Label>
                   <div className="position-relative auth-pass-inputgroup">
-                    {/* <Form.Control
-                      onChange={onChangeCompte}
-                      value={compteData.password}
-                      type={passwordShow ? "text" : "password"}
-                      className="pe-5 password-input"
-                      placeholder="......"
-                      id="password"
-                      name="password"
-                    /> */}
                     <input
                       id="password"
                       name="password"

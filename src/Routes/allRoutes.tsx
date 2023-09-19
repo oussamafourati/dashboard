@@ -63,6 +63,13 @@ import UserProfile from "pages/Authentication/user-profile";
 import ShippingDetails from "pages/Shipping/ShippingList/ShippingDetails";
 import CreateDevis from "pages/Devis/CreateDevis";
 import DevisList from "pages/Devis/DevisList";
+import PassagerInvoice from "pages/Invoices/CreateInvoice/PassagerInvoice";
+import ProInvoice from "pages/Invoices/CreateInvoice/ProInvoice";
+import Loading from "Common/Loading";
+import DevisDetails from "pages/Devis/DevisDetails";
+import ListeBL from "pages/BL/ListeBL";
+import DetailsBL from "pages/BL/DetailsBL";
+import CreateBL from "pages/BL/CreateBL";
 
 // const authProtectedRoutes = [
 
@@ -85,18 +92,24 @@ const publicRoutes = [
   { path: "/liste-fournisseurs", component: <SellersGridView /> },
   { path: "/detail-fournisseur", component: <SellersOverview /> },
 
-  // Invoice
-  { path: "/invoices-list", component: <InvoiceList /> },
-  { path: "/invoices-details", component: <InvoiceDetails /> },
-  { path: "/nouveau-facture", component: <CreateInvoice /> },
+  // Invoice  invoices-list   invoices-details
+  { path: "/liste-factures", component: <InvoiceList /> },
+  { path: "/details-factures", component: <InvoiceDetails /> },
+  { path: "/nouveau-facture-passager", component: <PassagerInvoice /> },
+  { path: "/nouveau-facture-pro", component: <ProInvoice /> },
 
   // Devis
   { path: "/liste-devis", component: <DevisList /> },
-  { path: "/details-devis", component: <InvoiceDetails /> },
+  { path: "/details-devis", component: <DevisDetails /> },
   { path: "/nouveau-devis", component: <CreateDevis /> },
 
-  // ClientPhy
-  { path: "/client-morale", component: <ClientPhy /> },
+  // BL
+  { path: "/liste-bl", component: <ListeBL /> },
+  { path: "/details-bl", component: <DetailsBL /> },
+  { path: "/nouveau-bl", component: <CreateBL /> },
+
+  // ClientMor
+  { path: "/client-morale", component: <ClientMor /> },
 
   // Shipping
   { path: "/nouveau-arrivage", component: <ShippingList /> },

@@ -50,7 +50,7 @@ const AddArrivageProduit = () => {
   const navigate = useNavigate();
   let now = dayjs();
   const [value, setValue] = React.useState<Dayjs | null>(now);
-  const newDate = `${value?.date()}/${value!.month() + 1}/${value!.year()}`;
+  const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
 
   const [createArrivage] = useAddArrivageMutation();
 
@@ -58,7 +58,7 @@ const AddArrivageProduit = () => {
     idArrivage: Math.floor(100000 + Math.random() * 900000),
     designation: "",
     montantTotal: "",
-    dateArrivage: new Date().toLocaleDateString("en-GB"),
+    dateArrivage: now.toString(),
     raison_sociale: "",
     fournisseurID: 17,
     piecejointe: "",
@@ -124,14 +124,7 @@ const AddArrivageProduit = () => {
       <div className="page-content">
         <Container fluid={true}>
           <Breadcrumb title="Arrivage" pageTitle="Tableau de bord" />
-          <Card
-            className="mx-auto"
-            // style={{
-            //   width: "46rem",
-            //   height: "28rem",
-            //   marginTop: 50,
-            // }}
-          >
+          <Card className="mx-auto">
             <Card.Header>
               <h6 className="card-title mb-0" id="addCategoryLabel">
                 Créer Achats
@@ -180,22 +173,35 @@ const AddArrivageProduit = () => {
                       <label htmlFor="statusSelect" className="form-label">
                         Fournisseur
                       </label>
-                      <select
-                        className="form-select"
-                        name="statusSelect"
-                        id="statusSelect"
-                        onChange={handleFournisseur}
-                      >
-                        <option value="">Raison Sociale</option>
-                        {allfournisseur.map((fournisseur) => (
-                          <option
-                            key={fournisseur.idfournisseur}
-                            value={fournisseur.idfournisseur}
+                      <div className="input-group mb-3">
+                        <select
+                          className="form-select"
+                          name="statusSelect"
+                          id="statusSelect"
+                          onChange={handleFournisseur}
+                        >
+                          <option value="">Raison Sociale</option>
+                          {allfournisseur.map((fournisseur) => (
+                            <option
+                              key={fournisseur.idfournisseur}
+                              value={fournisseur.idfournisseur}
+                            >
+                              {fournisseur.raison_sociale}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="flex-shrink-0">
+                          <Button
+                            className="float-end"
+                            variant="success"
+                            id="add-btn"
+                            onClick={() => navigate("/liste-fournisseurs")}
+                            style={{ marginLeft: 7 }}
                           >
-                            {fournisseur.raison_sociale}
-                          </option>
-                        ))}
-                      </select>
+                            +
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </Col>
                   <Col lg={2}>
@@ -205,7 +211,6 @@ const AddArrivageProduit = () => {
                       </Form.Label>
                     </div>
                   </Col>
-
                   <Col lg={2}>
                     <LocalizationProvider
                       dateAdapter={AdapterDayjs}
@@ -222,12 +227,12 @@ const AddArrivageProduit = () => {
                             id: "dateArrivage",
                             name: "dateArrivage",
                             size: "small",
-                            inputProps: { ["placeholder"]: "DD.MM.YYYY" },
+                            inputProps: { ["placeholder"]: "AAAA-MM-DD" },
                           },
                         }}
                         value={value}
                         onChange={(newValue) => setValue(newValue)}
-                        format="DD-MM-YYYY"
+                        format="YYYY-MM-DD"
                       />
                     </LocalizationProvider>
                   </Col>

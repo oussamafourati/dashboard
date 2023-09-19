@@ -86,8 +86,7 @@ const CreateArrivageProduit = () => {
     setPrixVente(parseInt(event.target.value));
     setBenifice(parseInt(event.target.value) - prixAchatTTC!);
     setPourcentageBenifice(
-      ((parseInt(event.target.value) - prixAchatTTC!) * 100) /
-        parseInt(event.target.value)
+      ((parseInt(event.target.value) - prixAchatTTC!) * 100) / prixAchatTTC!
     );
   };
 
@@ -95,8 +94,7 @@ const CreateArrivageProduit = () => {
     setBenifice(parseInt(event.target.value));
     setPrixVente(parseInt(event.target.value) + prixAchatTTC!);
     setPourcentageBenifice(
-      (parseInt(event.target.value) * 100) /
-        (parseInt(event.target.value) + prixAchatTTC!)
+      (parseInt(event.target.value) * 100) / prixAchatTTC!
     );
   };
   const onChangePourcentageBenifice = (
@@ -104,13 +102,17 @@ const CreateArrivageProduit = () => {
   ) => {
     setPourcentageBenifice(parseInt(event.target.value));
     setBenifice(
-      (prixAchatTTC! * parseInt(event.target.value)) /
-        (100 - parseInt(event.target.value))
-    );
-    setPrixVente(
-      (prixAchatTTC! * parseInt(event.target.value)) /
-        (100 - parseInt(event.target.value)) +
+      prixAchatTTC! +
+        prixAchatTTC! * (parseInt(event.target.value) / 100) -
         prixAchatTTC!
+    );
+    // setPrixVente(
+    //   (prixAchatTTC! * parseInt(event.target.value)) /
+    //     (100 - parseInt(event.target.value)) +
+    //     prixAchatTTC!
+    // );
+    setPrixVente(
+      prixAchatTTC! + prixAchatTTC! * (parseInt(event.target.value) / 100)
     );
   };
 
@@ -207,9 +209,15 @@ const CreateArrivageProduit = () => {
       prixAchatTTC! * arrivageProduitData["quantite"];
 
     e.preventDefault();
-    CreateArrivageProduit(arrivageProduitData).then(() =>
-      setArrivageProduitData(initialArrivageProduitData)
-    );
+    CreateArrivageProduit(arrivageProduitData)
+      .then(() => setArrivageProduitData(initialArrivageProduitData))
+      .then(() => setPrixAchatHT(0))
+      .then(() => setPrixAchatTTc(0))
+      .then(() => setPrixVente(0))
+      .then(() => setBenifice(0))
+      .then(() => setPourcentageBenifice(0))
+      .then(() => setPrixRemise(0))
+      .then(() => setPourcentageRemise(0));
   };
 
   const [modal_AddProduitModals, setmodal_AddProduitModals] =
@@ -429,9 +437,9 @@ const CreateArrivageProduit = () => {
                               value={arrivageProduitData.quantite}
                               onChange={onChangeArrivageProduit}
                               id="quantite"
-                              placeholder="0"
                               aria-label="Price"
                               aria-describedby="product-price-addon"
+                              required
                             />
                             <div className="invalid-feedback">
                               Please enter a product price.
@@ -448,7 +456,7 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
-                              value={prixAchatHT!}
+                              value={prixAchatHT?.toFixed(0)}
                               onChange={onChangePAHT}
                               id="prixAchatHt"
                               aria-label="prixAchatHt"
@@ -472,12 +480,12 @@ const CreateArrivageProduit = () => {
                       <Col lg={3} sm={6}>
                         <div className="mb-3">
                           <Form.Label htmlFor="prixAchatTtc">
-                            Prix Achat Ttc
+                            Prix Achat TTC
                           </Form.Label>
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
-                              value={prixAchatTTC?.toFixed(3)}
+                              value={prixAchatTTC?.toFixed(0)}
                               onChange={onChangePATTC}
                               id="prixAchatTtc"
                               aria-label="Price"
@@ -499,7 +507,7 @@ const CreateArrivageProduit = () => {
                           <Form.Control
                             type="number"
                             id="prixVente"
-                            value={prixvente}
+                            value={prixvente?.toFixed(0)}
                             min={prixAchatTTC}
                             onChange={onChangePV}
                             aria-label="discount"
@@ -519,7 +527,7 @@ const CreateArrivageProduit = () => {
                               id="PourcentageBenifice"
                               aria-label="discount"
                               aria-describedby="product-discount-addon"
-                              value={pourcentageBenifice?.toFixed(3)}
+                              value={pourcentageBenifice?.toFixed(0)}
                               onChange={onChangePourcentageBenifice}
                             />
                             <span
@@ -541,7 +549,7 @@ const CreateArrivageProduit = () => {
                           <Form.Control
                             type="number"
                             id="Benifice"
-                            value={benifice?.toFixed(3)}
+                            value={benifice?.toFixed(0)}
                             onChange={onChangeBenifice}
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
@@ -583,7 +591,7 @@ const CreateArrivageProduit = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
-                              value={pourcentageRemise?.toFixed(3)}
+                              value={pourcentageRemise?.toFixed(0)}
                               onChange={onChangePourcentagePrixRemise}
                               id="PourcentageRemise"
                               aria-label="discount"
@@ -630,7 +638,7 @@ const CreateArrivageProduit = () => {
                                 <tr>
                                   <th scope="col">#</th>
                                   <th scope="col">Nom Produit</th>
-                                  <th scope="col">prix Achat Ttc</th>
+                                  <th scope="col">prix Achat TTC</th>
                                   <th scope="col">prix Vente</th>
                                   <th scope="col">Benifice</th>
                                   <th scope="col">Benifice en %</th>

@@ -1,5 +1,13 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Modal,
+  Row,
+  Offcanvas,
+} from "react-bootstrap";
 import TableContainer from "Common/TableContainer";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -16,6 +24,7 @@ import {
   useAddChargeMutation,
   useDeleteChargesMutation,
 } from "features/charge/chargeSlice";
+import CountUp from "react-countup";
 
 const ChargeTable = () => {
   const [show, setShow] = useState<boolean>(false);
@@ -197,7 +206,15 @@ const ChargeTable = () => {
       },
       {
         Header: "Montant Charge",
-        accessor: "montantCharges",
+        accessor: (charge: Charges) => {
+          return (
+            <CountUp
+              end={parseInt(charge.montantCharges)}
+              separator=","
+              duration={1}
+            />
+          );
+        },
         disableFilters: true,
         filterable: true,
       },
@@ -249,7 +266,7 @@ const ChargeTable = () => {
     <React.Fragment>
       <Row>
         <Col lg={12}>
-          <Card id="invoiceList">
+          <Card id="invoiceList" className="p-2">
             <Card.Body className="bg-soft-light border-end-0">
               <div className="flex-shrink-0">
                 <div className="d-flex gap-2 flex-row-reverse">
@@ -270,20 +287,18 @@ const ChargeTable = () => {
             </Card.Body>
             <Card.Body>
               <div>
-                <div className="table-responsive table-card">
-                  <TableContainer
-                    columns={columns || []}
-                    data={data || []}
-                    isGlobalFilter={true}
-                    iscustomPageSize={false}
-                    isBordered={false}
-                    customPageSize={10}
-                    className="custom-header-css table align-middle table-nowrap"
-                    tableClassName="table-centered align-middle table-nowrap mb-0"
-                    theadClassName="text-muted table-light"
-                    SearchPlaceholder="Rechercher charge..."
-                  />
-                </div>
+                <TableContainer
+                  columns={columns || []}
+                  data={data || []}
+                  isGlobalFilter={true}
+                  iscustomPageSize={false}
+                  isBordered={false}
+                  customPageSize={10}
+                  className="custom-header-css table align-middle table-nowrap"
+                  tableClassName="table-centered align-middle table-nowrap mb-0"
+                  theadClassName="text-muted table-light"
+                  SearchPlaceholder="Rechercher charge..."
+                />
               </div>
             </Card.Body>
           </Card>
@@ -462,6 +477,66 @@ const ChargeTable = () => {
           </div>
         </Form>
       </Modal>
+      <Offcanvas show={show} onHide={() => setShow(false)} placement="end">
+        <Offcanvas.Header closeButton></Offcanvas.Header>
+        <Offcanvas.Body>
+          <div className="text-center mt-3">
+            <h5 className="overview-title">{info.descriptionCharge}</h5>
+          </div>
+          <div className="text-center mt-3">
+            <h5 className="overview-title">{info.typeCharges}</h5>
+          </div>
+          <div className="text-center mt-3">
+            <h5 className="overview-title">
+              <CountUp
+                end={parseInt(info.montantCharges)}
+                separator=","
+                duration={1}
+              />
+            </h5>
+          </div>
+        </Offcanvas.Body>
+        <Offcanvas.Body>
+          <Link
+            rel="noreferrer"
+            to={`data:image/jpeg;base64,${info.piecejointes}`}
+            target="_blank"
+          >
+            <div className="avatar-xl mx-auto">
+              <div className="avatar-title bg-light rounded">
+                <img
+                  src={`data:image/jpeg;base64,${info.piecejointes}`}
+                  alt=""
+                  className="avatar-xl overview-img"
+                />
+              </div>
+            </div>
+          </Link>
+        </Offcanvas.Body>
+        <div className="p-3 border-top">
+          <Row>
+            <Col sm={6}>
+              <div data-bs-dismiss="offcanvas">
+                <Button
+                  variant="danger"
+                  type="button"
+                  className="btn btn-danger w-100 remove-list"
+                  data-bs-toggle="modal"
+                  data-bs-target="#delteModal"
+                  data-remove-id="12"
+                  onClick={() => {
+                    AlertDelete(info.idcategory);
+                    setShow(false);
+                  }}
+                >
+                  <i className="ri-delete-bin-line me-1 align-bottom"></i>{" "}
+                  Supprimer
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </Offcanvas>
     </React.Fragment>
   );
 };

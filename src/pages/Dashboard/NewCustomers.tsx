@@ -7,7 +7,7 @@ const NewCustomers = () => {
   const { data: EcheancesToDay = [] } = useGetDayEchancesQuery();
   return (
     <React.Fragment>
-      <div className="col-xxl-3 col-lg-6">
+      <div className="col-xxl-4 col-lg-6">
         <div className="card card-height-100">
           <div className="card-header align-items-center d-flex">
             <h4 className="card-title mb-0 flex-grow-1">
