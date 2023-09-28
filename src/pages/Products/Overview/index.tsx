@@ -1,31 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
-import SwiperCore, { FreeMode, Navigation, Thumbs } from "swiper";
 import { useLocation } from "react-router-dom";
 
 import { ArrivageProduit } from "features/arrivageProduit/arrivageProduitSlice";
 
-SwiperCore.use([FreeMode, Navigation, Thumbs]);
-
 const Overview = () => {
-  document.title = "Product Overview | Toner eCommerce + Admin React Template";
+  document.title = "Détails Produit| Radhouani";
   const LocationProduct = useLocation();
+  console.log(LocationProduct);
 
   const [produitState, setProduitState] = useState<ArrivageProduit[]>([]);
 
   useEffect(() => {
     const getProduitState = async () => {
       const reqdata = await fetch(
-        `https://src-api.onrender.com/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
+        `http://localhost:8000/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
       );
       const resdata = await reqdata.json();
       setProduitState(resdata);
     };
     getProduitState();
   }, []);
-
-  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
 
   return (
     <React.Fragment>
@@ -35,11 +31,7 @@ const Overview = () => {
           <Row className="gx-lg-4">
             <Col xl={4} lg={8} className="mx-auto">
               <Row className="sticky-side-div">
-                <Col lg={12}>
-                  {/* <Alert variant="success" className="text-center">
-                    Deals Of The Week
-                  </Alert> */}
-                </Col>
+                <Col lg={12}></Col>
                 <Col lg={10} className="text-center">
                   <div className="rounded-4 position-relative ribbon-box overflow-hidden">
                     <img
@@ -73,11 +65,9 @@ const Overview = () => {
                       <div className="vr"></div>
                       <div className="text-muted">
                         Date d'Arrivage :{" "}
-                        {produitState.map((arpro) => (
-                          <span className="text-body fw-medium">
-                            {arpro.dateArrivage}
-                          </span>
-                        ))}
+                        <span className="text-body fw-medium">
+                          {produitState[0]?.dateArrivage}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -88,9 +78,7 @@ const Overview = () => {
                       <p className="mb-2 text-uppercase text-muted fs-13">
                         Prix Achat :
                       </p>
-                      {produitState.map((arpro) => (
-                        <h5 className="mb-0">{arpro?.prixVente!}</h5>
-                      ))}
+                      <h5 className="mb-0">{produitState[0]?.prixAchatTtc}</h5>
                     </div>
                   </Col>
                   <Col lg={3} sm={6} className="g-3">
@@ -98,9 +86,7 @@ const Overview = () => {
                       <p className="mb-2 text-uppercase text-muted fs-13">
                         Prix Vente :
                       </p>
-                      {produitState.map((arpro) => (
-                        <h5 className="mb-0">{arpro?.prixAchatTtc!}</h5>
-                      ))}
+                      <h5 className="mb-0">{produitState[0]?.prixVente!}</h5>
                     </div>
                   </Col>
 
@@ -109,9 +95,7 @@ const Overview = () => {
                       <p className="mb-2 text-uppercase text-muted fs-13">
                         Pièce Disponible :
                       </p>
-                      {produitState.map((arpro) => (
-                        <h5 className="mb-0">{arpro.quantite}</h5>
-                      ))}
+                      <h5 className="mb-0">{produitState[0]?.quantite}</h5>
                     </div>
                   </Col>
                 </Row>

@@ -2,6 +2,7 @@ import React from "react";
 import SimpleBar from "simplebar-react";
 import { Card, Col } from "react-bootstrap";
 import { useFetchTopSellingQuery } from "features/ligneVente/ligneVenteSlice";
+import CountUp from "react-countup";
 
 const ProductDelivery = () => {
   const { data: TopSellingProduct = [] } = useFetchTopSellingQuery();
@@ -22,14 +23,19 @@ const ProductDelivery = () => {
                       <div className="flex-grow-1">
                         <h6>{item.productName}</h6>
                         <p className="mb-0">
-                          <span className="text-info">
+                          <span className="text-info fs-20">
                             {item.TotalQuantity}
                           </span>
                         </p>
                       </div>
                       <div className="flex-shrink-0">
-                        <span className="badge badge-soft-dark">
-                          {item.TotalVente}
+                        <span className="badge badge-soft-dark fs-15">
+                          <CountUp
+                            start={0}
+                            end={item.TotalVente!}
+                            separator=","
+                          />{" "}
+                          DT
                         </span>
                       </div>
                     </div>

@@ -10,6 +10,7 @@ import {
   useAddClientPhysiqueMutation,
   ClientPhysique,
 } from "features/clientPhysique/clientPhysiqueSlice";
+import TableDetails from "./TableDetails";
 
 const ClientPhy = () => {
   const { data = [] } = useFetchClientPhysiquesQuery();
@@ -151,36 +152,42 @@ const ClientPhy = () => {
     });
   }
 
-  document.title = "Client Physique | Radhouani";
+  const [modal_AddDetailClPhyModals, setmodal_AddDetailClPhyModals] =
+    useState<boolean>(false);
+  function tog_AddDetailClPhyModals() {
+    setmodal_AddDetailClPhyModals(!modal_AddDetailClPhyModals);
+  }
 
-  const [showCoupons, setShowCoupons] = useState<boolean>(false);
-  const [showCouponDetails, setShowCouponsDetails] = useState<any>({});
+  document.title = "Client Physique | Radhouani";
 
   const columns = useMemo(
     () => [
       {
-        Header: "Avatar",
+        Header: "Nom",
         disableFilters: true,
         filterable: true,
-        accessor: (clienphy: ClientPhysique) => {
+        accessor: (clientPhy: ClientPhysique) => {
           return (
-            <div className="d-flex align-items-center gap-2">
-              <div className="flex-shrink-0">
-                <img
-                  src={`data:image/jpeg;base64, ${clienphy.avatar}`}
-                  alt=""
-                  className="avatar-xs rounded-circle user-profile-img"
-                />
+            <Link
+              to="#"
+              state={clientPhy}
+              onClick={() => tog_AddDetailClPhyModals()}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <div className="flex-shrink-0">
+                  <img
+                    src={`data:image/jpeg;base64, ${clientPhy.avatar}`}
+                    alt=""
+                    className="avatar-sm rounded-circle user-profile-img"
+                  />
+                </div>
+                <div className="flex-grow-1 ms-2 user_name text-dark">
+                  {clientPhy.raison_sociale}
+                </div>
               </div>
-            </div>
+            </Link>
           );
         },
-      },
-      {
-        Header: "Nom Client",
-        accessor: "raison_sociale",
-        disableFilters: true,
-        filterable: true,
       },
       {
         Header: "C.I.N ",
@@ -206,48 +213,48 @@ const ClientPhy = () => {
         disableFilters: true,
         filterable: true,
       },
-      {
-        Header: "E-mail",
-        accessor: "mail",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "Etat",
-        disableFilters: true,
-        filterable: true,
-        accessor: (clientPhy: ClientPhysique) => {
-          switch (clientPhy.etat) {
-            case 0:
-              return (
-                <span className="badge badge-soft-danger text-uppercase">
-                  {" "}
-                  inactif
-                </span>
-              );
-            case 1:
-              return (
-                <span className="badge badge-soft-success text-uppercase">
-                  {" "}
-                  actif
-                </span>
-              );
-            default:
-              return (
-                <span className="badge badge-soft-danger text-uppercase">
-                  {" "}
-                  inactif
-                </span>
-              );
-          }
-        },
-      },
-      {
-        Header: "Remarque",
-        accessor: "remarque",
-        disableFilters: true,
-        filterable: true,
-      },
+      // {
+      //   Header: "E-mail",
+      //   accessor: "mail",
+      //   disableFilters: true,
+      //   filterable: true,
+      // },
+      // {
+      //   Header: "Etat",
+      //   disableFilters: true,
+      //   filterable: true,
+      //   accessor: (clientPhy: ClientPhysique) => {
+      //     switch (clientPhy.etat) {
+      //       case 0:
+      //         return (
+      //           <span className="badge badge-soft-danger text-uppercase">
+      //             {" "}
+      //             inactif
+      //           </span>
+      //         );
+      //       case 1:
+      //         return (
+      //           <span className="badge badge-soft-success text-uppercase">
+      //             {" "}
+      //             actif
+      //           </span>
+      //         );
+      //       default:
+      //         return (
+      //           <span className="badge badge-soft-danger text-uppercase">
+      //             {" "}
+      //             inactif
+      //           </span>
+      //         );
+      //     }
+      //   },
+      // },
+      // {
+      //   Header: "Remarque",
+      //   accessor: "remarque",
+      //   disableFilters: true,
+      //   filterable: true,
+      // },
       {
         Header: "Action",
         disableFilters: true,
@@ -270,7 +277,7 @@ const ClientPhy = () => {
         },
       },
     ],
-    [showCoupons]
+    []
   );
 
   const [modal_AddCouponsModals, setmodal_AddCouponsModals] =
@@ -316,7 +323,7 @@ const ClientPhy = () => {
                     className="custom-header-css table align-middle table-nowrap"
                     tableClassName="gridjs-table"
                     theadClassName="gridjs-thead"
-                    SearchPlaceholder="Rechercher Client Physique..."
+                    SearchPlaceholder="Rechercher..."
                   />
                 </div>
               </Col>
@@ -532,6 +539,24 @@ const ClientPhy = () => {
                 </Row>
               </form>
             </Modal.Body>
+          </Modal>
+
+          <Modal
+            id="showModal"
+            className="fade zoomIn"
+            size="xl"
+            show={modal_AddDetailClPhyModals}
+            onHide={() => {
+              tog_AddDetailClPhyModals();
+            }}
+            centered
+          >
+            <Modal.Header className="px-4 pt-4" closeButton>
+              <h5 className="modal-title fs-18" id="exampleModalLabel">
+                Détails
+              </h5>
+            </Modal.Header>
+            <Modal.Body> {<TableDetails />}</Modal.Body>
           </Modal>
         </Container>
       </div>

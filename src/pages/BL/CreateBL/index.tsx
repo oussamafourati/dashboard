@@ -17,8 +17,6 @@ import "dayjs/locale/fr";
 import { frFR } from "@mui/x-date-pickers/locales";
 import dayjs, { Dayjs } from "dayjs";
 import { Link } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
@@ -31,11 +29,8 @@ import {
   useAddClientMoraleMutation,
   useFetchClientMoralesQuery,
 } from "features/clientMoral/clientMoralSlice";
-import {
-  incremented,
-  amountAdded,
-} from "../../../features/counter/counterSlice";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+
+import { useFetchAllBLQuery } from "features/bl/bondeLSlice";
 
 interface FormFields {
   PU: string;
@@ -48,13 +43,17 @@ interface FormFields {
 }
 
 const CreateBL: React.FC = () => {
-  document.title = "Créer BL | Radhouani";
-  const counter = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();
+  let dateNow = dayjs();
+  const [nowDate, setNowDate] = React.useState<Dayjs | null>(dateNow);
 
-  function handleClick() {
-    dispatch(incremented());
-  }
+  let { data = [] } = useFetchAllBLQuery();
+  let lastFacture = data.slice(-1);
+  let key = parseInt(lastFacture[0]?.designationBL!.substr(0, 3)) + 1;
+  console.log(key);
+  const newKey = `${key}/${nowDate?.year()}`;
+  console.log(newKey);
+  document.title = "Créer BL | Radhouani";
+
   const [pourcentageBenifice, setPourcentageBenifice] = useState<number>();
   const onChangePourcentageBenifice = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -100,7 +99,7 @@ const CreateBL: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "https://src-api.onrender.com/clientMo/moraleclients"
+        "http://localhost:8000/clientMo/moraleclients"
       );
       const resdata = await reqdata.json();
       setClientMorale(resdata);
@@ -112,7 +111,7 @@ const CreateBL: React.FC = () => {
     const clientMoraleid = e.target.value;
     if (clientMoraleid !== "") {
       const reqstatedata = await fetch(
-        `https://src-api.onrender.com/clientMo/oneClientMorale/${clientMoraleid}`
+        `http://localhost:8000/clientMo/oneClientMorale/${clientMoraleid}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -128,20 +127,6 @@ const CreateBL: React.FC = () => {
 
   // Mutation to create a new Client
   const [createClientMorale] = useAddClientMoraleMutation();
-
-  //Toast Notification For Client Morale
-  const notifyClientMorale = () => {
-    toast.success("Le client morale a été créé avec succès", {
-      position: "top-center",
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
 
   const [clientMData, setClientMData] = useState({
     idclient_m: 99,
@@ -183,7 +168,6 @@ const CreateBL: React.FC = () => {
     e.preventDefault();
     createClientMorale(clientMData).then(() => setClientMData(clientMData));
     setState({ ...state, loading: true });
-    notifyClientMorale();
   };
 
   const handleClientMoraleFileUpload = async (
@@ -323,7 +307,7 @@ const CreateBL: React.FC = () => {
     setDisplayText(codeClient);
     tog_AddCodeUser();
   };
-  let numDevis = `${counter}/${valueDate?.year()}`;
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -391,7 +375,7 @@ const CreateBL: React.FC = () => {
                             readOnly: true,
                           }}
                           size="small"
-                          value={numDevis}
+                          value={newKey}
                           type="text"
                           id="invoicenoInput"
                           placeholder="25000355"
@@ -563,7 +547,7 @@ const CreateBL: React.FC = () => {
                                 (form.montantTtl = (
                                   parseInt(form.PU) *
                                     parseInt(form.quantiteProduit) +
-                                  (parseInt(form.PU) *
+                                  ((parseInt(form.PU) / 1.19) *
                                     parseInt(form.quantiteProduit) *
                                     pourcentageBenifice!) /
                                     100
@@ -592,14 +576,13 @@ const CreateBL: React.FC = () => {
                         </Col>
                         <Col>
                           <div>
-                            <Button
-                              id="add-item"
-                              className="btn fw-medium"
-                              variant="secondary"
+                            <Link
+                              to="#"
+                              className="link-secondary"
                               onClick={addFields}
                             >
-                              <i className="ri-add-fill me-1 align-bottom"></i>
-                            </Button>
+                              <i className="ri-add-fill me-1 ri-xl" />
+                            </Link>
                           </div>
                         </Col>
                       </Row>
@@ -672,13 +655,18 @@ const CreateBL: React.FC = () => {
                         <Col className="col-md-auto ms-auto pb-2">
                           <CountUp
                             className="fs-18 fw-meduim"
-                            end={
-                              formFields.reduce(
-                                (sum, i) => (sum += parseInt(i.montantTtl!)),
-                                0
-                              ) || 0
-                            }
+                            end={formFields.reduce(
+                              (sum, i) =>
+                                (sum +=
+                                  parseInt(i.PU) * parseInt(i.quantiteProduit) +
+                                  ((parseInt(i.PU) / 1.19) *
+                                    parseInt(i.quantiteProduit) *
+                                    pourcentageBenifice!) /
+                                    100),
+                              0
+                            )}
                             separator=","
+                            duration={1}
                             startVal={0}
                           />
                         </Col>
@@ -949,7 +937,6 @@ const CreateBL: React.FC = () => {
               </Form>
             </Modal.Body>
           </Modal>
-          <ToastContainer />
         </Container>
       </div>
     </React.Fragment>

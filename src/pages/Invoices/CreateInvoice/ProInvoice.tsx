@@ -20,8 +20,6 @@ import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
 import PaiementCheque from "./PaiementCheque";
 import { Link } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
@@ -34,11 +32,6 @@ import {
   useAddClientMoraleMutation,
   useFetchClientMoralesQuery,
 } from "features/clientMoral/clientMoralSlice";
-import {
-  incremented,
-  amountAdded,
-} from "../../../features/counter/counterSlice";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 
 interface FormFields {
   PU: string;
@@ -52,12 +45,7 @@ interface FormFields {
 
 const ProInvoice: React.FC = () => {
   document.title = "Créer Facture | Radhouani";
-  const counter = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();
 
-  function handleClick() {
-    dispatch(incremented());
-  }
   const [pourcentageBenifice, setPourcentageBenifice] = useState<number>();
   const onChangePourcentageBenifice = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -132,20 +120,6 @@ const ProInvoice: React.FC = () => {
   // Mutation to create a new Client
   const [createClientMorale] = useAddClientMoraleMutation();
 
-  //Toast Notification For Client Morale
-  const notifyClientMorale = () => {
-    toast.success("Le client morale a été créé avec succès", {
-      position: "top-center",
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
-
   const [clientMData, setClientMData] = useState({
     idclient_m: 99,
     raison_sociale: "",
@@ -186,7 +160,6 @@ const ProInvoice: React.FC = () => {
     e.preventDefault();
     createClientMorale(clientMData).then(() => setClientMData(clientMData));
     setState({ ...state, loading: true });
-    notifyClientMorale();
   };
 
   const handleClientMoraleFileUpload = async (
@@ -326,7 +299,7 @@ const ProInvoice: React.FC = () => {
     setDisplayText(codeClient);
     tog_AddCodeUser();
   };
-  let numDevis = `${counter}/${valueDate?.year()}`;
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -394,7 +367,6 @@ const ProInvoice: React.FC = () => {
                             readOnly: true,
                           }}
                           size="small"
-                          value={numDevis}
                           type="text"
                           id="invoicenoInput"
                           placeholder="25000355"
@@ -530,36 +502,13 @@ const ProInvoice: React.FC = () => {
                               value={pourcentageBenifice}
                               className="mb-2"
                             />{" "} */}
-                            <CountUp
-                              end={pourcentageBenifice!}
-                              separator=","
-                              duration={1}
-                            />
+                            <CountUp end={pourcentageBenifice!} separator="," />
                           </Col>
                           <Col lg={2} sm={6} className="text-center mt-2">
-                            {/* <TextField
-                              className="mb-2"
-                              sx={{ width: 190 }}
-                              id="montantTtl"
-                              size="small"
-                              type="number"
-                              name="montantTtl"
-                              placeholder="00.00"
-                              onChange={(event) =>
-                                handleFormChange(event, index)
-                              }
-                              value={
-                                
-                              }
-                              InputProps={{
-                                readOnly: true,
-                              }}
-                               
-                            /> */}
                             <CountUp
                               end={parseInt(
                                 (form.montantTtl = (
-                                  (parseInt(form.PU) / 1.19) *
+                                  parseInt(form.PU) *
                                     parseInt(form.quantiteProduit) +
                                   ((parseInt(form.PU) / 1.19) *
                                     parseInt(form.quantiteProduit) *
@@ -632,18 +581,42 @@ const ProInvoice: React.FC = () => {
                         <Col lg={9}></Col>
                         <Col className="col-md-auto ms-auto mt-2">
                           <Form.Label htmlFor="total" className="fs-18 fw-bold">
-                            Total:{" "}
+                            Total Prix Achat:{" "}
                           </Form.Label>
                         </Col>
                         <Col className="col-md-auto ms-auto pb-2 mt-2">
                           <CountUp
                             className="fs-18 fw-meduim"
-                            end={
-                              formFields.reduce(
-                                (sum, i) => (sum += parseInt(i.montantTtl!)),
-                                0
-                              ) || 0
-                            }
+                            end={formFields.reduce(
+                              (sum, i) =>
+                                (sum +=
+                                  (parseInt(i.PU) / 1.19) *
+                                    parseInt(i.quantiteProduit) +
+                                  ((parseInt(i.PU) / 1.19) *
+                                    parseInt(i.quantiteProduit) *
+                                    pourcentageBenifice!) /
+                                    100),
+                              0
+                            )}
+                            separator=","
+                            startVal={0}
+                          />
+                        </Col>
+                      </Row>
+                      <Row className="mt-1">
+                        <Col lg={9}></Col>
+                        <Col className="col-md-auto ms-auto mt-2">
+                          <Form.Label htmlFor="total" className="fs-18 fw-bold">
+                            Total Prix Vente:{" "}
+                          </Form.Label>
+                        </Col>
+                        <Col className="col-md-auto ms-auto pb-2 mt-2">
+                          <CountUp
+                            className="fs-18 fw-meduim"
+                            end={formFields.reduce(
+                              (sum, i) => (sum += parseInt(i.montantTtl!)),
+                              0
+                            )}
                             separator=","
                             startVal={0}
                           />
@@ -784,7 +757,7 @@ const ProInvoice: React.FC = () => {
                         type="submit"
                         onClick={() => tog_AddCodeUser()}
                       >
-                        <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
+                        <i className="ph ph-coin align-bottom me-1 fs-5"></i>{" "}
                         Paiement
                       </Button>
                       <Button variant="secondary" type="submit">
@@ -1064,7 +1037,6 @@ const ProInvoice: React.FC = () => {
               </Form>
             </Modal.Body>
           </Modal>
-          <ToastContainer />
         </Container>
       </div>
     </React.Fragment>

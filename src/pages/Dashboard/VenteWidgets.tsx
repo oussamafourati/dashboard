@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Col } from "react-bootstrap";
+import { Card, Col, Form } from "react-bootstrap";
 import CountUp from "react-countup";
 import {
   useFetchAllFactureQuery,
@@ -95,21 +95,20 @@ const VenteWidgets = () => {
                     </span>
                   )}
                 </h4>
-                <select
-                  className="form-select"
+                <Form.Select
                   id="choices-vente-input"
                   name="choices-vente-input"
                   onChange={handleSelectedValue}
+                  size="sm"
+                  className="m-2 rounded-4 shadow bg-secondary bg-opacity-25 border-0 text-dark"
                 >
-                  <option value=""></option>
                   <option value={venteTotalDay} selected>
                     Aujourd'hui
                   </option>
                   <option value={venteTotalMonth}> Mois en cours</option>
                   <option value={venteTotalYear}>Année en cours</option>
                   <option value={venteTotalLastYear}>Année Dernière</option>
-                </select>
-                {/* </div> */}
+                </Form.Select>
               </div>
               <div className="avatar-sm flex-shrink-0">
                 <span

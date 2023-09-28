@@ -7,7 +7,6 @@ import logoLight from "assets/images/logo-light.png";
 
 //Import Components
 import VerticalLayout from "./VerticalLayouts/index";
-import TwoColumnLayout from "./TwoColumnLayout";
 import { Button, Container } from "react-bootstrap";
 import HorizontalLayout from "./HorizontalLayout";
 
@@ -83,7 +82,6 @@ const Sidebar = ({ layoutType }: any) => {
           </div>
         ) : layoutType === "twocolumn" ? (
           <React.Fragment>
-            <TwoColumnLayout layoutType={layoutType} />
             <div className="sidebar-background"></div>
           </React.Fragment>
         ) : (

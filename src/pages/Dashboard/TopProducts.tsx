@@ -38,18 +38,11 @@ const TopProducts = () => {
     <React.Fragment>
       <Card className="card-height-100">
         <Card.Header className="align-items-center d-flex">
-          <h4 className="card-title mb-0 flex-grow-1">Rapport de stock</h4>
-          {/* <div className="flex-shrink-0">
-              <Link
-                to="#"
-                className="btn btn-soft-info btn-sm"
-                onClick={() => tog_AddCouponsModals()}
-              >
-                <i className="ri-file-list-3-line align-middle"></i> Détails
-              </Link>
-            </div> */}
+          <h4 className="card-title mb-0 text-dark flex-grow-1 z-1">
+            Rapport de stock
+          </h4>
         </Card.Header>
-        <Card.Body className="hstack gap-5 justify-content-center mb-0">
+        <Card.Body className="text-center">
           <div
             className="position-absolute opacity-50 start-0 end-0 top-0 bottom-0"
             style={{ backgroundImage: `url(${bodyLight})` }}
@@ -58,10 +51,10 @@ const TopProducts = () => {
             <Link
               to="#"
               onClick={() => tog_AddCouponsModals()}
-              className="btn btn-danger btn-label btn-hover rounded-pill"
+              className="btn btn-danger btn-label btn-hover rounded-pill mb-4"
             >
-              <i className="bi bi-cart-x label-icon align-middle rounded-pill fs-16 me-2"></i>{" "}
-              <span className="fs-18">{result.length}</span> Rupture de Stock
+              <i className="bi bi-cart-x label-icon align-middle rounded-pill fs-18 me-2"></i>{" "}
+              <span className="fs-22">{result.length} </span> Rupture de Stock
             </Link>
           </div>
           <div>
@@ -70,9 +63,8 @@ const TopProducts = () => {
               onClick={() => tog_AddProduitModals()}
               className="btn btn-warning btn-label btn-hover rounded-pill"
             >
-              <i className="bi bi-exclamation-octagon label-icon align-middle rounded-pill fs-16 me-2"></i>{" "}
-              <span className="fs-18">{result2.length}</span> à risque de
-              rupture
+              <i className="bi bi-exclamation-octagon label-icon align-middle rounded-pill fs-18 me-2"></i>{" "}
+              <span className="fs-22">{result2.length} </span> Risque de rupture
             </Link>
           </div>
         </Card.Body>

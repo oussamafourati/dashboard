@@ -11,6 +11,7 @@ import {
   useDeleteClientMoraleMutation,
   ClientMorale,
 } from "features/clientMoral/clientMoralSlice";
+import DetailsClientMoral from "./DetailsClientMoral";
 
 const ClientMor = () => {
   const swalWithBootstrapButtons = Swal.mixin({
@@ -158,29 +159,54 @@ const ClientMor = () => {
 
   document.title = "Client Morale | Radhouani";
 
+  const [modal_AddDetailClMorModals, setmodal_AddDetailClMorModals] =
+    useState<boolean>(false);
+  function tog_AddDetailClMorModals() {
+    setmodal_AddDetailClMorModals(!modal_AddDetailClMorModals);
+  }
+
   const columns = useMemo(
     () => [
       {
-        Header: "Logo",
-        disableFilters: true,
-        filterable: true,
-        accessor: (clienmorale: ClientMorale) => {
+        Header: " ",
+        accessor: (clientmorale: ClientMorale) => {
           return (
-            <div className="d-flex align-items-center gap-2">
-              <div className="flex-shrink-0">
-                <img
-                  src={`data:image/jpeg;base64, ${clienmorale.logo}`}
-                  alt=""
-                  className="avatar-xs rounded-circle user-profile-img"
-                />
+            <Link
+              to="#"
+              state={clientmorale}
+              onClick={() => tog_AddDetailClMorModals()}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <div className="flex-shrink-0">
+                  <img
+                    src={`data:image/jpeg;base64, ${clientmorale.logo}`}
+                    alt=""
+                    className="rounded-2 user-profile-img"
+                    width="100"
+                  />
+                </div>
               </div>
-            </div>
+            </Link>
           );
         },
+        disableFilters: true,
+        filterable: true,
       },
       {
         Header: "Raison sociale",
-        accessor: "raison_sociale",
+        accessor: (clientmorale: ClientMorale) => {
+          return (
+            <Link
+              to="#"
+              state={clientmorale}
+              onClick={() => tog_AddDetailClMorModals()}
+            >
+              <div className="flex-grow-1 text-dark">
+                {clientmorale.raison_sociale}
+              </div>
+            </Link>
+          );
+        },
         disableFilters: true,
         filterable: true,
       },
@@ -205,48 +231,6 @@ const ClientMor = () => {
       {
         Header: "Telephone",
         accessor: "tel",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "E-mail",
-        accessor: "mail",
-        disableFilters: true,
-        filterable: true,
-      },
-      {
-        Header: "Etat",
-        disableFilters: true,
-        filterable: true,
-        accessor: (clientMorale: ClientMorale) => {
-          switch (clientMorale.etat) {
-            case 1:
-              return (
-                <span className="badge badge-soft-success text-uppercase">
-                  {" "}
-                  actif
-                </span>
-              );
-            case 0:
-              return (
-                <span className="badge badge-soft-danger text-uppercase">
-                  {" "}
-                  inactif
-                </span>
-              );
-            default:
-              return (
-                <span className="badge badge-soft-danger text-uppercase">
-                  {" "}
-                  inactif
-                </span>
-              );
-          }
-        },
-      },
-      {
-        Header: "Remarque",
-        accessor: "remarque",
         disableFilters: true,
         filterable: true,
       },
@@ -526,6 +510,27 @@ const ClientMor = () => {
                   </Col>
                 </Row>
               </Form>
+            </Modal.Body>
+          </Modal>
+
+          <Modal
+            id="showModal"
+            className="fade zoomIn"
+            size="xl"
+            show={modal_AddDetailClMorModals}
+            onHide={() => {
+              tog_AddDetailClMorModals();
+            }}
+            centered
+          >
+            <Modal.Header className="px-4 pt-4" closeButton>
+              <h5 className="modal-title fs-18" id="exampleModalLabel">
+                Détails
+              </h5>
+            </Modal.Header>
+            <Modal.Body className="p-4">
+              {" "}
+              <DetailsClientMoral />{" "}
             </Modal.Body>
           </Modal>
         </Container>

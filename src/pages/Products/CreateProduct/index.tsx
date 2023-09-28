@@ -23,7 +23,7 @@ import {
 import Swal from "sweetalert2";
 import Slider from "@mui/material/Slider";
 import { debounce } from "@mui/material/utils";
-import { lime, purple } from "@mui/material/colors";
+
 const CreateProduct = () => {
   document.title = "Créer produit | Radhouani";
 
@@ -33,7 +33,6 @@ const CreateProduct = () => {
   }, []);
 
   const debounceSliderChange = debounce((val: number) => {
-    console.log(val);
     setValue(val);
   }, 200);
 
@@ -76,7 +75,7 @@ const CreateProduct = () => {
     imageProduit: "",
     marque: "",
     remarqueProduit: "",
-    seuil: 0,
+    seuil: "",
     sousCategoryID: 1,
     categoryID: 1,
   });
@@ -90,7 +89,6 @@ const CreateProduct = () => {
   const onSubmitProduct = (e: React.FormEvent<HTMLFormElement>) => {
     formData["categoryID"] = parseInt(categoryid);
     formData["sousCategoryID"] = parseInt(sousCategoryid);
-    formData["seuil"] = value;
     e.preventDefault();
     createProduct(formData).then(() => setFormData(formData));
     notify();
@@ -103,7 +101,7 @@ const CreateProduct = () => {
       icon: "success",
       title: "Le Produit a été créer avec succès",
       showConfirmButton: false,
-      timer: 2500,
+      timer: 2000,
     });
   };
   //Common Function
@@ -283,8 +281,8 @@ const CreateProduct = () => {
                       </Col>
                       <Col lg={6} style={{ marginBottom: 15 }}>
                         <div className="mb-3">
-                          <Form.Label htmlFor="marque">Seuil</Form.Label>
-                          <Card.Body>
+                          <Form.Label htmlFor="seuil">Seuil</Form.Label>
+                          {/* <Card.Body>
                             <Slider
                               disabled={false}
                               marks={false}
@@ -294,7 +292,13 @@ const CreateProduct = () => {
                               valueLabelDisplay="auto"
                               onChange={(e, v) => handleSliderChange(e, v)}
                             />
-                          </Card.Body>
+                          </Card.Body> */}
+                          <Form.Control
+                            type="number"
+                            id="seuil"
+                            value={formData.seuil}
+                            onChange={onChange}
+                          />
                         </div>
                       </Col>
                     </Row>

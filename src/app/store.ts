@@ -24,7 +24,6 @@ import { LigneVenteSlice } from "features/ligneVente/ligneVenteSlice";
 import { echanceSlice } from "features/Echance/echanceSlice";
 import { devisSlice } from "features/devis/devisSlice";
 import { notesSlice } from "features/notes/notesSlice";
-import counterReducer from "features/counter/counterSlice";
 import { blSlice } from "features/bl/bondeLSlice";
 
 export const store = configureStore({
@@ -45,7 +44,6 @@ export const store = configureStore({
     [devisSlice.reducerPath]: devisSlice.reducer,
     [notesSlice.reducerPath]: notesSlice.reducer,
     [blSlice.reducerPath]: blSlice.reducer,
-    counter: counterReducer,
     Layout: LayoutReducer,
     Login: LoginReducer,
     Account: AccountReducer,

@@ -10,10 +10,13 @@ import { useGetDayEchancesQuery } from "features/Echance/echanceSlice";
 import TopProducts from "./TopProducts";
 import AlertCharge from "./AlertCharge";
 import Notes from "./Notes";
+import { useFetchNotesDayQuery } from "features/notes/notesSlice";
+import AlertNote from "./AlertNote";
 
 const Dashboard = () => {
   document.title = "Tableau de bord | Radhouani";
   const { data: AllEcheancesForToDay = [] } = useGetDayEchancesQuery();
+  const { data = [] } = useFetchNotesDayQuery();
 
   return (
     <React.Fragment>
@@ -26,13 +29,18 @@ const Dashboard = () => {
           ) : (
             ""
           )}
+          {data.length > 0 ? (
+            <Row>
+              <AlertNote />
+            </Row>
+          ) : (
+            ""
+          )}
           <Row>
             <Widgets />
-
-            {/* <TopSalesLocation /> */}
           </Row>
           <Row>
-            <Col lg={4}>
+            <Col lg={3}>
               <Row>
                 <TopProducts />
               </Row>
@@ -40,11 +48,11 @@ const Dashboard = () => {
                 <AlertCharge />
               </Row>
             </Col>
-            <Col lg={4}>
+            <Col lg={5}>
               <Revenue />
             </Col>
             <Col lg={4}>
-              <Notes />
+              <NewCustomers />
             </Col>
             {/* <CustomerSatisfaction />
             <ProductDelivery />
@@ -55,7 +63,7 @@ const Dashboard = () => {
           <Row>
             <ProductDelivery />
             <TopCategories />
-            <NewCustomers />
+            <Notes />
           </Row>
         </Container>
       </div>

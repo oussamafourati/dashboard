@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "Common/ChartsDynamicColor";
 import {
@@ -413,7 +413,11 @@ const RevenueCharts = ({ dataColors, chartData }: any) => {
         },
       },
     ],
+    yaxis: {
+      show: false,
+    },
   };
+
   return (
     <React.Fragment>
       <ReactApexChart
@@ -537,7 +541,17 @@ const TopCategoriesChart = ({ dataColors }: any) => {
     (TopCategory[2]?.total_sold! / sumTotalVente) *
     100
   ).toFixed(2);
-  const series = [firstPourcentage, secondPourcentage, thirdPourcentage];
+  const fourthPourcentage = (
+    (TopCategory[3]?.total_sold! / sumTotalVente) *
+    100
+  ).toFixed(2);
+
+  const series = [
+    firstPourcentage,
+    secondPourcentage,
+    thirdPourcentage,
+    fourthPourcentage,
+  ];
   var options = {
     chart: {
       height: 300,
@@ -557,18 +571,26 @@ const TopCategoriesChart = ({ dataColors }: any) => {
           },
           value: {
             fontSize: "16px",
+            formatter: function (val: number) {
+              return val + "%";
+            },
           },
           total: {
             show: true,
             label: "Ventes",
-            formatter: function (w: any) {
-              return sumTotalVente;
+            formatter: function (w: number) {
+              return (w = sumTotalVente);
             },
           },
         },
       },
     },
-    labels: ["Outillage", "Peinture", "Menuiserie"],
+    labels: [
+      TopCategory[0]?.nom,
+      TopCategory[1]?.nom,
+      TopCategory[2]?.nom,
+      TopCategory[3]?.nom,
+    ],
     colors: topCategoriesChartsColors,
     legend: {
       show: false,

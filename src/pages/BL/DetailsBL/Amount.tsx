@@ -5,19 +5,22 @@ const styles = StyleSheet.create({
   container: {
     borderTop: "1px dashed #999",
     fontSize: 10,
-    marginTop: 16,
-    paddingTop: 16,
+    marginTop: 2,
+    paddingTop: 12,
   },
   amount: {
     borderLeft: "1.5px solid #000000",
-    fontSize: 12,
+    fontSize: 10,
     marginLeft: 4,
-    marginTop: 8,
+    marginTop: 2,
     paddingLeft: 8,
-    fontWeight: "medium",
+    fontWeight: "bold",
   },
   signature: {
-    marginTop: 14,
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 5,
+    marginBottom: 5,
   },
 });
 
@@ -50,12 +53,17 @@ const Amount: React.FC<ChildProps> = ({ amount }) => {
 
   return (
     <View style={styles.container}>
-      <Text fixed style={{ fontSize: 14, fontWeight: "bold" }}>
-        Montant Total
+      <Text fixed style={{ fontSize: 11, fontWeight: "semibold" }}>
+        Arrêtée la présente Bon de Livraison à la somme de :
       </Text>
       <View style={styles.amount}>
         <Text fixed>
           {words} ({amount} DT)
+        </Text>
+      </View>
+      <View style={styles.signature}>
+        <Text style={{ fontSize: 10, paddingLeft: 26 }} fixed>
+          Signature: _______________________________________________
         </Text>
       </View>
     </View>

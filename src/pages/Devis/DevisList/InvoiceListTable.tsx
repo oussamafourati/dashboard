@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { Button, Card, Col } from "react-bootstrap";
 import TableContainer from "Common/TableContainer";
-import { ListView } from "Common/data";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
@@ -9,6 +8,7 @@ import {
   useDeleteDevisMutation,
   useGetDevisQuery,
 } from "features/devis/devisSlice";
+import CountUp from "react-countup";
 
 const InvoiceListTable = () => {
   const { data: AllDevis = [] } = useGetDevisQuery();
@@ -114,7 +114,15 @@ const InvoiceListTable = () => {
       },
       {
         Header: "Montant",
-        accessor: "montantDevis",
+        accessor: (devis: Devis) => {
+          return (
+            <CountUp
+              end={parseInt(devis.montantDevis!)}
+              separator=","
+              duration={0}
+            />
+          );
+        },
         disableFilters: true,
         filterable: true,
       },

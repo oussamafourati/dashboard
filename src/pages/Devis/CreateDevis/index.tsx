@@ -17,10 +17,7 @@ import {
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
 import { useAddNewDevisMutation } from "features/devis/devisSlice";
-import {
-  incremented,
-  amountAdded,
-} from "../../../features/counter/counterSlice";
+
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import CountUp from "react-countup";
 
@@ -36,12 +33,6 @@ interface FormFields {
 
 const CreateDevis = () => {
   document.title = "Créer Devis | Radhouani";
-  const count = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();
-
-  function handleClick() {
-    dispatch(incremented());
-  }
 
   // sweetalert Notification
   const notify = () => {
@@ -64,7 +55,7 @@ const CreateDevis = () => {
   let now = dayjs();
   const [value, setValue] = React.useState<Dayjs | null>(now);
   const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
-  let numDevis = `${count}/${value?.year()}`;
+
   const [idDevis, setIdDevis] = useState(1);
   const [designationDevis, setDesignationDevis] = useState("");
   const [montantDevis, setMontantDevis] = useState("");
@@ -76,7 +67,7 @@ const CreateDevis = () => {
     try {
       await addFacture({
         idDevis,
-        designationDevis: numDevis,
+        designationDevis,
         montantDevis,
         dateDevis: newDate,
         nomclient,
@@ -166,7 +157,6 @@ const CreateDevis = () => {
                           type="text"
                           id="designationDevis"
                           placeholder="5/2023"
-                          value={numDevis}
                           InputProps={{
                             readOnly: true,
                           }}
@@ -341,13 +331,13 @@ const CreateDevis = () => {
                         </Col>
                         <Col>
                           <div>
-                            <Button
-                              id="add-item"
-                              className="btn btn-secondary fw-medium"
+                            <Link
+                              to="#"
+                              className="link-secondary"
                               onClick={addFields}
                             >
-                              <i className="ri-add-fill me-1 align-bottom"></i>
-                            </Button>
+                              <i className="ri-add-fill me-1 ri-xl" />
+                            </Link>
                           </div>
                         </Col>
                       </Row>
@@ -397,11 +387,7 @@ const CreateDevis = () => {
                       </Col>
                     </Row>
                     <div className="hstack gap-2 justify-content-end d-print-none mt-3">
-                      <Button
-                        variant="success"
-                        type="submit"
-                        onClick={handleClick}
-                      >
+                      <Button variant="success" type="submit">
                         <i className="ri-save-3-fill align-bottom me-1"></i>{" "}
                         Enregister
                       </Button>

@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image } from "@react-pdf/renderer";
 import logoLight from "assets/images/logo-light.png";
+import anis from "assets/images/anis.png";
 
 const styles = StyleSheet.create({
   container: {
@@ -33,27 +34,38 @@ const styles = StyleSheet.create({
   },
 });
 
-interface ChildProps {
-  date: string;
-  numero: string;
-}
-
-const HeaderBL: React.FC<ChildProps> = ({ date, numero }) => {
+const HeaderBL: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <View style={styles.left}>
-        <Image style={styles.image} src={logoLight} />
+    <View>
+      <View style={{ display: "flex", flexDirection: "row", marginBottom: 5 }}>
+        <View style={{ flex: 1, alignItems: "center" }}>
+          <Image
+            style={{
+              textAlign: "right",
+              width: 100,
+              border: 3,
+              borderStyle: "dashed",
+            }}
+            src={logoLight}
+          />
+        </View>
       </View>
-      <View style={styles.right}>
-        <Text style={styles.h1}>
-          Bon de Livraison <Text style={styles.num}>N°</Text>:{" "}
-          {/* <Text style={styles.h2}>{rowData.designationDevis}</Text> */}
-          <Text style={styles.h2}>{numero}</Text>
-        </Text>
-        <Text style={styles.h1}>
-          {/* Date: <Text style={styles.h2}>{rowData.dateDevis}</Text> */}
-          Date: <Text style={styles.h2}>{date}</Text>
-        </Text>
+      <View style={{ display: "flex", flexDirection: "row", marginBottom: 5 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.h1}>Anis Radhouani</Text>
+          <Text style={styles.h2}>Av. palestine cité ennour</Text>
+          <Text style={styles.h2}>2123 Gafsa</Text>
+          <Text style={{ fontSize: 11, fontWeight: "bold" }}>
+            M.F: <Text style={styles.h2}>1687166/T</Text>
+          </Text>
+        </View>
+        <Image
+          style={{
+            textAlign: "right",
+            width: 100,
+          }}
+          src={anis}
+        />
       </View>
     </View>
   );

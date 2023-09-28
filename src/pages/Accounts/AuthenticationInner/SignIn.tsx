@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 
 // Import Images
@@ -6,23 +6,18 @@ import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
 import logo from "assets/images/auth/logo.jpg";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { ToastContainer, toast, Flip } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
 
 // Formik validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Compte, useLoginMutation } from "features/compte/compteSlice";
-import { useAppDispatch } from "app/hooks";
 
 const SignIn = () => {
   document.title = "Connexion | Radhouani";
-  const dispatch = useAppDispatch();
+
   const [passwordShow, setPasswordShow] = useState<any>(false);
   const [username, setUsername] = useState<string>();
-  const [loginCompte, { data, isLoading, isSuccess, error, isError }] =
-    useLoginMutation();
+  const [loginCompte, { data, isSuccess, error, isError }] = useLoginMutation();
   const navigate = useNavigate();
   if (isError) {
     if ((error as any).data.message === "Invalid username or password") {

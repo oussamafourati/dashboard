@@ -13,6 +13,7 @@ export interface BondeLivraison {
   productName: string;
   adresse: string;
   tel: string;
+  mat: string;
 }
 
 export const blSlice = createApi({

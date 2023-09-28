@@ -2,10 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal, ModalHeader } from "react-bootstrap";
 
 import { Link } from "react-router-dom";
-//import images
-import avatar1 from "assets/images/users/avatar-1.jpg";
-import avatar7 from "assets/images/users/avatar-7.jpg";
-import avatar5 from "assets/images/users/avatar-5.jpg";
 
 const SearchModal = () => {
   const searchInputRef: any = useRef();
@@ -251,11 +247,6 @@ const SearchModal = () => {
                   className="list-group-item dropdown-item notify-item"
                 >
                   <div className="d-flex align-items-center">
-                    <img
-                      src={avatar1}
-                      alt=""
-                      className="avatar-xs rounded-circle flex-shrink-0 me-2"
-                    />
                     <div>
                       <h6 className="mb-0">Ayaan Bowen</h6>
                       <span className="fs-13 text-muted">React Developer</span>
@@ -267,11 +258,6 @@ const SearchModal = () => {
                   className="list-group-item dropdown-item notify-item"
                 >
                   <div className="d-flex align-items-center">
-                    <img
-                      src={avatar7}
-                      alt=""
-                      className="avatar-xs rounded-circle flex-shrink-0 me-2"
-                    />
                     <div>
                       <h6 className="mb-0">Alexander Kristi</h6>
                       <span className="fs-13 text-muted">React Developer</span>
@@ -283,11 +269,6 @@ const SearchModal = () => {
                   className="list-group-item dropdown-item notify-item"
                 >
                   <div className="d-flex align-items-center">
-                    <img
-                      src={avatar5}
-                      alt=""
-                      className="avatar-xs rounded-circle flex-shrink-0 me-2"
-                    />
                     <div>
                       <h6 className="mb-0">Alan Carla</h6>
                       <span className="fs-13 text-muted">React Developer</span>

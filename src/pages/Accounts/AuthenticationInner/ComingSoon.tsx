@@ -3,9 +3,7 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Countdown from "react-countdown";
 
 // Import Images
-import logoDark from "assets/images/logo-dark.png";
-import logoLight from "assets/images/logo-light.png";
-import comingsoon from "assets/images/develop-icon-20.jpg";
+
 import { Link } from "react-router-dom";
 
 const ComingSoon = () => {
@@ -51,9 +49,6 @@ const ComingSoon = () => {
                 <div className="auth-card mx-lg-3">
                   <Card className="border-0 mb-0">
                     <Card.Body className="text-center p-4">
-                      <div className="text-center px-sm-5 mx-5">
-                        <img src={comingsoon} alt="" height="110" />
-                      </div>
                       <div className="mt-4 text-center pt-3">
                         <div className="position-relative">
                           <h4 className="fs-22 error-subtitle text-uppercase mb-0">

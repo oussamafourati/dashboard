@@ -10,18 +10,13 @@ import CreateProduct from "pages/Products/CreateProduct";
 import Categories from "pages/Products/Categories";
 import SubCategories from "pages/Products/SubCategories";
 
-// Calendrier
-import Calendar from "pages/Calendar";
-
 // Sellers
 import SellersListView from "pages/Sellers/ListView";
-import SellersGridView from "pages/Sellers/GridView";
 import SellersOverview from "pages/Sellers/Overview";
 
 // Invoice
 import InvoiceList from "pages/Invoices/InvoiceList";
 import InvoiceDetails from "pages/Invoices/InvoiceDetails";
-import CreateInvoice from "pages/Invoices/CreateInvoice";
 
 // User List
 import ClientMor from "pages/ClientMor";
@@ -88,8 +83,7 @@ const publicRoutes = [
   { path: "/sub-categories", component: <SubCategories /> },
 
   // Sellers
-  { path: "/sellers-list-view", component: <SellersListView /> },
-  { path: "/liste-fournisseurs", component: <SellersGridView /> },
+  { path: "/liste-fournisseurs", component: <SellersListView /> },
   { path: "/detail-fournisseur", component: <SellersOverview /> },
 
   // Invoice  invoices-list   invoices-details
@@ -122,9 +116,6 @@ const publicRoutes = [
 
   // Echeances
   { path: "/echeances", component: <EcheanceListTable /> },
-
-  // Calendar
-  { path: "/calendrier", component: <Calendar /> },
 
   //Review & Rating
   { path: "/charges", component: <Brands /> },

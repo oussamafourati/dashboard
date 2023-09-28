@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -16,22 +16,152 @@ import Flatpickr from "react-flatpickr";
 
 import avatar2 from "../../../assets/images/users/avatar-2.jpg";
 import ListViewTable from "./listViewTable";
+import {
+  useAddFournisseurMutation,
+  useFetchFournisseurQuery,
+} from "features/fournisseur/fournisseurSlice";
+import Swal from "sweetalert2";
+import {
+  Arrivage,
+  useFetchTopFournisseurQuery,
+} from "features/arrivage/arrivageSlice";
 
 const SellersListView = () => {
-  document.title =
-    "List View - Sellers | Toner eCommerce + Admin React Template";
-
   const [modal_AddSellerModals, setmodal_AddSellerModals] =
     useState<boolean>(false);
   function tog_AddSellerModals() {
     setmodal_AddSellerModals(!modal_AddSellerModals);
   }
 
+  const { data = [] } = useFetchFournisseurQuery();
+
+  const etatActive = data.filter((fournisseur) => fournisseur.etat! === 1);
+  const etatNonActive = data.filter((fournisseur) => fournisseur.etat! === 0);
+
+  const notify = () => {
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Le Fournisseur a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  };
+
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  // This function is triggered when the select changes
+  const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedOption(value);
+  };
+  const [selectedEtat, setSelectedEtat] = useState<string>("");
+  // This function is triggered when the select changes
+  const selectChangeEtat = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedEtat(value);
+  };
+
+  const [createFournisseur] = useAddFournisseurMutation();
+
+  const initialFournisseur = {
+    idfournisseur: 99,
+    raison_sociale: "",
+    adresse: "",
+    tel: "",
+    mail: "",
+    type: 0,
+    matricule_fiscale: "",
+    logo: "",
+    rib: "",
+    etat: 1,
+    piecejointes: "",
+  };
+  const [formData, setFormData] = useState(initialFournisseur);
+
+  const {
+    raison_sociale,
+    adresse,
+    tel,
+    mail,
+    type,
+    matricule_fiscale,
+    logo,
+    rib,
+    etat,
+    piecejointes,
+  } = formData;
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    formData["type"] = parseInt(selectedOption);
+    formData["etat"] = parseInt(selectedEtat);
+    e.preventDefault();
+    createFournisseur(formData).then(() => setFormData(initialFournisseur));
+    notify();
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const fileLogo = (
+      document.getElementById("logo") as HTMLInputElement
+    ).files?.item(0) as File;
+    const base64 = await convertToBase64(fileLogo);
+
+    setFormData({
+      ...formData,
+      raison_sociale,
+      adresse,
+      tel,
+      mail,
+      type,
+      matricule_fiscale,
+      logo: base64 as string,
+      rib,
+      etat,
+      piecejointes,
+    });
+  };
+
+  function convertToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        const base64String = fileReader.result as string;
+        const base64Data = base64String.split(",")[1];
+        resolve(base64Data);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  }
+  const [arrivage, setArrivage] = useState<Arrivage[]>([]);
+  const { data: TopFournisseur = [] } = useFetchTopFournisseurQuery();
+  useEffect(() => {
+    const getArrivage = async () => {
+      const reqdata = await fetch(
+        "http://localhost:8000/arrivage/topfournisseur"
+      );
+      const resdata = await reqdata.json();
+      setArrivage(resdata);
+    };
+    getArrivage();
+  }, []);
+  console.log(arrivage);
+  console.log(TopFournisseur[0]?.raison_sociale!);
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <Breadcrumb title="List View" pageTitle="Sellers" />
+          <Breadcrumb title="Liste des fournisseurs" pageTitle="Fournisseur" />
           <Row>
             <Col xxl={3} md={6}>
               <Card className="card-height-100 bg-warning-subtle border-0 overflow-hidden">
@@ -171,18 +301,12 @@ const SellersListView = () => {
                   </svg>
                 </div>
                 <Card.Body className="p-4 z-1 position-relative">
-                  <h4 className="fs-22 fw-semibold mb-3">
-                    <CountUp
-                      start={0}
-                      end={559.25}
-                      duration={3}
-                      decimals={2}
-                      suffix="k"
-                    />
-                  </h4>
                   <p className="mb-0 fw-medium text-uppercase fs-14">
-                    Total Sellers
+                    Total fournisseurs
                   </p>
+                  <h4 className="fs-22 fw-semibold mb-3">
+                    <CountUp start={0} end={data.length} duration={1} />
+                  </h4>
                 </Card.Body>
               </Card>
             </Col>
@@ -324,18 +448,12 @@ const SellersListView = () => {
                   </svg>
                 </div>
                 <Card.Body className="p-4 z-1 position-relative">
-                  <h4 className="fs-22 fw-semibold mb-3">
-                    <CountUp
-                      start={0}
-                      end={559.25}
-                      duration={3}
-                      separator=","
-                      suffix="k"
-                    />
-                  </h4>
                   <p className="mb-0 fw-medium text-uppercase fs-14">
-                    Wholesalers
+                    Fournisseur Actif
                   </p>
+                  <h4 className="fs-22 fw-semibold mb-3">
+                    {etatActive.length}
+                  </h4>
                 </Card.Body>
               </Card>
             </Col>
@@ -477,18 +595,12 @@ const SellersListView = () => {
                   </svg>
                 </div>
                 <Card.Body className="p-4 z-1 position-relative">
-                  <h4 className="fs-22 fw-semibold mb-3">
-                    <CountUp
-                      start={0}
-                      end={559.25}
-                      duration={3}
-                      decimals={2}
-                      suffix="k"
-                    />
-                  </h4>
                   <p className="mb-0 fw-medium text-uppercase fs-14">
-                    Retail Seller
+                    Fournisseur Inactif
                   </p>
+                  <h4 className="fs-22 fw-semibold mb-3">
+                    {etatNonActive.length}
+                  </h4>
                 </Card.Body>
               </Card>
             </Col>
@@ -497,22 +609,23 @@ const SellersListView = () => {
                 <Card.Body className="p-3">
                   <div className="p-3 bg-white rounded">
                     <div className="d-flex align-items-center gap-2">
-                      <div className="flex-shrink-0">
-                        <img
-                          src={avatar2}
-                          alt=""
-                          className="avatar-sm rounded-circle"
-                        />
-                      </div>
                       <div className="flex-grow-1">
-                        <Link to="#!">
-                          <h6 className="fs-16">
-                            <span className="text-success">#1</span> Amanda
-                            Harvey
-                          </h6>
-                        </Link>
-                        <p className="text-muted mb-0">
-                          To reach if you need to sell 200+ orders.
+                        <h6 className="fs-16 fw-bold">
+                          <span className="text-success">#1</span>{" "}
+                          {TopFournisseur[0]?.raison_sociale!}
+                        </h6>
+                        <h6 className="fs-14 fw-semibold mb-1">
+                          <CountUp
+                            end={parseInt(TopFournisseur[0]?.TOTAL_ARRIVAGE!)}
+                            separator=","
+                            suffix="DT"
+                          />{" "}
+                        </h6>
+                        <p className="fs-13 fw-600 text-dark mb-0">
+                          Total approvisionnements:{" "}
+                          <span className="fs-15 fw-800 text-dark mb-0">
+                            {TopFournisseur[0]?.value_occurrence!}
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -527,81 +640,21 @@ const SellersListView = () => {
               <Card>
                 <Card.Body>
                   <Row className="g-3">
-                    <Col lg={3}>
-                      <div className="search-box">
-                        <input
-                          type="text"
-                          className="form-control search"
-                          placeholder="Search..."
-                        />
-                        <i className="ri-search-line search-icon"></i>
-                      </div>
-                    </Col>
-                    <Col className="col-lg-auto">
-                      <select
-                        className="form-select"
-                        id="idStatus"
-                        name="choices-single-default"
-                      >
-                        <option defaultValue="All">Status</option>
-                        <option value="All">All</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                      </select>
-                    </Col>
-                    <Col className="col-lg-auto">
-                      <select
-                        className="form-select"
-                        data-choices
-                        data-choices-search-false
-                        name="choices-single-default"
-                      >
-                        <option defaultValue="all">All</option>
-                        <option value="Today">Today</option>
-                        <option value="Yesterday">Yesterday</option>
-                        <option value="Last 7 Days">Last 7 Days</option>
-                        <option value="Last 30 Days">Last 30 Days</option>
-                        <option value="This Month">This Month</option>
-                        <option value="Last Month">Last Month</option>
-                      </select>
-                    </Col>
                     <Col className="col-lg-auto ms-auto">
                       <div className="hstack gap-2">
                         <Button
-                          variant="primary"
-                          className="add-btn"
+                          variant="success"
                           onClick={() => tog_AddSellerModals()}
+                          className="add-btn"
                         >
-                          Add Seller
+                          <i className="bi bi-plus-circle me-1 align-middle"></i>
+                          Ajouter
                         </Button>
-                        <Dropdown>
-                          <Dropdown.Toggle
-                            className="btn-icon btn btn-soft-dark arrow-none"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            <i className="ph-dots-three-outline"></i>
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu as="ul">
-                            <li>
-                              <Link className="dropdown-item" to="#">
-                                Action
-                              </Link>
-                            </li>
-                            <li>
-                              <Link className="dropdown-item" to="#">
-                                Another action
-                              </Link>
-                            </li>
-                            <li>
-                              <Link className="dropdown-item" to="#">
-                                Something else here
-                              </Link>
-                            </li>
-                          </Dropdown.Menu>
-                        </Dropdown>
                       </div>
                     </Col>
+                  </Row>
+                  <Row>
+                    <ListViewTable />
                   </Row>
                 </Card.Body>
               </Card>
@@ -609,6 +662,242 @@ const SellersListView = () => {
           </Row>
         </Container>
       </div>
+      <Modal
+        className="fade"
+        id="createModal"
+        show={modal_AddSellerModals}
+        onHide={() => {
+          tog_AddSellerModals();
+        }}
+        centered
+      >
+        <Modal.Header closeButton>
+          <h1 className="modal-title fs-5" id="createModalLabel">
+            Ajouter Fournisseur
+          </h1>
+        </Modal.Header>
+        <Modal.Body>
+          <Form className="create-form" onSubmit={onSubmit}>
+            <input type="hidden" id="id-field" />
+            <div
+              id="alert-error-msg"
+              className="d-none alert alert-danger py-2"
+            ></div>
+            <div>
+              <div className="text-center mb-3">
+                <div className="position-relative d-inline-block">
+                  <div className="position-absolute top-100 start-100 translate-middle">
+                    <label
+                      htmlFor="logo"
+                      className="mb-0"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="right"
+                      title="Select company logo"
+                    >
+                      <span className="avatar-xs d-inline-block">
+                        <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
+                          <i className="ri-image-fill"></i>
+                        </span>
+                      </span>
+                    </label>
+                    <input
+                      className="form-control d-none"
+                      type="file"
+                      name="logo"
+                      id="logo"
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload(e)}
+                    />
+                  </div>
+                  <div className="avatar-lg">
+                    <div className="avatar-title bg-light rounded-3">
+                      <img
+                        src={`data:image/jpeg;base64, ${formData.logo}`}
+                        alt={formData.raison_sociale}
+                        id="logo"
+                        className="avatar-xl h-auto rounded-3 object-fit-cover"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mb-3">
+                <Form.Label htmlFor="raison_sociale">Raison Sociale</Form.Label>
+                <Form.Control
+                  onChange={onChange}
+                  value={formData.raison_sociale}
+                  type="text"
+                  id="raison_sociale"
+                  required
+                />
+              </div>
+
+              <Row>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label htmlFor="matricule_fiscale">
+                      Matricule Fiscale
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="matricule_fiscale"
+                      required
+                      onChange={onChange}
+                      value={formData.matricule_fiscale}
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label htmlFor="adresse">Adresse</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="adresse"
+                      required
+                      onChange={onChange}
+                      value={formData.adresse}
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label htmlFor="tel">Téléphone</Form.Label>
+                    <Form.Control
+                      type="number"
+                      id="tel"
+                      required
+                      value={formData.tel}
+                      minLength={8}
+                      onChange={onChange}
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label htmlFor="mail">E-mail</Form.Label>
+                    <Form.Control
+                      type="email"
+                      id="mail"
+                      required
+                      onChange={onChange}
+                      value={formData.mail}
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label htmlFor="type">Type Fournisseur</Form.Label>
+                    <select
+                      onChange={selectChange}
+                      className="form-select"
+                      data-choices
+                      data-choices-search-false
+                      id="type"
+                      required
+                    >
+                      <option value="">Choisir</option>
+                      <option value={0} selected>
+                        Morale
+                      </option>
+                      <option value={1}>Physique</option>
+                    </select>
+                  </div>
+                </Col>
+
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label htmlFor="rib">R.I.B</Form.Label>
+                    <Form.Control
+                      type="number"
+                      id="rib"
+                      required
+                      onChange={onChange}
+                      value={formData.rib}
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div className="mb-3">
+                    <Form.Label htmlFor="etat">Etat Fournisseur</Form.Label>
+                    <select
+                      className="form-select"
+                      onChange={selectChangeEtat}
+                      data-choices
+                      data-choices-search-false
+                      id="etat"
+                      required
+                    >
+                      <option value="">Choisir</option>
+                      <option value={1}>Actif</option>
+                      <option value={0}>Inactif</option>
+                    </select>
+                  </div>
+                </Col>
+                {/* <Col md={6}>
+                      <div className="text-center mb-3">
+                        <div className="position-relative d-inline-block">
+                          <div className="position-absolute top-100 start-100 translate-middle">
+                            <label
+                              htmlFor="piecejointes"
+                              className="mb-0"
+                              data-bs-toggle="tooltip"
+                              data-bs-placement="right"
+                              title="Select company logo"
+                            >
+                              <span className="avatar-xs d-inline-block">
+                                <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
+                                  <i className="ri-image-fill"></i>
+                                </span>
+                              </span>
+                            </label>
+                            <input
+                              className="form-control d-none"
+                              type="file"
+                              name="piecejointes"
+                              id="piecejointes"
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(e)}
+                            />
+                          </div>
+                          <div className="avatar-lg">
+                            <div className="avatar-title bg-light rounded-3">
+                              <img
+                                src={`data:image/jpeg;base64, ${formData.piecejointes}`}
+                                alt={formData.raison_sociale}
+                                id="companyPJ-img"
+                                className="avatar-md h-auto rounded-3 object-fit-cover"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Col> */}
+              </Row>
+            </div>
+            <div className="hstack gap-2 justify-content-end">
+              <Button
+                variant="light"
+                onClick={() => {
+                  tog_AddSellerModals();
+                  setFormData(initialFournisseur);
+                }}
+              >
+                Fermer
+              </Button>
+              <Button
+                onClick={() => {
+                  tog_AddSellerModals();
+                }}
+                type="submit"
+                variant="success"
+                id="addNew"
+              >
+                Ajouter
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </React.Fragment>
   );
 };

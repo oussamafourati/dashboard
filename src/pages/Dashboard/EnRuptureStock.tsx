@@ -1,7 +1,6 @@
 import React from "react";
 import { Card, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { stockReport } from "../../Common/data";
 import { useGetQtyProduitQuery } from "features/arrivageProduit/arrivageProduitSlice";
 import SimpleBar from "simplebar-react";
 

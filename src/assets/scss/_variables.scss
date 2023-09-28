@@ -22,7 +22,7 @@ $vertical-menu-bg:                                var(--#{$prefix}vertical-menu-
 $vertical-menu-box-shadow:                        0 2px 4px rgba(15,34,58,0.12);
 $vertical-menu-border:                            var(--#{$prefix}vertical-menu-border);
 $vertical-menu-z-index:                           1002;
-$vertical-menu-item-font-size:                    0.9063rem;
+$vertical-menu-item-font-size:                    1.039rem;
 $vertical-menu-item-font-family:                  $font-family-primary;
 $vertical-menu-item-color:                        var(--#{$prefix}vertical-menu-item-color);
 $vertical-menu-item-hover-color:                  var(--#{$prefix}vertical-menu-item-hover-color);
@@ -30,7 +30,7 @@ $vertical-menu-item-hover-bg:                     var(--#{$prefix}vertical-menu-
 $vertical-menu-item-active-color:                 var(--#{$prefix}vertical-menu-item-active-color);
 $vertical-menu-item-padding-x:                    1.5rem;
 $vertical-menu-item-padding-y:                    0.625rem;
-$vertical-menu-sub-item-font-size:                0.9063rem;
+$vertical-menu-sub-item-font-size:                1rem;
 $vertical-menu-sub-item-font-family:              $font-family-primary;
 $vertical-menu-sub-item-color:                    var(--#{$prefix}vertical-menu-sub-item-color);
 $vertical-menu-sub-item-hover-color:              var(--#{$prefix}vertical-menu-sub-item-hover-color);

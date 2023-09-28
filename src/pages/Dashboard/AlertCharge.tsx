@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useGetChargeDayQuery } from "features/charge/chargeSlice";
 import CountUp from "react-countup";
 import { Modal } from "react-bootstrap";
+import TableCharges from "./TableCharges";
 
 const AlertCharge = () => {
   const { data: ChargeToDay = [] } = useGetChargeDayQuery();
@@ -42,67 +43,9 @@ const AlertCharge = () => {
             </div>
           </SimpleBar>
         ) : (
-          // <SimpleBar style={{ maxHeight: "445px" }}>
-          //   {(ChargeToDay || []).map((item, key) => (
-          //     <div className="p-1 border-bottom border-bottom-dashed" key={key}>
-          //       <div className="d-flex align-items-center gap-1">
-          //         <div className="flex-grow-1">
-          //           <div className="card-body">
-          //             <div className="table-responsive">
-          //               <table className="table table-sm table-borderless align-middle description-table mb-0">
-          //                 <tbody>
-          //                   <tr>
-          //                     <td>
-          //                       <h6>Description</h6>
-          //                     </td>
-          //                     <td>
-          //                       <span className="text-muted fw-medium">
-          //                         {item.descriptionCharge}
-          //                       </span>
-          //                     </td>
-          //                   </tr>
-          //                   <tr>
-          //                     <td>
-          //                       <h6>Date</h6>
-          //                     </td>
-          //                     <td>
-          //                       <span className="text-muted fw-medium">
-          //                         {item.dateCharges}
-          //                       </span>
-          //                     </td>
-          //                   </tr>
-          //                   <tr>
-          //                     <td>
-          //                       <h6>Type</h6>
-          //                     </td>
-          //                     <td>
-          //                       <span className="text-muted fw-medium">
-          //                         {item.typeCharges}
-          //                       </span>
-          //                     </td>
-          //                   </tr>
-          //                 </tbody>
-          //               </table>
-          //             </div>
-          //           </div>
-          //         </div>
-          //         <div className="flex-shrink-1">
-          //           <span className="fs-16 badge badge-soft-secondary">
-          //             <CountUp
-          //               start={0}
-          //               end={parseInt(item.montantCharges)}
-          //               separator=","
-          //             />{" "}
-          //             DT
-          //           </span>
-          //         </div>
-          //       </div>
-          //     </div>
-          //   ))}
-          // </SimpleBar>
           <>
-            <div className="mt-1">
-              <h4 className="mb-1">
+            <div className="mt-3">
+              <h4 className="mb-3">
                 Total :{" "}
                 <small className="fw-normal fs-14">
                   {" "}
@@ -116,7 +59,7 @@ const AlertCharge = () => {
                 </small>
               </h4>
             </div>
-            <table className="table table-borderless table-striped align-middle table-sm fs-14 mb-1">
+            <table className="table table-borderless table-striped align-middle table-sm fs-14 mb-3">
               <tbody>
                 {(ChargeToDay || []).map((item, key) => (
                   <tr>
@@ -156,10 +99,12 @@ const AlertCharge = () => {
       >
         <Modal.Header className="px-4 pt-4" closeButton>
           <h5 className="modal-title fs-18" id="exampleModalLabel">
-            En rupture de stock
+            Détails
           </h5>
         </Modal.Header>
-        <Modal.Body className="p-4">{/* <StockReport />{" "} */}</Modal.Body>
+        <Modal.Body className="p-4">
+          <TableCharges />
+        </Modal.Body>
       </Modal>
     </React.Fragment>
   );

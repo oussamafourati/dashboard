@@ -173,48 +173,20 @@ const InvoiceListTablePassager = () => {
 
   return (
     <React.Fragment>
-      <Card.Header className="border-0">
-        <div className="d-flex align-items-center justify-content-end">
-          <div className="flex-shrink-0">
-            <div className="d-flex gap-2 flex-wrap">
-              {isMultiDeleteButton && (
-                <Button variant="danger" className="btn-icon">
-                  <i className="ri-delete-bin-2-line"></i>
-                </Button>
-              )}
-              <Link to="/nouveau-facture-passager" className="btn btn-primary">
-                <i className="ri-add-line align-bottom me-1"></i> Créer
-              </Link>
-            </div>
-          </div>
-        </div>
-      </Card.Header>
       <Card.Body>
         <div>
-          <div className="table-responsive table-card">
-            <TableContainer
-              columns={columns || []}
-              data={data || []}
-              isGlobalFilter={true}
-              iscustomPageSize={false}
-              isBordered={false}
-              customPageSize={10}
-              className="custom-header-css table align-middle table-nowrap"
-              tableClassName="table-centered align-middle table-nowrap mb-0"
-              theadClassName="text-muted table-light"
-              SearchPlaceholder="Recherche..."
-            />
-            <div className="noresult" style={{ display: "none" }}>
-              <div className="text-center">
-                {/* <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon> */}
-                <h5 className="mt-2">Sorry! No Result Found</h5>
-                <p className="text-muted mb-0">
-                  We've searched more than 150+ invoices We did not find any
-                  invoices for you search.
-                </p>
-              </div>
-            </div>
-          </div>
+          <TableContainer
+            columns={columns || []}
+            data={data || []}
+            isGlobalFilter={true}
+            iscustomPageSize={false}
+            isBordered={false}
+            customPageSize={10}
+            className="custom-header-css table align-middle table-nowrap"
+            tableClassName="table-centered align-middle table-nowrap mb-0"
+            theadClassName="text-muted table-light"
+            SearchPlaceholder="Recherche..."
+          />
         </div>
       </Card.Body>
     </React.Fragment>

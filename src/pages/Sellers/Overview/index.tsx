@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Col, Container, Form, Row } from "react-bootstrap";
 import CountUp from "react-countup";
 import { useLocation } from "react-router-dom";
-import profilebgImg from "../../../assets/images/fournissuer_cover.avif";
+import profilebgImg from "../../../assets/images/fournisseur.jpg";
 import { useGetArrivageByFournisseurQuery } from "features/arrivage/arrivageSlice";
 import ProductList from "./ProductList";
 
@@ -24,12 +24,12 @@ const SellersOverview = () => {
         <Container fluid={true}>
           <Row>
             <Col lg={12}>
-              <Card className="border-0  shadow-none mx-n4 mt-n4">
+              <Card className="border-0 shadow-none mx-n3 mt-n5">
                 <Card.Body
                   className="profile-basic position-relative"
                   style={{
                     backgroundImage: `url(${profilebgImg})`,
-                    backgroundSize: "cover",
+                    backgroundSize: "contain",
                     backgroundPosition: "center",
                   }}
                 ></Card.Body>
@@ -76,13 +76,13 @@ const SellersOverview = () => {
                         <Form.Label htmlFor="matricule_fiscale">
                           Matricule Fiscale :
                         </Form.Label>
-                        {LocationFournisseur.state?.matricule_fiscale}
+                        <span id="matricule_fiscale">
+                          {LocationFournisseur.state?.matricule_fiscale}
+                        </span>
                       </div>
                       <div className="mb-2">
-                        <Form.Label htmlFor="descriptionCharge">
-                          R.I.B :
-                        </Form.Label>
-                        {LocationFournisseur.state?.rib}
+                        <Form.Label htmlFor="rib">R.I.B :</Form.Label>
+                        <span id="rib"> {LocationFournisseur.state?.rib}</span>
                       </div>
                       <div className="mb-2 text-muted">
                         <i className="bi bi-geo-alt align-middle me-1"></i>{" "}

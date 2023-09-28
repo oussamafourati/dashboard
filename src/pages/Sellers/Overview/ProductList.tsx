@@ -2,7 +2,11 @@ import React, { useMemo } from "react";
 import TableContainer from "Common/TableContainer";
 import { Link } from "react-router-dom";
 import { Produit } from "features/produit/productSlice";
-import { useGetFournisseurProduitQuery } from "features/arrivageProduit/arrivageProduitSlice";
+import {
+  ArrivageProduit,
+  useGetFournisseurProduitQuery,
+} from "features/arrivageProduit/arrivageProduitSlice";
+import CountUp from "react-countup";
 
 interface MyProps {
   idfournisseur: number;
@@ -48,12 +52,24 @@ const ProductList = ({ idfournisseur }: MyProps) => {
       },
       {
         Header: "Prix Achat TTC",
-        accessor: "prixAchatTtc",
+        accessor: (arrivagePro: ArrivageProduit) => {
+          return (
+            <CountUp
+              end={arrivagePro.prixAchatTtc!}
+              separator=","
+              duration={0}
+            />
+          );
+        },
         Filter: true,
       },
       {
         Header: "Prix Vente",
-        accessor: "prixVente",
+        accessor: (arrivagePro: ArrivageProduit) => {
+          return (
+            <CountUp end={arrivagePro.prixVente!} separator="," duration={0} />
+          );
+        },
         Filter: true,
       },
       {
@@ -62,8 +78,16 @@ const ProductList = ({ idfournisseur }: MyProps) => {
         Filter: true,
       },
       {
-        Header: "Montant Total Produit",
-        accessor: "MontantTotalProduit",
+        Header: "Total",
+        accessor: (arrivagePro: ArrivageProduit) => {
+          return (
+            <CountUp
+              end={arrivagePro.MontantTotalProduit!}
+              separator=","
+              duration={0}
+            />
+          );
+        },
         Filter: true,
       },
       {

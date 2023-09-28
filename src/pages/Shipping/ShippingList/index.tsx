@@ -25,7 +25,7 @@ const AddArrivageProduit = () => {
   useEffect(() => {
     const getFournisseur = async () => {
       const reqFournisseur = await fetch(
-        "https://src-api.onrender.com/fournisseur/allFournisseur"
+        "http://localhost:8000/fournisseur/allFournisseur"
       );
       const resFournisseur = await reqFournisseur.json();
       setFournisseurState(resFournisseur);
@@ -37,7 +37,7 @@ const AddArrivageProduit = () => {
     const fournisseurId = e.target.value;
     if (fournisseurId !== "") {
       const reqFournisseurData = await fetch(
-        `https://src-api.onrender.com/fournisseur/oneFournisseur/${fournisseurId}`
+        `http://localhost:8000/fournisseur/oneFournisseur/${fournisseurId}`
       );
       const resfournisseurdata = await reqFournisseurData.json();
       setSelected(await resfournisseurdata);

@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { stockReport } from "../../Common/data";
 import { useGetQtyProduitQuery } from "features/arrivageProduit/arrivageProduitSlice";
 import SimpleBar from "simplebar-react";
+import CountUp from "react-countup";
 
 const RiskRupture = () => {
   const { data: QtyProduct = [] } = useGetQtyProduitQuery();
@@ -38,12 +38,13 @@ const RiskRupture = () => {
                   {(result2 || []).map((item, key) => (
                     <tr key={key}>
                       <td>
-                        <Link
+                        {/* <Link
                           to="/product-overview"
+                          state={result2}
                           className="fw-medium link-primary"
-                        >
-                          {item.nomProduit}
-                        </Link>
+                        > */}
+                        {item.nomProduit}
+                        {/* </Link> */}
                       </td>
                       {/* <td>
                         <div className="d-flex align-items-center">
@@ -63,7 +64,8 @@ const RiskRupture = () => {
                       </td> */}
 
                       <td>
-                        <span className="text-secondary">{item.SUMTOTAL}</span>
+                        <CountUp start={0} end={item.SUMTOTAL!} separator="," />{" "}
+                        DT
                       </td>
                       {/* <td>
                         <Status status={item.stockStatus} />

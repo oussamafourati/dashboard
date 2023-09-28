@@ -2,15 +2,9 @@ import React from "react";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 // PDF
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
+import { Page, View, Document, StyleSheet } from "@react-pdf/renderer";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import CountUp from "react-countup";
 
 // Import Images
 import logoDark from "assets/images/logo-dark.png";
@@ -26,6 +20,7 @@ import HeaderBL from "./HearderBL";
 import ClientBL from "./ClientBL";
 import TableBL from "./TableBL";
 import MontantTotal from "./MontantTotal";
+import FooterDevis from "pages/Devis/DevisDetails/FooterDevis";
 
 const styles = StyleSheet.create({
   body: {
@@ -42,23 +37,39 @@ const styles = StyleSheet.create({
   },
 });
 const PDF_REPORT_BL = (props: BondeLivraison) => {
-  const { designationBL, dateBL, raison_sociale, adresse, tel, montant, idbl } =
-    props;
+  const {
+    designationBL,
+    dateBL,
+    raison_sociale,
+    adresse,
+    tel,
+    montant,
+    idbl,
+    mat,
+  } = props;
 
   return (
     <Document>
-      <Page size="A4" style={styles.body}>
-        <View style={styles.top}>
-          <HeaderBL date={dateBL} numero={designationBL} />
-          <ClientBL nom={raison_sociale} adr={adresse} tel={tel} />
-        </View>
+      <Page size="A4" style={styles.body} wrap>
+        <HeaderBL />
+        <ClientBL
+          numero={designationBL}
+          date={dateBL}
+          nom={raison_sociale}
+          adr={adresse}
+          tel={tel}
+          matricule={mat}
+        />
         <View style={{ flex: 2 }}>
           <TableBL id={idbl} />
           <MontantTotal mnt={montant} />
         </View>
         <View>
           <Amount amount={montant} />
-          <ProposalSignature />
+          {/* <ProposalSignature /> */}
+        </View>
+        <View fixed>
+          <FooterDevis />
         </View>
       </Page>
     </Document>
@@ -73,7 +84,7 @@ const DetailsBL = () => {
     locationBLDetail.state.idbl
   );
 
-  const mntTotal = allLigneVente?.reduce(
+  const mntTotal: number | undefined = allLigneVente?.reduce(
     (sum, i) => (sum += parseInt(i.montantTtl)),
     0
   );
@@ -181,7 +192,7 @@ const DetailsBL = () => {
                             Montant Total
                           </p>
                           <h5 className="fs-15 mb-0">
-                            <span id="total-amount">{mntTotal}</span> Dt
+                            <span id="total-amount">{mntTotal}</span> DT
                           </h5>
                         </Col>
                       </Row>
@@ -237,10 +248,21 @@ const DetailsBL = () => {
                                     {lignevente.productName}
                                   </span>
                                 </td>
-                                <td>{lignevente.PU}</td>
+                                <td>
+                                  {" "}
+                                  <CountUp
+                                    end={parseInt(lignevente.PU!)}
+                                    separator=","
+                                    duration={0}
+                                  />
+                                </td>
                                 <td>{lignevente.quantiteProduit}</td>
                                 <td className="text-end">
-                                  {lignevente.montantTtl}
+                                  <CountUp
+                                    end={parseInt(lignevente.montantTtl!)}
+                                    separator=","
+                                    duration={0}
+                                  />
                                 </td>
                               </tr>
                             ))}
@@ -256,7 +278,7 @@ const DetailsBL = () => {
                           <tbody>
                             <tr className="border-top border-top-dashed fs-15">
                               <th scope="row">Montant Total</th>
-                              <th className="text-end">{mntTotal} Dt</th>
+                              <th className="text-end">{mntTotal} DT</th>
                             </tr>
                           </tbody>
                         </Table>

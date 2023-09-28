@@ -174,38 +174,20 @@ const InvoiceListTablePaye = () => {
 
   return (
     <React.Fragment>
-      <Card.Header className="border-0">
-        <div className="d-flex align-items-center justify-content-end">
-          <div className="flex-shrink-0">
-            <div className="d-flex gap-2 flex-wrap">
-              {isMultiDeleteButton && (
-                <Button variant="danger" className="btn-icon">
-                  <i className="ri-delete-bin-2-line"></i>
-                </Button>
-              )}
-              <Link to="/nouveau-facture-passager" className="btn btn-primary">
-                <i className="ri-add-line align-bottom me-1"></i> Créer
-              </Link>
-            </div>
-          </div>
-        </div>
-      </Card.Header>
       <Card.Body>
         <div>
-          <div className="table-responsive table-card">
-            <TableContainer
-              columns={columns || []}
-              data={payefacture || []}
-              isGlobalFilter={true}
-              iscustomPageSize={false}
-              isBordered={false}
-              customPageSize={10}
-              className="custom-header-css table align-middle table-nowrap"
-              tableClassName="table-centered align-middle table-nowrap mb-0"
-              theadClassName="text-muted table-light"
-              SearchPlaceholder="Recherche..."
-            />
-          </div>
+          <TableContainer
+            columns={columns || []}
+            data={payefacture || []}
+            isGlobalFilter={true}
+            iscustomPageSize={false}
+            isBordered={false}
+            customPageSize={10}
+            className="custom-header-css table align-middle table-nowrap"
+            tableClassName="table-centered align-middle table-nowrap mb-0"
+            theadClassName="text-muted table-light"
+            SearchPlaceholder="Recherche..."
+          />
         </div>
       </Card.Body>
     </React.Fragment>

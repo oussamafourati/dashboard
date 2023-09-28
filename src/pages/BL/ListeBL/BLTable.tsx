@@ -10,6 +10,7 @@ import {
   useDeleteChargesMutation,
 } from "features/charge/chargeSlice";
 import { BondeLivraison, useFetchAllBLQuery } from "features/bl/bondeLSlice";
+import CountUp from "react-countup";
 
 const BLTable = () => {
   const notify = () => {
@@ -68,7 +69,7 @@ const BLTable = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "Designation Bon de Livraison",
+        Header: "Designation",
         accessor: "designationBL",
         disableFilters: true,
         filterable: true,
@@ -81,12 +82,14 @@ const BLTable = () => {
       },
       {
         Header: "Montant",
-        accessor: "montant",
+        accessor: (bl: BondeLivraison) => {
+          return <CountUp end={bl.montant!} separator="," duration={0} />;
+        },
         disableFilters: true,
         filterable: true,
       },
       {
-        Header: "Date Bon de Livraison",
+        Header: "Date",
         disableFilters: true,
         filterable: true,
         accessor: "dateBL",
@@ -142,20 +145,18 @@ const BLTable = () => {
             </Card.Body>
             <Card.Body>
               <div>
-                <div className="table-responsive table-card">
-                  <TableContainer
-                    columns={columns || []}
-                    data={AllBLs || []}
-                    isGlobalFilter={true}
-                    iscustomPageSize={false}
-                    isBordered={false}
-                    customPageSize={10}
-                    className="custom-header-css table align-middle table-nowrap"
-                    tableClassName="table-centered align-middle table-nowrap mb-0"
-                    theadClassName="text-muted table-light"
-                    SearchPlaceholder="Rechercher Bon de livraison..."
-                  />
-                </div>
+                <TableContainer
+                  columns={columns || []}
+                  data={AllBLs || []}
+                  isGlobalFilter={true}
+                  iscustomPageSize={false}
+                  isBordered={false}
+                  customPageSize={10}
+                  className="custom-header-css table align-middle table-nowrap"
+                  tableClassName="table-centered align-middle table-nowrap mb-0"
+                  theadClassName="text-muted table-light"
+                  SearchPlaceholder="Rechercher Bon de livraison..."
+                />
               </div>
             </Card.Body>
           </Card>

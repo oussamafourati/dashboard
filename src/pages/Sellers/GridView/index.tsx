@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -9,7 +9,6 @@ import {
   Row,
 } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
-import { sellerGrid } from "Common/data";
 import CountUp from "react-countup";
 import { Link } from "react-router-dom";
 import {
@@ -181,31 +180,6 @@ const SellersGridView = () => {
 
   const indexOfLast = currentPage * perPageData;
   const indexOfFirst = indexOfLast - perPageData;
-
-  const currentdata = useMemo(
-    () => sellerGrid.slice(indexOfFirst, indexOfLast),
-    [indexOfFirst, indexOfLast]
-  );
-
-  useEffect(() => {
-    setCurrentpages(currentdata);
-  }, [currentPage, currentdata]);
-
-  const searchTeamMember = (ele: any) => {
-    let search = ele.target.value;
-    if (search) {
-      search = search.toLowerCase();
-      setCurrentpages(
-        sellerGrid.filter((data: any) =>
-          data.sellerName.toLowerCase().includes(search)
-        )
-      );
-      setPagination(false);
-    } else {
-      setCurrentpages(currentdata);
-      setPagination(true);
-    }
-  };
 
   const pageNumbers: any = [];
   for (let i = 1; i <= Math.ceil(data.length / perPageData); i++) {

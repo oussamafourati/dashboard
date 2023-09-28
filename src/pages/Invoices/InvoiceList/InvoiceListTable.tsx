@@ -11,6 +11,7 @@ import {
 } from "features/facture/factureSlice";
 import Swal from "sweetalert2";
 import dayjs, { Dayjs } from "dayjs";
+import CountUp from "react-countup";
 
 const InvoiceListTable = () => {
   const { data = [] } = useFetchAllFactureQuery();
@@ -149,7 +150,11 @@ const InvoiceListTable = () => {
       },
       {
         Header: "Montant Total",
-        accessor: "MontantTotal",
+        accessor: (facture: Facture) => {
+          return (
+            <CountUp end={facture.MontantTotal!} separator="," duration={0} />
+          );
+        },
         disableFilters: true,
         filterable: true,
       },

@@ -21,6 +21,12 @@ export const notesSlice = createApi({
         },
         providesTags: ["Notes"],
       }),
+      fetchNotesDay: builder.query<Notes[], number | void>({
+        query() {
+          return "/notesToDay";
+        },
+        providesTags: ["Notes"],
+      }),
       addNewNote: builder.mutation<void, Notes>({
         query(payload) {
           return {
@@ -31,8 +37,20 @@ export const notesSlice = createApi({
         },
         invalidatesTags: ["Notes"],
       }),
+      removeNote: builder.mutation<void, number>({
+        query: (idNote) => ({
+          url: `removeNote/${idNote}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Notes"],
+      }),
     };
   },
 });
 
-export const { useAddNewNoteMutation, useGetAllNotesQuery } = notesSlice;
+export const {
+  useFetchNotesDayQuery,
+  useAddNewNoteMutation,
+  useGetAllNotesQuery,
+  useRemoveNoteMutation,
+} = notesSlice;

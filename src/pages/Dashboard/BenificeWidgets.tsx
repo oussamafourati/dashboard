@@ -38,7 +38,7 @@ const BenificeWidgets = () => {
   const [totalBenifice, setTotalBenifice] = useState<number>(0);
 
   useEffect(() => {
-    setTotalBenifice(venteTotalYear - arrivagesTotal);
+    setTotalBenifice(venteTotalYear - (arrivagesTotal + chargeYear));
   });
 
   const widgetsData: Array<WidgetsProps> = [

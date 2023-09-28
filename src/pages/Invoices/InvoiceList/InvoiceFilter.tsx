@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Accordion, Card, Col, Row } from "react-bootstrap";
+import { Accordion, Button, Card, Col, Row } from "react-bootstrap";
 import InvoiceListTable from "./InvoiceListTable";
 import InvoiceListTablePassager from "./InvoiceListTablePassager";
 import InvoiceListTablePro from "./InvoiceListTablePro";
@@ -34,6 +34,18 @@ const InvoiceFilter = () => {
           <Accordion flush defaultActiveKey="0" className="filter-accordion">
             <StatusFilter status={status} setStatus={setStatus} />
           </Accordion>
+          <Button
+            type="submit"
+            size="sm"
+            variant="light"
+            id="add-btn"
+            onClick={() => {
+              setType("");
+              setStatus(3);
+            }}
+          >
+            Clear
+          </Button>
         </Col>
         <Col lg={10}>
           {!type && status === 3 ? (

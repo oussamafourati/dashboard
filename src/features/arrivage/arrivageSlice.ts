@@ -8,6 +8,8 @@ export interface Arrivage {
   raison_sociale: string;
   fournisseurID?: number;
   piecejointe: string;
+  value_occurrence?: number;
+  TOTAL_ARRIVAGE?: string;
 }
 
 export const arrivageSlice = createApi({
@@ -21,6 +23,12 @@ export const arrivageSlice = createApi({
       getAllArrivages: builder.query<Arrivage[], number | void>({
         query() {
           return "/allArrivage";
+        },
+        providesTags: ["Arrivage"],
+      }),
+      fetchTopFournisseur: builder.query<Arrivage[], number | void>({
+        query() {
+          return "/topfournisseur";
         },
         providesTags: ["Arrivage"],
       }),
@@ -56,7 +64,7 @@ export const arrivageSlice = createApi({
       }),
       getThisMonthArrivage: builder.query<Arrivage[], number | void>({
         query() {
-          return `/ArrivageLastMonth`;
+          return `/thisMonthArrivage`;
         },
         providesTags: ["Arrivage"],
       }),
@@ -144,6 +152,12 @@ export const arrivageSlice = createApi({
         },
         providesTags: ["Arrivage"],
       }),
+      fetchArrivageMonth: builder.query<Arrivage[], number | void>({
+        query() {
+          return `/thisMonthArrivage`;
+        },
+        providesTags: ["Arrivage"],
+      }),
       addArrivage: builder.mutation<void, Arrivage>({
         query(payload) {
           return {
@@ -174,6 +188,8 @@ export const arrivageSlice = createApi({
 });
 
 export const {
+  useFetchArrivageMonthQuery,
+  useFetchTopFournisseurQuery,
   useGetArrivageWeekQuery,
   useGetArrivagesSixMonthsQuery,
   useGetArrivageAprQuery,

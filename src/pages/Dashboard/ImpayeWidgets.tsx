@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Col } from "react-bootstrap";
+import { Card, Col, Form } from "react-bootstrap";
 import CountUp from "react-countup";
 import {
   useGetFactureImpayeLastYearQuery,
@@ -95,20 +95,20 @@ const ImpayeWidgets = () => {
                     </span>
                   )}
                 </h4>
-                <select
-                  className="form-select"
+                <Form.Select
+                  size="sm"
+                  className="m-2 rounded-4 shadow bg-danger bg-opacity-25 border-0 text-dark"
                   id="choices-charge-input"
                   name="choices-charge-input"
                   onChange={handlesousCategory}
                 >
-                  <option value=""></option>
                   <option value={ToDayFactureImpaye} selected>
                     Aujourd'hui
                   </option>
                   <option value={ThisMonthFactureImpaye}>Mois en cours</option>
                   <option value={ThisYearFactureImpaye}>Année en cours</option>
                   <option value={LastYearFactureImpaye}>Année Dernière</option>
-                </select>
+                </Form.Select>
               </div>
               <div className="avatar-sm flex-shrink-0">
                 <span

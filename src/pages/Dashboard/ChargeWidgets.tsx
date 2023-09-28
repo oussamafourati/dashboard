@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { Card, Col } from "react-bootstrap";
+import { Card, Col, Form } from "react-bootstrap";
 import CountUp from "react-countup";
 import {
-  useGetAllChargesQuery,
   useGetChargeDayQuery,
   useGetChargeLastYearQuery,
-  useGetChargeThreeMonthsQuery,
   useGetChargeAnneeQuery,
   useGetChargeMonthQuery,
 } from "features/charge/chargeSlice";
@@ -20,16 +18,10 @@ interface WidgetsProps {
 }
 
 const ChargeWidgets = () => {
-  const { data: AllCharge = [] } = useGetAllChargesQuery();
   const { data: YearCharge = [] } = useGetChargeAnneeQuery();
   const { data: DayCharge = [] } = useGetChargeDayQuery();
   const { data: LastYear = [] } = useGetChargeLastYearQuery();
   const { data: allChargesMois = [] } = useGetChargeMonthQuery();
-
-  const chargeTotal = AllCharge.reduce(
-    (sum, i) => (sum += parseInt(i.montantCharges)),
-    0
-  );
 
   const chargeYear = YearCharge.reduce(
     (sum, i) => (sum += parseInt(i.montantCharges)),
@@ -97,20 +89,20 @@ const ChargeWidgets = () => {
                     </span>
                   )}
                 </h4>
-                <select
-                  className="form-select"
+                <Form.Select
+                  size="sm"
+                  className="m-2 rounded-4 shadow bg-warning bg-opacity-25 border-0 text-dark"
                   id="choices-charge-input"
                   name="choices-charge-input"
                   onChange={handlesousCategory}
                 >
-                  <option value=""></option>
                   <option value={chargeDay} selected>
                     Aujourd'hui
                   </option>
                   <option value={chargeTotalThisMonth}>Mois en cours</option>
                   <option value={chargeYear}>Année en cours</option>
                   <option value={chargeTotalLastYear}>Année Dernière</option>
-                </select>
+                </Form.Select>
               </div>
               <div className="avatar-sm flex-shrink-0">
                 <span

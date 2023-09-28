@@ -143,6 +143,24 @@ export const chargesSlice = createApi({
         },
         providesTags: ["Charges"],
       }),
+      fetchAllChargesin3days: builder.query<Charges[], number | void>({
+        query() {
+          return "/3daysCharges";
+        },
+        providesTags: ["Charges"],
+      }),
+      fetchAllChargesin2days: builder.query<Charges[], number | void>({
+        query() {
+          return "/2daysCharges";
+        },
+        providesTags: ["Charges"],
+      }),
+      fetchAllChargesin1day: builder.query<Charges[], number | void>({
+        query() {
+          return "/1daysCharges";
+        },
+        providesTags: ["Charges"],
+      }),
       addCharge: builder.mutation<void, Charges>({
         query(payload) {
           return {
@@ -173,6 +191,9 @@ export const chargesSlice = createApi({
 });
 
 export const {
+  useFetchAllChargesin1dayQuery,
+  useFetchAllChargesin2daysQuery,
+  useFetchAllChargesin3daysQuery,
   useGetAllChargesSixMonthsQuery,
   useGetAllChargesAprQuery,
   useGetAllChargesAugQuery,

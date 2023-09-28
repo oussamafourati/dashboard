@@ -17,9 +17,9 @@ const AddNote = () => {
   const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
 
   const navigate = useNavigate();
-  // Mutation to create product
+
   const [addNewNote] = useAddNewNoteMutation();
-  // Product's Values and Functions
+
   const [noteData, setNoteData] = useState({
     idNote: 1,
     nomNote: "",
@@ -79,10 +79,6 @@ const AddNote = () => {
                     onChange={onChange}
                     value={noteData.nomNote}
                   />
-
-                  <div className="invalid-feedback">
-                    Veuillez saisir le titre du produit.
-                  </div>
                 </div>
                 <Col lg={7}>
                   <div className="hstack gap-5 mb-3">
@@ -128,7 +124,7 @@ const AddNote = () => {
                   </Col>
                 </Row>
                 <Row>
-                  <div className="text-end mb-3" style={{ marginTop: 13 }}>
+                  <div className="text-end">
                     <Button variant="primary" type="submit" className="w-sm">
                       Ajouter
                     </Button>

@@ -19,7 +19,6 @@ import dayjs, { Dayjs } from "dayjs";
 import { Link } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { createFilterOptions } from "@mui/material/Autocomplete";
 import Swal from "sweetalert2";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
@@ -29,17 +28,16 @@ import {
   useAddClientPhysiqueMutation,
   useGetOneClientQuery,
 } from "features/clientPhysique/clientPhysiqueSlice";
-import { useAddFactureMutation } from "features/facture/factureSlice";
+import {
+  useAddFactureMutation,
+  useFetchAllFactureQuery,
+} from "features/facture/factureSlice";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
 import { useCreateNewLigneVenteMutation } from "features/ligneVente/ligneVenteSlice";
-import {
-  incremented,
-  amountAdded,
-} from "../../../features/counter/counterSlice";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+
 // PDF
 import {
   Page,
@@ -99,6 +97,16 @@ const styles = StyleSheet.create({
 // };
 
 const PassagerInvoice: React.FC = () => {
+  let dateNow = dayjs();
+  const [nowDate, setNowDate] = React.useState<Dayjs | null>(dateNow);
+
+  let { data = [] } = useFetchAllFactureQuery();
+  let lastFacture = data.slice(-1);
+  let key = parseInt(lastFacture[0]?.designationFacture!.substr(0, 3)) + 1;
+  console.log(key);
+  const newKey = `${key}/${nowDate?.year()}`;
+  console.log(newKey);
+
   const filterOptions = (
     options: ClientPhysique[],
     state: { inputValue: string }
@@ -112,12 +120,6 @@ const PassagerInvoice: React.FC = () => {
   };
 
   document.title = "Créer Facture | Radhouani";
-  const counter = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();
-
-  function handleClick() {
-    dispatch(incremented());
-  }
 
   // sweetalert Notification
   const notify = () => {
@@ -295,7 +297,7 @@ const PassagerInvoice: React.FC = () => {
   let now = dayjs();
   const [value, setValue] = React.useState<Dayjs | null>(now);
   const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
-  let numDevis = `${counter}/${value?.year()}`;
+
   const { data: oneClient } = useGetOneClientQuery(clientValue?.idclient_p!);
 
   const [idFacture, setIdLigneVente] = useState(0);
@@ -313,7 +315,7 @@ const PassagerInvoice: React.FC = () => {
     try {
       await addFacture({
         idFacture,
-        designationFacture: numDevis,
+        designationFacture: newKey,
         dateFacturation: newDate,
         datePaiement,
         modePaiement,
@@ -522,7 +524,7 @@ const PassagerInvoice: React.FC = () => {
                         type="text"
                         id="designationFacture"
                         placeholder="25000355"
-                        value={numDevis}
+                        value={newKey}
                         onChange={(e) => setDesignationFacture(e.target.value)}
                         sx={{ width: 320 }}
                         className="mb-2"
@@ -948,7 +950,7 @@ const PassagerInvoice: React.FC = () => {
                       type="submit"
                       onClick={() => tog_AddCodeUser()}
                     >
-                      <i className="ri-hand-coin-line align-bottom me-1"></i>{" "}
+                      <i className="ph ph-coin align-bottom me-1 fs-5"></i>{" "}
                       Paiement
                     </Button>
                     <Button variant="secondary" onClick={handleAddFacture}>
