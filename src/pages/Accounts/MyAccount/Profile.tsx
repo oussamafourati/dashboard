@@ -1,11 +1,6 @@
 import React from "react";
-import { Card, Col, Dropdown, Row, Table } from "react-bootstrap";
-import Acitivity from "./Acitivity";
+import { Col, Row } from "react-bootstrap";
 import RecentOrders from "./RecentOrders";
-import { Link } from "react-router-dom";
-
-// Import Images
-import img1 from "assets/images/users/avatar-1.jpg";
 
 const Profile = () => {
   return (

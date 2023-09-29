@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const HeaderBL: React.FC = () => {
+const HeaderPDF: React.FC = () => {
   return (
     <View>
       <View style={{ display: "flex", flexDirection: "row", marginBottom: 5 }}>
@@ -55,7 +55,7 @@ const HeaderBL: React.FC = () => {
           <Text style={styles.h1}>Anis Radhouani</Text>
           <Text style={styles.h2}>Av. palestine cité ennour</Text>
           <Text style={styles.h2}>2123 Gafsa</Text>
-          <Text style={{ fontSize: 11, fontWeight: "bold" }}>
+          <Text style={{ fontSize: 10.5, fontWeight: "bold" }}>
             M.F: <Text style={styles.h2}>1687166/T</Text>
           </Text>
         </View>
@@ -71,4 +71,4 @@ const HeaderBL: React.FC = () => {
   );
 };
 
-export default HeaderBL;
+export default HeaderPDF;

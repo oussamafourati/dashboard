@@ -17,16 +17,11 @@ import {
 } from "features/produit/productSlice";
 import Swal from "sweetalert2";
 import {
-  Arrivage,
-  useGetAllArrivagesQuery,
-} from "features/arrivage/arrivageSlice";
-import {
-  ArrivageProduit,
   useAddArrivageProduitMutation,
   useDeleteArrivageProduitMutation,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Category } from "features/category/categorySlice";
 import { SubCategory } from "features/subCategory/subCategorySlice";
 import Box from "@mui/material/Box";
@@ -206,7 +201,7 @@ const CreateArrivageProduit = () => {
     arrivageProduitData["PrixRemise"] = prixRemise!;
     arrivageProduitData["PourcentageRemise"] = pourcentageRemise!;
     arrivageProduitData["MontantTotalProduit"] =
-      prixAchatTTC! * arrivageProduitData["quantite"];
+      prixvente! * arrivageProduitData["quantite"];
 
     e.preventDefault();
     CreateArrivageProduit(arrivageProduitData)
@@ -441,9 +436,6 @@ const CreateArrivageProduit = () => {
                               aria-describedby="product-price-addon"
                               required
                             />
-                            <div className="invalid-feedback">
-                              Please enter a product price.
-                            </div>
                           </div>
                         </div>
                       </Col>
@@ -470,9 +462,6 @@ const CreateArrivageProduit = () => {
                             >
                               TVA : 19%
                             </span>
-                            <div className="invalid-feedback">
-                              Please enter a product price.
-                            </div>
                           </div>
                         </div>
                       </Col>
@@ -491,9 +480,6 @@ const CreateArrivageProduit = () => {
                               aria-label="Price"
                               aria-describedby="product-price-addon"
                             />
-                            <div className="invalid-feedback">
-                              Please enter a product price.
-                            </div>
                           </div>
                         </div>
                       </Col>
@@ -536,9 +522,6 @@ const CreateArrivageProduit = () => {
                             >
                               %
                             </span>
-                            <div className="invalid-feedback">
-                              Please enter a product orders.
-                            </div>
                           </div>
                         </div>
                       </Col>
@@ -554,9 +537,6 @@ const CreateArrivageProduit = () => {
                             aria-label="discount"
                             aria-describedby="product-discount-addon"
                           />
-                          <div className="invalid-feedback">
-                            Please enter a product orders.
-                          </div>
                         </div>
                       </Col>
                     </Row>
@@ -576,9 +556,6 @@ const CreateArrivageProduit = () => {
                               aria-label="discount"
                               aria-describedby="product-discount-addon"
                             />
-                            <div className="invalid-feedback">
-                              Please enter a product discount.
-                            </div>
                           </div>
                         </div>
                       </Col>
@@ -604,9 +581,6 @@ const CreateArrivageProduit = () => {
                             >
                               %
                             </span>
-                            <div className="invalid-feedback">
-                              Please enter a product discount.
-                            </div>
                           </div>
                         </div>
                       </Col>

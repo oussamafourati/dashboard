@@ -18,10 +18,8 @@ const styles = StyleSheet.create({
   },
   pageNumber: {
     position: "absolute",
+
     fontSize: 12,
-    bottom: 30,
-    left: 0,
-    right: 0,
     textAlign: "center",
     color: "grey",
   },
@@ -31,13 +29,12 @@ function FooterDevis() {
   return (
     <View
       style={{
-        marginTop: 5,
         display: "flex",
         flexDirection: "row",
         borderTop: "1px dashed #999",
       }}
     >
-      <View style={{ flex: 13, alignItems: "center" }}>
+      <View style={{ flex: 15, alignItems: "center" }}>
         <Text style={{ fontSize: 9, fontWeight: "bold" }}>
           Av. palestine cité ennour 2123 Gafsa
         </Text>
@@ -54,15 +51,7 @@ function FooterDevis() {
           </Text>
         </Text>
       </View>
-      <View style={{ flex: 1, alignItems: "flex-end" }}>
-        {/* <Text style={{ fontSize: 8, fontWeight: "bold", marginTop: 5 }}>
-          Page: */}
-        {/* <Text
-            style={{ color: "#606060", fontSize: 8, fontWeight: "demibold" }}
-            render={({ pageNumber, totalPages }) =>
-              `${pageNumber} / ${totalPages}`
-            }
-          /> */}
+      <View style={{ flex: 1 }}>
         <Text
           style={styles.pageNumber}
           render={({ pageNumber, totalPages }) =>
@@ -70,7 +59,6 @@ function FooterDevis() {
           }
           fixed
         />
-        {/* </Text> */}
       </View>
     </View>
   );

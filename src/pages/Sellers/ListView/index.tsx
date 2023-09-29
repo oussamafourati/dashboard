@@ -11,10 +11,7 @@ import {
 } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import CountUp from "react-countup";
-import { Link } from "react-router-dom";
-import Flatpickr from "react-flatpickr";
 
-import avatar2 from "../../../assets/images/users/avatar-2.jpg";
 import ListViewTable from "./listViewTable";
 import {
   useAddFournisseurMutation,

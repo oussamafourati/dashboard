@@ -14,7 +14,8 @@ import {
 } from "features/arrivage/arrivageSlice";
 import Swal from "sweetalert2";
 import CountUp from "react-countup";
-const Shipments = () => {
+
+const ListArrivage = () => {
   const { data: ArrivageWeek = [] } = useGetArrivageWeekQuery();
   const { data: ArrivageThisYear = [] } = useGetThisYearArrivageQuery();
   const { data: ArrivageThisDay = [] } = useGetToDayArrivageQuery();
@@ -831,4 +832,4 @@ const Shipments = () => {
   );
 };
 
-export default Shipments;
+export default ListArrivage;

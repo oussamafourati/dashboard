@@ -20,9 +20,9 @@ import logoLight from "assets/images/logo-light.png";
 import { Link, useLocation } from "react-router-dom";
 import { useFetchAllLigneVenteQuery } from "features/ligneVente/ligneVenteSlice";
 import { useFetchCategoriesQuery } from "features/category/categorySlice";
-import HeaderDevis from "./HeaderDevis";
+import HeaderPDF from "../../../Common/HearderPDF";
 import ClientDevis from "./ClientDevis";
-import FooterDevis from "./FooterDevis";
+import FooterDevis from "../../../Common/FooterPDF";
 import Amount from "./Amount";
 import ProposalSignature from "./ProposalSignature";
 import TableDevis from "./TableDevis";
@@ -52,7 +52,7 @@ const PDF_REPORT_Devis = (props: Devis) => {
     <Document>
       <Page size="A4" style={styles.body}>
         <View style={styles.top}>
-          <HeaderDevis date={dateDevis!} numero={designationDevis} />
+          <HeaderPDF />
           <ClientDevis nom={nomclient!} />
         </View>
         <View style={{ flex: 2 }}>

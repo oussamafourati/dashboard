@@ -4,7 +4,6 @@ import Dashboard from "pages/Dashboard";
 
 //Product
 import ListView from "pages/Products/ListView";
-import GridView from "pages/Products/GridView";
 import Overview from "pages/Products/Overview";
 import CreateProduct from "pages/Products/CreateProduct";
 import Categories from "pages/Products/Categories";
@@ -21,9 +20,9 @@ import InvoiceDetails from "pages/Invoices/InvoiceDetails";
 // User List
 import ClientMor from "pages/ClientMor";
 
-// Shipping
-import Shipments from "pages/Shipping/Shipments";
-import ShippingList from "pages/Shipping/ShippingList";
+// Arrivage
+import Shipments from "pages/Shipping/ListArrivage";
+import CreateArrivage from "pages/Shipping/CreateArrivage";
 import CreateArrivageProduit from "pages/Shipping/CreateArrivageProduit";
 
 // Echéances
@@ -55,12 +54,11 @@ import Logout from "pages/Authentication/Logout";
 import Register from "pages/Authentication/Register";
 import ForgotPassword from "pages/Authentication/ForgotPassword";
 import UserProfile from "pages/Authentication/user-profile";
-import ShippingDetails from "pages/Shipping/ShippingList/ShippingDetails";
+import ShippingDetails from "pages/Shipping/CreateArrivage/ArrivageDetails";
 import CreateDevis from "pages/Devis/CreateDevis";
 import DevisList from "pages/Devis/DevisList";
 import PassagerInvoice from "pages/Invoices/CreateInvoice/PassagerInvoice";
 import ProInvoice from "pages/Invoices/CreateInvoice/ProInvoice";
-import Loading from "Common/Loading";
 import DevisDetails from "pages/Devis/DevisDetails";
 import ListeBL from "pages/BL/ListeBL";
 import DetailsBL from "pages/BL/DetailsBL";
@@ -76,7 +74,6 @@ const publicRoutes = [
 
   //Product
   { path: "/products-list", component: <ListView /> },
-  { path: "/products-grid", component: <GridView /> },
   { path: "/product-overview", component: <Overview /> },
   { path: "/product-create", component: <CreateProduct /> },
   { path: "/categories", component: <Categories /> },
@@ -106,7 +103,7 @@ const publicRoutes = [
   { path: "/client-morale", component: <ClientMor /> },
 
   // Shipping
-  { path: "/nouveau-arrivage", component: <ShippingList /> },
+  { path: "/nouveau-arrivage", component: <CreateArrivage /> },
   { path: "/liste-arrivage", component: <Shipments /> },
   { path: "/detail", component: <ShippingDetails /> },
   { path: "/nouveau-arrivage-produit", component: <CreateArrivageProduit /> },

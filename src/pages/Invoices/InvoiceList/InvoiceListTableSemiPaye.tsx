@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { Button, Card, Col, Dropdown, Form, Modal, Row } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import TableContainer from "Common/TableContainer";
-import Flatpickr from "react-flatpickr";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Facture,
@@ -271,122 +270,6 @@ const InvoiceListTableSemiPaye = () => {
           </div>
         </div>
       </Card.Body>
-
-      <Modal
-        className="fade"
-        show={modal_AddUserModals}
-        onHide={() => {
-          tog_AddUserModals();
-        }}
-      >
-        <Modal.Header className="px-4 pt-4" closeButton>
-          <h5 className="modal-title" id="exampleModalLabel">
-            Add User
-          </h5>
-        </Modal.Header>
-        <Form className="tablelist-form">
-          <Modal.Body className="p-4">
-            <div
-              id="alert-error-msg"
-              className="d-none alert alert-danger py-2"
-            ></div>
-            <input type="hidden" id="id-field" />
-
-            <div className="text-center">
-              <div className="position-relative d-inline-block">
-                <div className="position-absolute  bottom-0 end-0">
-                  <label
-                    htmlFor="customer-image-input"
-                    className="mb-0"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="right"
-                    title="Select Image"
-                  >
-                    <div className="avatar-xs cursor-pointer">
-                      <div className="avatar-title bg-light border rounded-circle text-muted">
-                        <i className="ri-image-fill"></i>
-                      </div>
-                    </div>
-                  </label>
-                  <Form.Control
-                    className="d-none"
-                    value=""
-                    id="users-image-input"
-                    type="file"
-                    accept="image/png, image/gif, image/jpeg"
-                  />
-                </div>
-                <div className="avatar-lg p-1">
-                  <div className="avatar-title bg-light rounded-circle">
-                    {/* <img src="../assets/images/users/user-dummy-img.jpg" id="users-img-field" className="avatar-md rounded-circle object-cover" /> */}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <Form.Label htmlFor="user-name">User Name</Form.Label>
-              <Form.Control
-                type="text"
-                id="user-name-field"
-                placeholder="Enter Name"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <Form.Label htmlFor="email-field">User Email</Form.Label>
-              <Form.Control
-                type="email"
-                id="email-field"
-                placeholder="Enter Email"
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <Form.Label htmlFor="date-field">Date</Form.Label>
-              <Flatpickr
-                className="form-control flatpickr-input"
-                placeholder="Select Date"
-                options={{
-                  mode: "range",
-                  dateFormat: "d M, Y",
-                }}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="account-status" className="form-label">
-                Account Status
-              </label>
-              <select
-                className="form-control"
-                required
-                id="account-status-field"
-              >
-                <option value="">Account Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">inactive</option>
-              </select>
-            </div>
-          </Modal.Body>
-          <div className="modal-footer">
-            <div className="hstack gap-2 justify-content-end">
-              <Button
-                className="btn-ghost-danger"
-                onClick={() => {
-                  tog_AddUserModals();
-                }}
-              >
-                Close
-              </Button>
-              <Button variant="success" id="add-btn">
-                Add User
-              </Button>
-            </div>
-          </div>
-        </Form>
-      </Modal>
     </React.Fragment>
   );
 };

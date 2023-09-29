@@ -6,9 +6,9 @@ import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
 
 //Import Components
-import VerticalLayout from "./VerticalLayouts/index";
+
 import { Button, Container } from "react-bootstrap";
-import HorizontalLayout from "./HorizontalLayout";
+import VerticalLayouts from "./VerticalLayouts";
 
 const Sidebar = ({ layoutType }: any) => {
   useEffect(() => {
@@ -75,9 +75,7 @@ const Sidebar = ({ layoutType }: any) => {
           <div id="scrollbar">
             <Container fluid>
               <div id="two-column-menu"></div>
-              <ul className="navbar-nav" id="navbar-nav">
-                <HorizontalLayout />
-              </ul>
+              <ul className="navbar-nav" id="navbar-nav"></ul>
             </Container>
           </div>
         ) : layoutType === "twocolumn" ? (
@@ -90,7 +88,7 @@ const Sidebar = ({ layoutType }: any) => {
               <Container fluid>
                 <div id="two-column-menu"></div>
                 <ul className="navbar-nav" id="navbar-nav">
-                  <VerticalLayout layoutType={layoutType} />
+                  <VerticalLayouts layoutType={layoutType} />
                 </ul>
               </Container>
             </SimpleBar>

@@ -113,34 +113,36 @@ const MontantTotal: React.FC<ChildProps> = ({ mnt }) => {
         </View>
       </View>
       <View style={{ flex: 1, alignItems: "flex-end" }}>
-        <View style={[styles.table, { border: 1, width: 160, padding: 3 }]}>
-          <View style={[styles.tableRow]}>
-            <Text style={{ fontSize: 11, fontWeight: "bold" }}>
+        <View style={[styles.table, { border: 1, width: 150, padding: 3 }]}>
+          <View style={[styles.tableRow, { justifyContent: "space-between" }]}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: "bold",
+              }}
+            >
               Total H.T:{" "}
-              <Text
-                style={{
-                  fontSize: 10,
-                  fontWeight: "medium",
-                  alignItems: "flex-end",
-                }}
-              >
-                {(mnt / 1.19).toFixed(3)}
-              </Text>
+            </Text>
+            <Text
+              style={{
+                fontSize: 10,
+                fontWeight: "medium",
+              }}
+            >
+              {(mnt / 1.19).toFixed(3)}
             </Text>
           </View>
-          <View style={[styles.tableRow]}>
-            <Text style={{ fontSize: 11, fontWeight: "bold" }}>
-              T.V.A:{" "}
-              <Text style={{ fontSize: 10, fontWeight: "medium" }}>
-                {(mnt - mnt / 1.19).toFixed(3)}
-              </Text>
+          <View style={[styles.tableRow, { justifyContent: "space-between" }]}>
+            <Text style={{ fontSize: 11, fontWeight: "bold" }}>T.V.A: </Text>
+            <Text style={{ fontSize: 10, fontWeight: "medium" }}>
+              {(mnt - mnt / 1.19).toFixed(3)}
             </Text>
           </View>
-          <View style={[styles.tableRow]}>
+          <View style={[styles.tableRow, { justifyContent: "space-between" }]}>
             <Text style={{ fontSize: 11, fontWeight: "bold" }}>
               Total T.T.C:{" "}
-              <Text style={{ fontSize: 10, fontWeight: "medium" }}>{mnt}</Text>
             </Text>
+            <Text style={{ fontSize: 10, fontWeight: "medium" }}>{mnt}</Text>
           </View>
         </View>
       </View>

@@ -16,7 +16,7 @@ import {
   useFetchFournisseurQuery,
 } from "../../../features/fournisseur/fournisseurSlice";
 
-const AddArrivageProduit = () => {
+const CreateArrivage = () => {
   document.title = "Arrivage | Radhouani";
 
   const [fournisseurState, setFournisseurState] = useState<Fournisseur[]>([]);
@@ -297,4 +297,4 @@ const AddArrivageProduit = () => {
   );
 };
 
-export default AddArrivageProduit;
+export default CreateArrivage;

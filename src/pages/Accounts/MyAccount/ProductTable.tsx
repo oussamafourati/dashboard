@@ -1,15 +1,6 @@
 import React, { useMemo, useState } from "react";
 import TableContainer from "Common/TableContainer";
-import { profile } from "Common/data";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Form,
-  Offcanvas,
-  Row,
-} from "react-bootstrap";
+import { Button, Col, Offcanvas, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   Compte,
