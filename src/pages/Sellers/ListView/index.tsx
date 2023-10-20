@@ -145,15 +145,14 @@ const SellersListView = () => {
   useEffect(() => {
     const getArrivage = async () => {
       const reqdata = await fetch(
-        "http://localhost:8000/arrivage/topfournisseur"
+        "https://app.src.smartschools.tn/arrivage/topfournisseur"
       );
       const resdata = await reqdata.json();
       setArrivage(resdata);
     };
     getArrivage();
   }, []);
-  console.log(arrivage);
-  console.log(TopFournisseur[0]?.raison_sociale!);
+
   return (
     <React.Fragment>
       <div className="page-content">

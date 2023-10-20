@@ -16,7 +16,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/fr";
 import { frFR } from "@mui/x-date-pickers/locales";
 import dayjs, { Dayjs } from "dayjs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
@@ -30,31 +30,37 @@ import {
   useFetchClientMoralesQuery,
 } from "features/clientMoral/clientMoralSlice";
 
-import { useFetchAllBLQuery } from "features/bl/bondeLSlice";
+import {
+  useCreateNewBLMutation,
+  useFetchAllBLQuery,
+} from "features/bl/bondeLSlice";
+import ModalClientMoral from "pages/ClientMor/ModalClientMoral";
+import { useCreateNewLigneVenteMutation } from "features/ligneVente/ligneVenteSlice";
+import Swal from "sweetalert2";
 
 interface FormFields {
   PU: string;
   quantiteProduit: string;
   productName: string;
   montantTtl: string;
-  numFacture: string;
+  numBL: string;
   benifice: string;
+  blID: string;
   [key: string]: string;
 }
 
 const CreateBL: React.FC = () => {
+  const navigate = useNavigate();
   let dateNow = dayjs();
   const [nowDate, setNowDate] = React.useState<Dayjs | null>(dateNow);
 
   let { data = [] } = useFetchAllBLQuery();
   let lastFacture = data.slice(-1);
   let key = parseInt(lastFacture[0]?.designationBL!.substr(0, 3)) + 1;
-  console.log(key);
   const newKey = `${key}/${nowDate?.year()}`;
-  console.log(newKey);
   document.title = "Créer BL | Radhouani";
 
-  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>();
+  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>(0);
   const onChangePourcentageBenifice = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -99,7 +105,7 @@ const CreateBL: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "http://localhost:8000/clientMo/moraleclients"
+        "https://app.src.smartschools.tn/clientMo/moraleclients"
       );
       const resdata = await reqdata.json();
       setClientMorale(resdata);
@@ -111,7 +117,7 @@ const CreateBL: React.FC = () => {
     const clientMoraleid = e.target.value;
     if (clientMoraleid !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/clientMo/oneClientMorale/${clientMoraleid}`
+        `https://app.src.smartschools.tn/clientMo/oneClientMorale/${clientMoraleid}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -119,6 +125,27 @@ const CreateBL: React.FC = () => {
     } else {
       setSelected([]);
     }
+  };
+
+  // sweetalert Notification
+  const notify = () => {
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "La bon de livraison a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  };
+
+  const errorBL = (err: any) => {
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: `Ooops, ${err}, Quelque chose n'a pas fonctionné !!`,
+      showConfirmButton: false,
+      timer: 2000,
+    });
   };
 
   //Query to Fetch All Client Morale
@@ -236,14 +263,25 @@ const CreateBL: React.FC = () => {
     valueDate!.month() + 1
   }-${valueDate!.date()}`;
 
+  let dateNowBL = dayjs();
+  const [nowDateBL, setNowDateBL] = React.useState<Dayjs | null>(dateNowBL);
+
+  let { data: allBL = [] } = useFetchAllBLQuery();
+  let lastBL = allBL.slice(-1);
+  let keyBL = parseInt(lastBL[0]?.designationBL!.substr(0, 3)) + 1;
+  let idLastDevis = (lastBL[0]?.idbl! + 1).toString();
+
+  const newDevisKey = `${keyBL}/${nowDateBL?.year()}`;
+
   const [formFields, setFormFields] = useState<FormFields[]>([
     {
       PU: "",
       montantTtl: "",
       quantiteProduit: "",
       productName: "",
-      numFacture: "",
+      numBL: "",
       benifice: "",
+      blID: "",
     },
   ]);
 
@@ -254,18 +292,10 @@ const CreateBL: React.FC = () => {
     let data = [...formFields];
     data[index][event.target.name] = event.target.value;
     setFormFields(data);
-    // setFactureData((prevState) => ({
-    //   ...prevState,
-    //   [event.target.id]: event.target.value,
-    // }));
-  };
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // console.log(formFields);
   };
 
   const montantTotal =
-    formFields.reduce((sum, i) => (sum += parseInt(i.montanttotal!)), 0) || 0;
+    formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl!)), 0) || 0;
 
   const addFields = () => {
     let object: FormFields = {
@@ -273,8 +303,9 @@ const CreateBL: React.FC = () => {
       montantTtl: "",
       quantiteProduit: "",
       productName: "",
-      numFacture: "",
-      benifice: "",
+      numBL: "",
+      benifice: pourcentageBenifice.toString(),
+      blID: "",
     };
     setFormFields([...formFields, object]);
   };
@@ -295,18 +326,61 @@ const CreateBL: React.FC = () => {
 
   const [displayText, setDisplayText] = useState<string>("");
 
-  const [codeClient, setCodeClient] = useState<string>("");
-  const onChangeCodeClient = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCodeClient(e.target.value);
-  };
+  const [createLigneVenteDevis] = useCreateNewLigneVenteMutation();
+  useEffect(() => {
+    formFields[formFields.length - 1]["productName"] = acValue?.nomProduit!;
+    formFields[formFields.length - 1]["blID"] = idLastDevis;
+    localStorage.setItem("bl", JSON.stringify(formFields));
+  }, [formFields]);
 
-  const { data: OneUser } = useFetchOneUserQuery(codeClient);
+  async function handleAddDevisLigneVente() {
+    try {
+      var jsonData = JSON.parse(localStorage.getItem("bl") || "[]");
 
-  const handleSubmitCodeClient = (e: React.FormEvent) => {
-    e.preventDefault();
-    setDisplayText(codeClient);
-    tog_AddCodeUser();
-  };
+      for (var i = 0; i < jsonData.length; i++) {
+        var lignevente = jsonData[i];
+        lignevente["numBL"] = newDevisKey;
+        lignevente["benifice"] = pourcentageBenifice!;
+        await createLigneVenteDevis(lignevente);
+      }
+    } catch (err) {
+      errorBL(err);
+    }
+  }
+
+  let result: number =
+    formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl!)), 0) || 0;
+
+  const [idbl, setIdbl] = useState(1);
+  const [designationBL, setDesignationBL] = useState("");
+  const [montant, setMontant] = useState("");
+  const [dateBL, setDateBL] = useState("");
+  const [nomclient, setNomclient] = useState("");
+  const [clientID, setClientID] = useState(0);
+  const [addBL] = useCreateNewBLMutation();
+
+  async function handleAddBL() {
+    try {
+      await addBL({
+        idbl,
+        designationBL: newDevisKey,
+        montant: result,
+        dateBL: newDate,
+        clientID: clientValue?.idclient_m!,
+      })
+        .unwrap()
+        .then(handleAddDevisLigneVente)
+        .then(() => notify())
+        .then(() => navigate("/liste-bl"));
+      setDesignationBL("");
+      setMontant("");
+      setDateBL("");
+      setNomclient("");
+      setClientID(0);
+    } catch (err) {
+      errorBL(err);
+    }
+  }
 
   return (
     <React.Fragment>
@@ -319,175 +393,173 @@ const CreateBL: React.FC = () => {
           <Row className="justify-content-center">
             <Col xxl={12}>
               <Card>
-                <Form
+                {/* <Form
                   className="needs-validation"
                   id="invoice_form"
                   onSubmit={(event) => handleSubmit(event, acValue)}
-                >
-                  <Card.Body className="border-bottom border-bottom-dashed p-3">
-                    <Row>
-                      <Col lg={4} sm={6}>
-                        <div>
-                          <div className="input-group d-flex gap-2 mb-4">
-                            <Autocomplete
-                              id="nomClient"
-                              sx={{ width: 320 }}
-                              options={clientMorale!}
-                              autoHighlight
-                              onChange={(event, value) => setClientValue(value)}
-                              getOptionLabel={(option) =>
-                                option.raison_sociale!
-                              }
-                              renderOption={(props, option) => (
-                                <li {...props} key={option.idclient_m}>
-                                  {option.raison_sociale}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  label="Nom Client"
-                                  inputProps={{
-                                    ...params.inputProps,
-                                  }}
-                                  size="small"
-                                />
-                              )}
-                            />
-                            <Button
-                              onClick={() => tog_AddClientMoraleModals()}
-                              variant="outline-info"
-                              size="sm"
-                              className="rounded"
-                            >
-                              <i className="ri-user-add-line ri-xl"></i>
-                            </Button>
-                          </div>
-                        </div>
-                      </Col>
-                      <Col lg={4} sm={6}>
-                        <TextField
-                          label=" Numero Bon de Livraison"
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          InputProps={{
-                            readOnly: true,
-                          }}
-                          size="small"
-                          value={newKey}
-                          type="text"
-                          id="invoicenoInput"
-                          placeholder="25000355"
-                          sx={{ width: 320 }}
-                          className="mb-2"
-                        />
-                      </Col>
-                      <Col lg={4} sm={6}>
-                        <LocalizationProvider
-                          dateAdapter={AdapterDayjs}
-                          adapterLocale="fr"
-                          localeText={
-                            frFR.components.MuiLocalizationProvider.defaultProps
-                              .localeText
-                          }
-                        >
-                          <DatePicker
-                            defaultValue={now}
-                            slotProps={{
-                              textField: {
-                                size: "small",
-                                inputProps: { ["placeholder"]: "DD-MM-YYYY" },
-                              },
-                            }}
-                            format="DD-MM-YYYY"
+                > */}
+                <Card.Body className="border-bottom border-bottom-dashed p-3">
+                  <Row>
+                    <Col lg={4} sm={6}>
+                      <div>
+                        <div className="input-group d-flex gap-2 mb-4">
+                          <Autocomplete
+                            id="nomClient"
                             sx={{ width: 320 }}
+                            options={clientMorale!}
+                            autoHighlight
+                            onChange={(event, value) => setClientValue(value)}
+                            getOptionLabel={(option) => option.raison_sociale!}
+                            renderOption={(props, option) => (
+                              <li {...props} key={option.idclient_m}>
+                                {option.raison_sociale}
+                              </li>
+                            )}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Nom Client"
+                                inputProps={{
+                                  ...params.inputProps,
+                                }}
+                                size="small"
+                              />
+                            )}
                           />
-                        </LocalizationProvider>
+                          <Button
+                            onClick={() => tog_AddClientMoraleModals()}
+                            variant="outline-info"
+                            size="sm"
+                            className="rounded"
+                          >
+                            <i className="ri-user-add-line ri-xl"></i>
+                          </Button>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col lg={4} sm={6}>
+                      <TextField
+                        label=" Numero Bon de Livraison"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        size="small"
+                        value={newKey}
+                        type="text"
+                        id="invoicenoInput"
+                        placeholder="25000355"
+                        sx={{ width: 220 }}
+                        className="mb-2"
+                      />
+                    </Col>
+                    <Col lg={4} sm={6}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="fr"
+                        localeText={
+                          frFR.components.MuiLocalizationProvider.defaultProps
+                            .localeText
+                        }
+                      >
+                        <DatePicker
+                          defaultValue={now}
+                          slotProps={{
+                            textField: {
+                              size: "small",
+                              inputProps: { ["placeholder"]: "DD-MM-YYYY" },
+                            },
+                          }}
+                          format="DD-MM-YYYY"
+                          value={valueDate}
+                          onChange={(newValue) => setValueDate(newValue)}
+                          sx={{ width: 220 }}
+                        />
+                      </LocalizationProvider>
+                    </Col>
+                  </Row>
+                </Card.Body>
+                <Card.Body className="p-3">
+                  <div>
+                    <Row>
+                      <Col lg={4}>
+                        <Form.Label htmlFor="nomProduit">
+                          Détail Produit
+                        </Form.Label>
                       </Col>
+                      <Col lg={2} className="text-center">
+                        <Form.Label htmlFor="quantiteProduit">
+                          Quantité
+                        </Form.Label>
+                      </Col>
+                      <Col lg={2} className="text-center">
+                        <Form.Label htmlFor="PU">Prix Unitaire</Form.Label>
+                      </Col>
+                      <Col className="text-center" lg={1}>
+                        <Form.Label htmlFor="benifice">Benifice</Form.Label>
+                      </Col>
+                      <Col className="text-center" lg={2}>
+                        <Form.Label htmlFor="montantTtl">Montant</Form.Label>
+                      </Col>
+                      <Col lg={1}></Col>
                     </Row>
-                  </Card.Body>
-                  <Card.Body className="p-3">
-                    <div>
-                      <Row>
+                    {formFields.map((form, index) => (
+                      <Row key={index} className="mb-3">
                         <Col lg={4}>
-                          <Form.Label htmlFor="nomProduit">
-                            Détail Produit
-                          </Form.Label>
+                          <Autocomplete
+                            id="nomProduit"
+                            sx={{ width: 230 }}
+                            options={allArrivageProduit}
+                            autoHighlight
+                            onChange={(event, value) => {
+                              setACValue(value);
+                              const updatedPU = [...formFields];
+                              updatedPU[index].PU =
+                                value!.prixVente!.toString();
+                              setFormFields(updatedPU);
+                            }}
+                            getOptionLabel={(option) => option.nomProduit!}
+                            renderOption={(props, option) => (
+                              <li {...props} key={option.idArrivageProduit}>
+                                {option.nomProduit}
+                                ---
+                                <strong>{option.dateArrivage}</strong>---
+                                <span style={{ color: "red" }}>
+                                  ({option.quantite})
+                                </span>
+                              </li>
+                            )}
+                            className="mb-2"
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Référence"
+                                inputProps={{
+                                  ...params.inputProps,
+                                }}
+                                size="small"
+                                fullWidth
+                              />
+                            )}
+                          />
                         </Col>
-                        <Col>
-                          <Form.Label htmlFor="quantiteProduit">
-                            Quantité
-                          </Form.Label>
+                        <Col className="text-center" lg={2}>
+                          <TextField
+                            className="mb-2"
+                            sx={{ width: 100 }}
+                            id="quantiteProduit"
+                            type="number"
+                            size="small"
+                            name="quantiteProduit"
+                            placeholder="0.0"
+                            onChange={(event) => handleFormChange(event, index)}
+                            value={form.quantiteProduit}
+                          />
                         </Col>
-                        <Col>
-                          <Form.Label htmlFor="PU">Prix Unitaire</Form.Label>
-                        </Col>
-                        <Col className="text-center">
-                          <Form.Label htmlFor="benifice">Benifice</Form.Label>
-                        </Col>
-                        <Col className="text-center">
-                          <Form.Label htmlFor="montantTtl">Montant</Form.Label>
-                        </Col>
-                        <Col></Col>
-                      </Row>
-                      {formFields.map((form, index) => (
-                        <Row key={index}>
-                          <Col>
-                            <Autocomplete
-                              id="nomProduit"
-                              sx={{ width: 355 }}
-                              options={allArrivageProduit}
-                              autoHighlight
-                              onChange={(event, value) => {
-                                setACValue(value);
-                                const updatedPU = [...formFields];
-                                updatedPU[index].PU =
-                                  value!.prixVente!.toString();
-                                setFormFields(updatedPU);
-                              }}
-                              getOptionLabel={(option) => option.nomProduit!}
-                              renderOption={(props, option) => (
-                                <li {...props} key={option.idArrivageProduit}>
-                                  {option.nomProduit}
-                                  ---
-                                  <strong>{option.dateArrivage}</strong>---
-                                  <span style={{ color: "red" }}>
-                                    ({option.quantite})
-                                  </span>
-                                </li>
-                              )}
-                              className="mb-2"
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  label="Référence"
-                                  inputProps={{
-                                    ...params.inputProps,
-                                  }}
-                                  size="small"
-                                  fullWidth
-                                />
-                              )}
-                            />
-                          </Col>
-                          <Col className="text-center">
-                            <TextField
-                              className="mb-2"
-                              sx={{ width: 100 }}
-                              id="quantiteProduit"
-                              type="number"
-                              size="small"
-                              name="quantiteProduit"
-                              placeholder="0.0"
-                              onChange={(event) =>
-                                handleFormChange(event, index)
-                              }
-                              value={form.quantiteProduit}
-                            />
-                          </Col>
-                          <Col className="text-center mt-2">
-                            {/* <TextField
+                        <Col className="text-center mt-2" lg={2}>
+                          {/* <TextField
                               id="PU"
                               type="number"
                               size="small"
@@ -497,12 +569,12 @@ const CreateBL: React.FC = () => {
                               sx={{ width: 180 }}
                               className="mb-2"
                             > */}
-                            <CountUp end={parseInt(form.PU)} separator="," />
+                          <CountUp end={parseInt(form.PU)} separator="," />
 
-                            {/* </TextField> */}
-                          </Col>
-                          <Col className="text-center mt-2">
-                            {/* <TextField
+                          {/* </TextField> */}
+                        </Col>
+                        <Col className="text-center mt-2" lg={1}>
+                          {/* <TextField
                               sx={{ width: 100 }}
                               id="benifice"
                               type="number"
@@ -514,10 +586,10 @@ const CreateBL: React.FC = () => {
                               className="mb-2"
                               variant="standard"
                             /> */}
-                            <CountUp end={pourcentageBenifice!} separator="," />
-                          </Col>
-                          <Col className="text-center mt-2">
-                            {/* <TextField
+                          <CountUp end={pourcentageBenifice} separator="," />
+                        </Col>
+                        <Col className="text-center mt-2" lg={2}>
+                          {/* <TextField
                               className="mb-2"
                               sx={{ width: 220 }}
                               id="montantTtl"
@@ -542,73 +614,68 @@ const CreateBL: React.FC = () => {
                                 readOnly: true,
                               }}
                             /> */}
-                            <CountUp
-                              end={parseInt(
-                                (form.montantTtl = (
-                                  parseInt(form.PU) *
-                                    parseInt(form.quantiteProduit) +
-                                  ((parseInt(form.PU) / 1.19) *
-                                    parseInt(form.quantiteProduit) *
-                                    pourcentageBenifice!) /
-                                    100
-                                ).toString())
-                              )}
-                              separator=","
-                              startVal={0}
-                            />
-                          </Col>
-                          <Col className="mt-2">
-                            <Link
-                              to="#"
-                              className="link-danger"
-                              onClick={() => removeFields(index)}
-                            >
-                              <i className="ri-close-line ri-xl" />
-                            </Link>
-                          </Col>
-                        </Row>
-                      ))}
-                      <Row className="mb-2">
-                        <Col id="newForm" style={{ display: "none" }}>
-                          <div className="d-none">
-                            <p>Add New Form</p>
-                          </div>
-                        </Col>
-                        <Col>
-                          <div>
-                            <Link
-                              to="#"
-                              className="link-secondary"
-                              onClick={addFields}
-                            >
-                              <i className="ri-add-fill me-1 ri-xl" />
-                            </Link>
-                          </div>
-                        </Col>
-                      </Row>
-                    </div>
-                    <Row className="border-top border-top-dashed ">
-                      <Row className="mt-4 align-items-center">
-                        <Col xxl={3} md={5}></Col>
-                        <Col className="col-md-auto ms-auto">
-                          <TextField
-                            sx={{ width: 100 }}
-                            label="% Bénifice"
-                            InputLabelProps={{
-                              shrink: true,
-                            }}
-                            size="small"
-                            type="number"
-                            name="pourcentageBenifice"
-                            onChange={onChangePourcentageBenifice}
-                            value={pourcentageBenifice}
-                            id="pourcentageBenifice"
-                            placeholder="0.00"
+                          <CountUp
+                            end={parseInt(
+                              (form.montantTtl = (
+                                parseInt(form.PU) *
+                                  parseInt(form.quantiteProduit) +
+                                ((parseInt(form.PU) / 1.19) *
+                                  parseInt(form.quantiteProduit) *
+                                  pourcentageBenifice) /
+                                  100
+                              ).toString())
+                            )}
+                            separator=","
+                            startVal={0}
                           />
                         </Col>
+                        <Col className="mt-2" lg={1}>
+                          <Link
+                            to="#"
+                            className="link-danger"
+                            onClick={() => removeFields(index)}
+                          >
+                            <i className="ri-close-line ri-xl" />
+                          </Link>
+                        </Col>
                       </Row>
+                    ))}
+                    <Row className="mb-4">
+                      <Col>
+                        <div>
+                          <Link
+                            to="#"
+                            className="link-secondary"
+                            onClick={addFields}
+                          >
+                            <i className="ri-add-fill me-1 ri-xl" />
+                          </Link>
+                        </div>
+                      </Col>
                     </Row>
-                    {/* <Row className="mb-4">
+                  </div>
+                  <Row className="border-top border-top-dashed ">
+                    <Row className="mt-4 align-items-center">
+                      <Col xxl={3} md={5}></Col>
+                      <Col className="col-md-auto ms-auto">
+                        <TextField
+                          sx={{ width: 100 }}
+                          label="% Bénifice"
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          size="small"
+                          type="number"
+                          name="pourcentageBenifice"
+                          onChange={onChangePourcentageBenifice}
+                          value={pourcentageBenifice}
+                          id="pourcentageBenifice"
+                          placeholder="0.00"
+                        />
+                      </Col>
+                    </Row>
+                  </Row>
+                  {/* <Row className="mb-4">
                       <Col lg={8}></Col>
                       <Col lg={4} className="text-center mt-3">
                         <TextField
@@ -644,46 +711,50 @@ const CreateBL: React.FC = () => {
                         />
                       </Col>
                     </Row> */}
-                    <Row className="mb-4">
-                      <Row className="mt-4 align-items-center">
-                        <Col xxl={10} md={5}></Col>
-                        <Col className="col-md-auto ms-auto">
-                          <Form.Label htmlFor="total" className="fs-18 fw-bold">
-                            Total:{" "}
-                          </Form.Label>
-                        </Col>
-                        <Col className="col-md-auto ms-auto pb-2">
-                          <CountUp
-                            className="fs-18 fw-meduim"
-                            end={formFields.reduce(
-                              (sum, i) =>
-                                (sum +=
-                                  parseInt(i.PU) * parseInt(i.quantiteProduit) +
-                                  ((parseInt(i.PU) / 1.19) *
-                                    parseInt(i.quantiteProduit) *
-                                    pourcentageBenifice!) /
-                                    100),
-                              0
-                            )}
-                            separator=","
-                            duration={1}
-                            startVal={0}
-                          />
-                        </Col>
-                      </Row>
+                  <Row className="mb-4">
+                    <Row className="mt-4 align-items-center">
+                      <Col xxl={10} md={5}></Col>
+                      <Col className="col-md-auto ms-auto">
+                        <Form.Label htmlFor="total" className="fs-18 fw-bold">
+                          Total:{" "}
+                        </Form.Label>
+                      </Col>
+                      <Col className="col-md-auto ms-auto pb-2">
+                        <CountUp
+                          className="fs-18 fw-meduim"
+                          end={formFields.reduce(
+                            (sum, i) =>
+                              (sum +=
+                                parseInt(i.PU) * parseInt(i.quantiteProduit) +
+                                ((parseInt(i.PU) / 1.19) *
+                                  parseInt(i.quantiteProduit) *
+                                  pourcentageBenifice) /
+                                  100),
+                            0
+                          )}
+                          separator=","
+                          duration={1}
+                          startVal={0}
+                        />
+                      </Col>
                     </Row>
-                    <div className="hstack gap-2 justify-content-end d-print-none mt-0">
-                      <Button variant="success" type="submit">
-                        <i className="ri-save-3-line align-bottom me-1"></i>{" "}
-                        Enregister
-                      </Button>
-                      <Button variant="primary">
+                  </Row>
+                  <div className="hstack gap-2 justify-content-end d-print-none mt-0">
+                    <Button
+                      variant="success"
+                      type="submit"
+                      onClick={handleAddBL}
+                    >
+                      <i className="ri-save-3-line align-bottom me-1"></i>{" "}
+                      Enregister
+                    </Button>
+                    {/* <Button variant="primary">
                         <i className="ri-download-2-line align-bottom me-1"></i>{" "}
                         Telecharger
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Form>
+                      </Button> */}
+                  </div>
+                </Card.Body>
+                {/* </Form> */}
               </Card>
             </Col>
           </Row>
@@ -704,237 +775,7 @@ const CreateBL: React.FC = () => {
               </h5>
             </Modal.Header>
             <Modal.Body className="p-4">
-              <Form className="tablelist-form">
-                <Row>
-                  <div
-                    id="alert-error-msg"
-                    className="d-none alert alert-danger py-2"
-                  ></div>
-                  <input type="hidden" id="id-field" />
-                  <Col lg={12}>
-                    <div className="text-center mb-3">
-                      <div className="position-relative d-inline-block">
-                        <div className="position-absolute top-100 start-100 translate-middle">
-                          <label
-                            htmlFor="logo"
-                            className="mb-0"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="Select Client Physique Avatar"
-                          >
-                            <span className="avatar-xs d-inline-block">
-                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                                <i className="ri-image-fill"></i>
-                              </span>
-                            </span>
-                          </label>
-                          <input
-                            className="form-control d-none"
-                            type="file"
-                            name="logo"
-                            id="logo"
-                            accept="image/*"
-                            onChange={(e) => handleClientMoraleFileUpload(e)}
-                          />
-                        </div>
-                        <div className="avatar-lg">
-                          <div className="avatar-title bg-light rounded-3">
-                            <img
-                              src={`data:image/jpeg;base64, ${clientMData.logo}`}
-                              alt=""
-                              id="category-img"
-                              className="avatar-md h-auto rounded-3 object-fit-cover"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="error-msg mt-1">
-                        Please add a category images.
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={6} className="mt-2">
-                    <div className="mb-3">
-                      <Form.Label htmlFor="raison_sociale">
-                        Raison Sociale
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.raison_sociale}
-                        onChange={onClientMoraleChange}
-                        id="raison_sociale"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6} className="mt-2">
-                    <div className="mb-3">
-                      <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.mat}
-                        onChange={onClientMoraleChange}
-                        id="mat"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={4}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="rib">RIB</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.rib}
-                        onChange={onClientMoraleChange}
-                        id="rib"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="tel">Telephone</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.tel}
-                        onChange={onClientMoraleChange}
-                        id="tel"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={5}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="adresse">Adresse</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.adresse}
-                        onChange={onClientMoraleChange}
-                        id="adresse"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="mail">E-mail</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.mail}
-                        onChange={onClientMoraleChange}
-                        id="mail"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="etat">Etat</Form.Label>
-                      <select
-                        className="form-select"
-                        data-choices
-                        data-choices-search-false
-                        id="choices-payment-status"
-                        required
-                      >
-                        <option value=""></option>
-                        <option value="Actif">Actif</option>
-                        <option value="Inactif">Inactif</option>
-                      </select>
-                    </div>
-                  </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="remarque">Remarque</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.remarque}
-                        onChange={onClientMoraleChange}
-                        id="remarque"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={12} className="modal-footer">
-                    <div className="hstack gap-2 justify-content-end">
-                      <Button
-                        className="btn-ghost-danger"
-                        onClick={() => {
-                          tog_AddClientMoraleModals();
-                        }}
-                      >
-                        <i className="ri-close-line align-bottom me-1"></i>{" "}
-                        Fermer
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          tog_AddClientMoraleModals();
-                        }}
-                        type={"submit"}
-                        variant="primary"
-                        id="add-btn"
-                      >
-                        Ajouter
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </Modal.Body>
-          </Modal>
-          {/* ******Modal For User****** */}
-          <Modal
-            id="showModal"
-            className="fade zoomIn"
-            size="sm"
-            show={modal_AddCodeUser}
-            onHide={() => {
-              tog_AddCodeUser();
-            }}
-            centered
-          >
-            <Modal.Header className="px-4 pt-4" closeButton>
-              <h5 className="modal-title fs-18" id="exampleModalLabel">
-                Ajouter Code
-              </h5>
-            </Modal.Header>
-            <Modal.Body className="text-center p-4">
-              <Form className="tablelist-form">
-                <Row>
-                  <div
-                    id="alert-error-msg"
-                    className="d-none alert alert-danger py-2"
-                  ></div>
-                  <input type="hidden" id="id-field" />
-                  <Col lg={6}>
-                    <TextField
-                      label="Code"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      inputProps={{ maxLength: 3 }}
-                      size="small"
-                      type="text"
-                      id="codeInput"
-                      placeholder="185"
-                      onChange={onChangeCodeClient}
-                    />
-                  </Col>
-                  <Col lg={6}>
-                    <div className="gap-2">
-                      <Button
-                        type={"submit"}
-                        variant="primary"
-                        id="add-btn"
-                        onClick={handleSubmitCodeClient}
-                      >
-                        <i className="ri-add-box-line"></i>
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
+              <ModalClientMoral />
             </Modal.Body>
           </Modal>
         </Container>

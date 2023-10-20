@@ -12,6 +12,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import FooterPDF from "Common/FooterPDF";
 
 // Import Images
 import logoDark from "assets/images/logo-dark.png";
@@ -28,6 +29,7 @@ import ProposalSignature from "./ProposalSignature";
 import TableDevis from "./TableDevis";
 import { Devis, useGetDevisLigneVenteQuery } from "features/devis/devisSlice";
 import MontantTotalDevis from "./MontantTotalDevis";
+import CountUp from "react-countup";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -50,18 +52,22 @@ const PDF_REPORT_Devis = (props: Devis) => {
     props;
   return (
     <Document>
-      <Page size="A4" style={styles.body}>
-        <View style={styles.top}>
-          <HeaderPDF />
-          <ClientDevis nom={nomclient!} />
-        </View>
+      <Page size="A4" style={styles.body} wrap>
+        <HeaderPDF />
+        <ClientDevis
+          numero={designationDevis!}
+          date={dateDevis!}
+          nom={nomclient!}
+        />
         <View style={{ flex: 2 }}>
           <TableDevis id={idDevis} />
           <MontantTotalDevis mnt={montantDevis} />
         </View>
         <View>
-          <Amount amount={parseInt(montantDevis)} />
-          <ProposalSignature />
+          <Amount amount={montantDevis!} />
+        </View>
+        <View fixed>
+          <FooterPDF />
         </View>
       </Page>
     </Document>
@@ -182,7 +188,11 @@ const DevisDetails = () => {
                           </p>
                           <h5 className="fs-15 mb-0">
                             <span id="total-amount">
-                              {locationDevis.state.montantDevis}
+                              <CountUp
+                                end={locationDevis.state.montantDevis}
+                                separator=","
+                                suffix="DT"
+                              />
                             </span>{" "}
                             Dt
                           </h5>
@@ -240,10 +250,23 @@ const DevisDetails = () => {
                                     {lignevente.productName}
                                   </span>
                                 </td>
-                                <td>{lignevente.PU}</td>
-                                <td>{lignevente.quantiteProduit}</td>
+                                <td>
+                                  <CountUp
+                                    end={parseInt(lignevente?.PU!)}
+                                    separator=","
+                                  />
+                                </td>
+                                <td>
+                                  <CountUp
+                                    end={parseInt(lignevente?.quantiteProduit!)}
+                                    separator=","
+                                  />
+                                </td>
                                 <td className="text-end">
-                                  {lignevente.montantTtl}
+                                  <CountUp
+                                    end={parseInt(lignevente?.montantTtl!)}
+                                    separator=","
+                                  />
                                 </td>
                               </tr>
                             ))}
@@ -259,7 +282,10 @@ const DevisDetails = () => {
                             <tr className="border-top border-top-dashed fs-15">
                               <th scope="row">Montant Total</th>
                               <th className="text-end">
-                                {locationDevis.state.montantDevis} Dt
+                                <CountUp
+                                  end={locationDevis.state.montantDevis}
+                                  separator=","
+                                />
                               </th>
                             </tr>
                           </tbody>

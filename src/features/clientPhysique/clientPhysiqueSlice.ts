@@ -18,7 +18,7 @@ export interface ClientPhysique {
 export const clientPhysiqueSlice = createApi({
   reducerPath: "clientPhysique",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/clientPyh/",
+    baseUrl: "https://app.src.smartschools.tn/clientPyh/",
   }),
   tagTypes: ["ClientPhysique"],
   endpoints(builder) {

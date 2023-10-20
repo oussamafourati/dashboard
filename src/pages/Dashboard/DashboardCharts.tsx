@@ -2,8 +2,6 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "Common/ChartsDynamicColor";
 import {
-  useFetchFactureLastMonthQuery,
-  useFetchFactureMonthQuery,
   useFetchFacturesJanuaryQuery,
   useFetchfacturesDecemberQuery,
   useFetchfacturesaprilQuery,
@@ -425,94 +423,7 @@ const RevenueCharts = ({ dataColors, chartData }: any) => {
         options={options}
         series={series}
         type="line"
-        height="405"
-        className="apex-charts"
-      />
-    </React.Fragment>
-  );
-};
-
-const SatisfactionChart = ({ dataColors }: any) => {
-  const satisfactionChartsColors = getChartColorsArray(dataColors);
-
-  const series = [
-    {
-      name: "Mois en cours",
-      data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    },
-    {
-      name: "Mois Dernier",
-      data: [9, 8, 7, 6, 5, 4, 10, 11, 21, 32, 55, 66],
-    },
-  ];
-  var options: any = {
-    chart: {
-      height: 250,
-      type: "area",
-      toolbar: {
-        show: false,
-      },
-    },
-    fill: {
-      type: ["gradient", "gradient"],
-      gradient: {
-        shadeIntensity: 1,
-        type: "vertical",
-        inverseColors: false,
-        opacityFrom: 0.3,
-        opacityTo: 0.0,
-        stops: [50, 70, 100, 100],
-      },
-    },
-    markers: {
-      size: 4,
-      colors: "#ffffff",
-      strokeColors: satisfactionChartsColors,
-      strokeWidth: 1,
-      strokeOpacity: 0.9,
-      fillOpacity: 1,
-      hover: {
-        size: 6,
-      },
-    },
-    grid: {
-      show: false,
-      padding: {
-        top: -35,
-        right: 0,
-        bottom: 0,
-        left: -6,
-      },
-    },
-    legend: {
-      show: false,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      width: [2, 2],
-      curve: "smooth",
-    },
-    colors: satisfactionChartsColors,
-    xaxis: {
-      labels: {
-        show: false,
-      },
-    },
-    yaxis: {
-      labels: {
-        show: false,
-      },
-    },
-  };
-  return (
-    <React.Fragment>
-      <ReactApexChart
-        options={options}
-        series={series}
-        type="area"
-        height="240"
+        height={405}
         className="apex-charts"
       />
     </React.Fragment>
@@ -529,22 +440,18 @@ const TopCategoriesChart = ({ dataColors }: any) => {
     0
   );
 
-  const firstPourcentage = (
-    (TopCategory[0]?.total_sold! / sumTotalVente) *
-    100
-  ).toFixed(2);
-  const secondPourcentage = (
-    (TopCategory[1]?.total_sold! / sumTotalVente) *
-    100
-  ).toFixed(2);
-  const thirdPourcentage = (
-    (TopCategory[2]?.total_sold! / sumTotalVente) *
-    100
-  ).toFixed(2);
-  const fourthPourcentage = (
-    (TopCategory[3]?.total_sold! / sumTotalVente) *
-    100
-  ).toFixed(2);
+  const firstPourcentage = parseFloat(
+    ((TopCategory[0]?.total_sold! / sumTotalVente) * 100).toFixed(2)
+  );
+  const secondPourcentage = parseFloat(
+    ((TopCategory[1]?.total_sold! / sumTotalVente) * 100).toFixed(2)
+  );
+  const thirdPourcentage = parseFloat(
+    ((TopCategory[2]?.total_sold! / sumTotalVente) * 100).toFixed(2)
+  );
+  const fourthPourcentage = parseFloat(
+    ((TopCategory[3]?.total_sold! / sumTotalVente) * 100).toFixed(2)
+  );
 
   const series = [
     firstPourcentage,
@@ -610,11 +517,11 @@ const TopCategoriesChart = ({ dataColors }: any) => {
         options={options}
         series={series}
         type="radialBar"
-        height="300"
+        height={300}
         className="apex-charts"
       />
     </React.Fragment>
   );
 };
 
-export { RevenueCharts, SatisfactionChart, TopCategoriesChart };
+export { RevenueCharts, TopCategoriesChart };

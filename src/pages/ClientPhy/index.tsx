@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import TableContainer from "Common/TableContainer";
 import { Link } from "react-router-dom";
@@ -7,25 +7,16 @@ import Swal from "sweetalert2";
 import {
   useFetchClientPhysiquesQuery,
   useDeleteClientPhysiqueMutation,
-  useAddClientPhysiqueMutation,
   ClientPhysique,
 } from "features/clientPhysique/clientPhysiqueSlice";
 import TableDetails from "./TableDetails";
+import ModalClientPhy from "./ModalClientPhy";
 
 const ClientPhy = () => {
+  document.title = "Client Physique | Radhouani";
+
   const { data = [] } = useFetchClientPhysiquesQuery();
   const [deleteClientPhysique] = useDeleteClientPhysiqueMutation();
-  const [createClientPhysique] = useAddClientPhysiqueMutation();
-
-  const notify = () => {
-    Swal.fire({
-      position: "center",
-      icon: "success",
-      title: "Le Client Physique a été créer avec succès",
-      showConfirmButton: false,
-      timer: 2500,
-    });
-  };
 
   const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
@@ -76,96 +67,16 @@ const ClientPhy = () => {
   const etatActive = data.filter((fournisseur) => fournisseur.etat === 1);
   const etatNonActive = data.filter((fournisseur) => fournisseur.etat === 0);
 
-  const clientPhysiqueInitialValue = {
-    idclient_p: 99,
-    raison_sociale: "",
-    adresse: "",
-    tel: "",
-    mail: "",
-    cin: "",
-    avatar: "",
-    rib: "",
-    etat: 1,
-    remarque: "",
-    credit: 123,
-    piecejointes: "",
-  };
-  const [formData, setFormData] = useState(clientPhysiqueInitialValue);
-
-  const {
-    raison_sociale,
-    adresse,
-    tel,
-    mail,
-    cin,
-    avatar,
-    rib,
-    etat,
-    remarque,
-    credit,
-    piecejointes,
-  } = formData;
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  };
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    formData["etat"] = parseInt(selectedEtat);
-    e.preventDefault();
-    createClientPhysique(formData).then(() =>
-      setFormData(clientPhysiqueInitialValue)
-    );
-    notify();
-  };
-
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const fileLogo = (
-      document.getElementById("avatar") as HTMLInputElement
-    ).files?.item(0) as File;
-    const base64 = await convertToBase64(fileLogo);
-    setFormData({
-      ...formData,
-      avatar: base64 as string,
-    });
-  };
-
-  function convertToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-
-      fileReader.onload = () => {
-        const base64String = fileReader.result as string;
-        const base64Data = base64String.split(",")[1];
-
-        resolve(base64Data);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  }
-
   const [modal_AddDetailClPhyModals, setmodal_AddDetailClPhyModals] =
     useState<boolean>(false);
   function tog_AddDetailClPhyModals() {
     setmodal_AddDetailClPhyModals(!modal_AddDetailClPhyModals);
   }
 
-  document.title = "Client Physique | Radhouani";
-
   const columns = useMemo(
     () => [
       {
-        Header: "Nom",
-        disableFilters: true,
-        filterable: true,
+        Header: " ",
         accessor: (clientPhy: ClientPhysique) => {
           return (
             <Link
@@ -178,16 +89,22 @@ const ClientPhy = () => {
                   <img
                     src={`data:image/jpeg;base64, ${clientPhy.avatar}`}
                     alt=""
-                    className="avatar-sm rounded-circle user-profile-img"
+                    className="rounded-2 user-profile-img"
+                    width="40"
                   />
-                </div>
-                <div className="flex-grow-1 ms-2 user_name text-dark">
-                  {clientPhy.raison_sociale}
                 </div>
               </div>
             </Link>
           );
         },
+        disableFilters: true,
+        filterable: true,
+      },
+      {
+        Header: "Nom",
+        accessor: "raison_sociale",
+        disableFilters: true,
+        filterable: true,
       },
       {
         Header: "C.I.N ",
@@ -213,48 +130,6 @@ const ClientPhy = () => {
         disableFilters: true,
         filterable: true,
       },
-      // {
-      //   Header: "E-mail",
-      //   accessor: "mail",
-      //   disableFilters: true,
-      //   filterable: true,
-      // },
-      // {
-      //   Header: "Etat",
-      //   disableFilters: true,
-      //   filterable: true,
-      //   accessor: (clientPhy: ClientPhysique) => {
-      //     switch (clientPhy.etat) {
-      //       case 0:
-      //         return (
-      //           <span className="badge badge-soft-danger text-uppercase">
-      //             {" "}
-      //             inactif
-      //           </span>
-      //         );
-      //       case 1:
-      //         return (
-      //           <span className="badge badge-soft-success text-uppercase">
-      //             {" "}
-      //             actif
-      //           </span>
-      //         );
-      //       default:
-      //         return (
-      //           <span className="badge badge-soft-danger text-uppercase">
-      //             {" "}
-      //             inactif
-      //           </span>
-      //         );
-      //     }
-      //   },
-      // },
-      // {
-      //   Header: "Remarque",
-      //   accessor: "remarque",
-      //   disableFilters: true,
-      //   filterable: true,
-      // },
       {
         Header: "Action",
         disableFilters: true,
@@ -346,198 +221,7 @@ const ClientPhy = () => {
               </h5>
             </Modal.Header>
             <Modal.Body className="p-4">
-              <form className="tablelist-form" onSubmit={onSubmit}>
-                <Row>
-                  <div
-                    id="alert-error-msg"
-                    className="d-none alert alert-danger py-2"
-                  ></div>
-                  <input type="hidden" id="id-field" />
-                  <Col lg={12} className="text-center">
-                    <div className="mb-3">
-                      <div className="position-relative d-inline-block">
-                        <div className="position-absolute top-100 start-100 translate-middle">
-                          <label
-                            htmlFor="avatar"
-                            className="mb-0"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="Select Client Physique Avatar"
-                          >
-                            <span className="avatar-xs d-inline-block">
-                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                                <i className="ri-image-fill"></i>
-                              </span>
-                            </span>
-                          </label>
-                          <input
-                            className="form-control d-none"
-                            type="file"
-                            name="avatar"
-                            id="avatar"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(e)}
-                          />
-                        </div>
-                        <div className="avatar-lg">
-                          <div className="avatar-title bg-light rounded-3">
-                            <img
-                              src={`data:image/jpeg;base64, ${formData.avatar}`}
-                              alt=""
-                              id="category-img"
-                              className="avatar-md h-auto rounded-3 object-fit-cover"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="error-msg mt-1">
-                        Please add a category images.
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={6} className="mt-3">
-                    <div className="mb-3">
-                      <Form.Label htmlFor="raison_sociale">
-                        Nom Client <span className="text-danger">*</span>
-                      </Form.Label>
-                      <input
-                        type="text"
-                        value={formData.raison_sociale}
-                        onChange={onChange}
-                        id="raison_sociale"
-                        required
-                        className="form-control"
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6} className="mt-3">
-                    <div className="mb-3">
-                      <Form.Label htmlFor="cin">
-                        C.I.N <span className="text-danger">*</span>
-                      </Form.Label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        value={formData.cin}
-                        onChange={onChange}
-                        id="cin"
-                        minLength={8}
-                        maxLength={8}
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={5}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="adresse">
-                        Adresse <span className="text-danger">*</span>
-                      </Form.Label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        value={formData.adresse}
-                        onChange={onChange}
-                        id="adresse"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="tel">
-                        Telephone <span className="text-danger">*</span>
-                      </Form.Label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        value={formData.tel}
-                        onChange={onChange}
-                        id="tel"
-                        maxLength={8}
-                        minLength={8}
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={4}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="rib">
-                        RIB<span className="text-danger">*</span>
-                      </Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={formData.rib}
-                        onChange={onChange}
-                        id="rib"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={5}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="mail">E-mail</Form.Label>
-                      <Form.Control
-                        type="email"
-                        value={formData.mail}
-                        onChange={onChange}
-                        id="mail"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="etat">Etat</Form.Label>
-                      <select
-                        onChange={selectChangeEtat}
-                        className="form-select"
-                        name="choices-single-default"
-                        id="etat"
-                      >
-                        <option value="">Choisir</option>
-                        <option value={1}>Actif</option>
-                        <option value={0}>Inactif</option>
-                      </select>
-                    </div>
-                  </Col>
-                  <Col lg={4}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="remarque">Remarque</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.remarque}
-                        onChange={onChange}
-                        id="remarque"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={12} className="modal-footer">
-                    <div className="hstack gap-2 justify-content-end">
-                      <Button
-                        className="btn-ghost-danger"
-                        onClick={() => {
-                          tog_AddCouponsModals();
-                        }}
-                      >
-                        <i className="ri-close-line align-bottom me-1"></i>{" "}
-                        Fermer
-                      </Button>
-                      <Button
-                        type={"submit"}
-                        onClick={() => {
-                          tog_AddCouponsModals();
-                        }}
-                        variant="primary"
-                        id="add-btn"
-                      >
-                        Ajouter
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-              </form>
+              <ModalClientPhy />
             </Modal.Body>
           </Modal>
 

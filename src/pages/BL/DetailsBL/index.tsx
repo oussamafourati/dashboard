@@ -2,15 +2,20 @@ import React from "react";
 import { Button, Card, Col, Container, Row, Table } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 // PDF
-import { Page, View, Document, StyleSheet } from "@react-pdf/renderer";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import CountUp from "react-countup";
-import { ToWords } from "to-words";
-
 // Import Images
 import logoDark from "assets/images/logo-dark.png";
 import logoLight from "assets/images/logo-light.png";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   BondeLivraison,
   useFetchBLLigneVenteQuery,
@@ -21,7 +26,6 @@ import ClientBL from "./ClientBL";
 import TableBL from "./TableBL";
 import MontantTotal from "./MontantTotal";
 import FooterPDF from "Common/FooterPDF";
-
 const styles = StyleSheet.create({
   body: {
     fontFamiy: "Source Sans",
@@ -44,8 +48,8 @@ const PDF_REPORT_BL = (props: BondeLivraison) => {
     adresse,
     tel,
     montant,
-    idbl,
     mat,
+    idbl,
   } = props;
 
   return (
@@ -55,10 +59,10 @@ const PDF_REPORT_BL = (props: BondeLivraison) => {
         <ClientBL
           numero={designationBL}
           date={dateBL}
-          nom={raison_sociale}
-          adr={adresse}
-          tel={tel}
-          matricule={mat}
+          nom={raison_sociale!}
+          adr={adresse!}
+          tel={tel!}
+          matricule={mat!}
         />
         <View style={{ flex: 2 }}>
           <TableBL id={idbl} />
@@ -83,38 +87,14 @@ const DetailsBL = () => {
     locationBLDetail.state.idbl
   );
 
-  const mntTotal: number | undefined = allLigneVente?.reduce(
-    (sum, i) => (sum += parseInt(i.montantTtl)),
+  const mntTotal = allLigneVente?.reduce(
+    (sum, i) => (sum += parseInt(i?.montantTtl!)),
     0
   );
-
   //Print the Invoice
   const printBL = () => {
     window.print();
   };
-
-  const toWords = new ToWords({
-    localeCode: "fr-FR",
-    converterOptions: {
-      currency: true,
-      ignoreDecimal: false,
-      ignoreZeroCurrency: false,
-      doNotAddOnly: false,
-      currencyOptions: {
-        // can be used to override defaults for the selected locale
-        name: "Dinar Tunisien",
-        plural: "Dinar Tunisien",
-        symbol: "₹",
-        fractionalUnit: {
-          name: "Paisa",
-          plural: "Paise",
-          symbol: "",
-        },
-      },
-    },
-  });
-  let words = toWords.convert(locationBLDetail.state.montant);
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -123,278 +103,247 @@ const DetailsBL = () => {
             title="Détails Bon de Livraison"
             pageTitle="Bon de Livraison"
           />
-          <Row>
-            <Col>
-              <div className="mx-auto mb-3">
-                <label
-                  htmlFor="profile-img-file-input"
-                  className="d-flex justify-content-center"
-                >
-                  <span
-                    className="overflow-hidden border border-dashed d-flex align-items-center justify-content-center rounded"
-                    style={{ height: "60px", width: "256px" }}
-                  >
-                    <img
-                      src={logoDark}
-                      className="card-logo card-logo-dark user-profile-image img-fluid"
-                      alt="logo dark"
-                    />
-                    <img
-                      src={logoLight}
-                      className="card-logo card-logo-light user-profile-image img-fluid"
-                      alt="logo light"
-                    />
-                  </span>
-                </label>
-              </div>
-            </Col>
-          </Row>
-          <Row className="d-flex">
-            <Col lg={6}>
-              <div>
-                <div className="mb-2">
-                  <span>
-                    <strong>Anis Radhouani </strong>{" "}
-                  </span>
-                </div>
-                <div className="mb-2">
-                  <span>Av. palestine cité ennour</span>
-                </div>
-                <div className="mb-2">
-                  <span>2123, Gafsa</span>
-                </div>
-                <div className="mb-2">
-                  <span>
-                    <strong>M.F:</strong> <span>1687166/T</span>
-                  </span>
-                </div>
-              </div>
-            </Col>
-            <Col lg={6}>
-              <div className="text-end">
-                <div className="mb-2">
-                  <span>
-                    <strong>أنيس رضواني</strong>{" "}
-                  </span>
-                </div>
-                <div className="mb-2">
-                  <span>شارع فلسطين حي النور</span>
-                </div>
-                <div className="mb-2">
-                  <span>فقصة 2123</span>
-                  <br />
-                </div>
-                <div className="mb-2">
-                  <span>
-                    <strong> المعرف الجبائي : </strong>
-                  </span>
-                  <span>1687166/T </span>
-                </div>
-              </div>
-            </Col>
-          </Row>
-          <Row className="mt-3 mb-3">
-            <Col lg={6} style={{ width: 255 }}>
-              <div className="text-center fs-16 border border-dark">
-                <span className="text-center">
-                  <strong> Bon de Livraison</strong>
-                </span>
-              </div>
-              <table className="table table-bordered table-nowrap border-dark">
-                <thead className="border"></thead>
-                <tbody>
-                  <tr>
-                    <th>Numéro</th>
-                    <th>Date</th>
-                    <th>Page</th>
-                  </tr>
-                  <tr>
-                    <td>{locationBLDetail.state.designationBL}</td>
-                    <td>{locationBLDetail.state.dateBL}</td>
-                    <td>1</td>
-                  </tr>
-                </tbody>
-              </table>
-            </Col>
-            <Col lg={6} style={{ width: 280 }}>
-              <table className="border table-nowrap border-dark m-3">
-                <tbody>
-                  <tr>
-                    <th>Client: </th>
-                    <td className="text-center">
-                      {locationBLDetail.state.raison_sociale}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td className="text-center">
-                      {locationBLDetail.state.adresse}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>M.F: </th>
-                    <td className="text-center">
-                      {locationBLDetail.state.mat}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Mode Paiement: </th>
-                    <td className="text-center">Espèce</td>
-                  </tr>
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-          <Row className="mb-3">
-            <Table className="table-borderless table-nowrap mb-0">
-              <thead>
-                <tr className="table-active">
-                  <th scope="col" style={{ width: "50px" }}>
-                    #
-                  </th>
-                  <th scope="col">Details Produit</th>
-                  <th scope="col" className="text-end">
-                    Prix Unitaire
-                  </th>
-                  <th scope="col" className="text-center">
-                    Quantité
-                  </th>
-                  <th scope="col" className="text-end">
-                    Total
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="products-list">
-                {allLigneVente?.map((lignevente, key) => (
-                  <tr key={key}>
-                    <th scope="row">{key + 1}</th>
-                    <td className="text-start">
-                      <span className="fw-medium">
-                        {lignevente.productName}
-                      </span>
-                    </td>
-                    <td className="text-end">
-                      {" "}
-                      <CountUp
-                        end={parseInt(lignevente.PU!)}
-                        separator=","
-                        duration={0}
-                      />
-                    </td>
-                    <td className="text-center">
-                      {lignevente.quantiteProduit}
-                    </td>
-                    <td className="text-end">
-                      <CountUp
-                        end={parseInt(lignevente.montantTtl!)}
-                        separator=","
-                        duration={0}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Row>
-          <Row className="mt-2 mb-2 border-bottom dashed">
-            <Col lg={6} style={{ width: 240 }}>
-              <table className="table table-bordered table-nowrap  border-dark">
-                <tbody>
-                  <tr>
-                    <th>Base</th>
-                    <th>TVA%</th>
-                    <th>TVA</th>
-                  </tr>
-                  <tr>
-                    <td className="text-end">
-                      {(locationBLDetail.state.montant / 1.19).toFixed(3)}
-                    </td>
-                    <td className="text-center">19.00</td>
-                    <td className="text-end">
-                      {(
-                        locationBLDetail.state.montant -
-                        locationBLDetail.state.montant / 1.19
-                      ).toFixed(3)}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </Col>
-            <Col
-              lg={6}
-              className="hstack gap-2 justify-content-end"
-              style={{ width: 240 }}
-            >
-              <table className="justify-content-end border table-nowrap border-dark">
-                <tbody>
-                  <tr>
-                    <th>Total H.T</th>
-                    <td className="text-end">
-                      {(locationBLDetail.state.montant / 1.19).toFixed(3)}
-                    </td>
-                  </tr>
+          <Row className="justify-content-center">
+            <Col xxl={9}>
+              <Card id="demo">
+                <Row>
+                  <Col lg={12}>
+                    <Card.Header className="border-bottom-dashed p-4">
+                      <Col lg={4}>
+                        <div className="mb-2">
+                          <div className="profile-user mx-auto mb-3">
+                            <input
+                              id="profile-img-file-input"
+                              type="file"
+                              className="profile-img-file-input"
+                            />
+                            <label
+                              htmlFor="profile-img-file-input"
+                              className="d-block"
+                            >
+                              <span
+                                className="overflow-hidden border border-dashed d-flex align-items-center justify-content-center rounded"
+                                style={{ height: "60px", width: "256px" }}
+                              >
+                                <img
+                                  src={logoDark}
+                                  className="card-logo card-logo-dark user-profile-image img-fluid"
+                                  alt="logo dark"
+                                />
+                                <img
+                                  src={logoLight}
+                                  className="card-logo card-logo-light user-profile-image img-fluid"
+                                  alt="logo light"
+                                />
+                              </span>
+                            </label>
+                          </div>
+                          <div className="mb-2">
+                            <span>
+                              <strong>Matricule Fiscale:</strong>{" "}
+                              <span>147852369</span>
+                            </span>
+                          </div>
+                          <div className="mb-2">
+                            <span>
+                              <strong>Adresse:</strong>{" "}
+                              <span>Cite Ennour, Gafsa</span>
+                              <br />
+                              <span> </span>
+                              <span>2123, Gafsa</span>
+                            </span>
+                          </div>
+                          <div className="mb-2">
+                            <span>
+                              <strong>Tél:</strong> <span>76001002</span>
+                            </span>
+                          </div>
+                          <div className="mb-2">
+                            <span>
+                              <strong>Email:</strong>{" "}
+                              <span>radhouani@gmail.com</span>
+                            </span>
+                          </div>
+                        </div>
+                      </Col>
+                    </Card.Header>
+                  </Col>
+                  <Col lg={12}>
+                    <Card.Body className="p-4">
+                      <Row className="g-3">
+                        <Col lg={3} className="col-6">
+                          <p className="text-muted mb-2 text-uppercase fw-semibold fs-14">
+                            Bon de Livraison N°:
+                          </p>
+                          <h5 className="fs-15 mb-0">
+                            <span id="invoice-no">
+                              {locationBLDetail.state.designationBL}
+                            </span>
+                          </h5>
+                        </Col>
+                        <Col lg={3} className="col-6">
+                          <p className="text-muted mb-2 text-uppercase fw-semibold fs-14">
+                            Date
+                          </p>
+                          <h5 className="fs-15 mb-0">
+                            <span id="invoice-date">
+                              {" "}
+                              {locationBLDetail.state.dateBL}
+                            </span>{" "}
+                          </h5>
+                        </Col>
 
-                  <tr>
-                    <th>T.V.A: </th>
-                    <td className="text-end">
-                      {(
-                        locationBLDetail.state.montant -
-                        locationBLDetail.state.montant / 1.19
-                      ).toFixed(3)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Total T.T.C:</th>
-                    <td className="text-end">
-                      {locationBLDetail.state.montant}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                        <Col lg={3} className="col-6">
+                          <p className="text-muted mb-2 text-uppercase fw-semibold fs-14">
+                            Montant Total
+                          </p>
+                          <h5 className="fs-15 mb-0">
+                            <CountUp
+                              start={0}
+                              end={mntTotal!}
+                              separator=","
+                              suffix="DT"
+                            />{" "}
+                          </h5>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Col>
+                  <Col lg={12}>
+                    <Card.Body className="p-4 border-top border-top-dashed">
+                      <Row className="g-3">
+                        <Col className="col-6">
+                          <h6 className="text-muted text-uppercase fw-semibold fs-14 mb-3">
+                            Client
+                          </h6>
+                          <p className="fw-medium mb-2 fs-16" id="billing-name">
+                            {locationBLDetail.state.raison_sociale}
+                          </p>
+                          <p
+                            className="text-muted mb-1"
+                            id="billing-address-line-1"
+                          >
+                            {locationBLDetail.state.adresse}
+                          </p>
+                          <p className="text-muted mb-1">
+                            <span>Téléphone: {locationBLDetail.state.tel}</span>
+                            <span id="billing-phone-no"></span>
+                          </p>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Col>
+                  <Col lg={12}>
+                    <Card.Body className="p-4">
+                      <div className="table-responsive">
+                        <Table className="table-borderless text-center table-nowrap align-middle mb-0">
+                          <thead>
+                            <tr className="table-active">
+                              <th scope="col" style={{ width: "50px" }}>
+                                #
+                              </th>
+                              <th scope="col" className="text-start">
+                                Details Produit
+                              </th>
+                              <th scope="col" className="text-end">
+                                Prix Unitaire
+                              </th>
+                              <th scope="col" className="text-end">
+                                Quantité
+                              </th>
+                              <th scope="col" className="text-end">
+                                Total
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="products-list">
+                            {allLigneVente?.map((lignevente, key) => (
+                              <tr key={key}>
+                                <th scope="row">{key + 1}</th>
+                                <td className="text-start">
+                                  <span className="fw-medium">
+                                    {lignevente.productName}
+                                  </span>
+                                </td>
+                                <td className="text-end">
+                                  {" "}
+                                  <CountUp
+                                    start={0}
+                                    end={parseInt(lignevente!.PU!)}
+                                    separator=","
+                                    duration={0}
+                                  />{" "}
+                                </td>
+                                <td className="text-end">
+                                  <CountUp
+                                    start={0}
+                                    end={parseInt(lignevente!.quantiteProduit!)}
+                                    separator=","
+                                    duration={0}
+                                  />
+                                </td>
+                                <td className="text-end">
+                                  <CountUp
+                                    start={0}
+                                    end={parseInt(lignevente!.montantTtl!)}
+                                    separator=","
+                                    duration={0}
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </div>
+
+                      <div className="border-top border-top-dashed mt-2">
+                        <Table
+                          className="table-borderless table-nowrap align-middle mb-0 ms-auto"
+                          style={{ width: "250px" }}
+                        >
+                          <tbody>
+                            <tr className="border-top border-top-dashed fs-15">
+                              <th scope="row">Montant Total</th>
+                              <th className="text-end">
+                                {" "}
+                                <CountUp
+                                  start={0}
+                                  end={mntTotal!}
+                                  separator=","
+                                  duration={0.5}
+                                  suffix="DT"
+                                />
+                              </th>
+                            </tr>
+                          </tbody>
+                        </Table>
+                      </div>
+                      <div className="hstack gap-2 justify-content-end d-print-none mt-4">
+                        <Button variant="outline-secondary" type="submit">
+                          <i
+                            className="ri-printer-line align-bottom me-1"
+                            onClick={printBL}
+                          ></i>{" "}
+                          Imprimer
+                        </Button>
+                        <PDFDownloadLink
+                          document={
+                            <PDF_REPORT_BL {...locationBLDetail.state} />
+                          }
+                          className="outline-secondary"
+                          fileName={`bon_de_livraison_numero_${locationBLDetail.state.designationBL}`}
+                        >
+                          <Button variant="outline-info" type="submit">
+                            <i className="ri-download-2-line align-bottom me-1"></i>{" "}
+                            Télécharger
+                          </Button>
+                        </PDFDownloadLink>
+                      </div>
+                    </Card.Body>
+                  </Col>
+                </Row>
+              </Card>
             </Col>
-          </Row>
-          <Row className="">
-            <div className="border-bottom dashed d-flex justify-content-start mb-2">
-              <div>
-                {" "}
-                <p>Arrêtée la présente Bon de Livraison à la somme de :</p>
-                <p className="m-2">
-                  {words} ({locationBLDetail.state.montant} DT)
-                </p>{" "}
-                <p className="m-4">
-                  Signature: _____________________________________
-                </p>
-              </div>
-              <div></div>
-            </div>
-            <div className="hstack gap-2 justify-content-center">
-              <p>Av. palestine cité ennour 2123 Gafsa</p>
-              <p>
-                radhouani@gmail.com <span className="fs-24 fw-bold">. </span>
-                <span>55748691/ 29336005</span>
-              </p>
-            </div>
-          </Row>
-          <Row>
-            <div className="hstack gap-2 justify-content-end d-print-none mt-4">
-              <Button
-                variant="outline-secondary"
-                type="submit"
-                onClick={printBL}
-              >
-                <i className="ri-printer-line align-bottom me-1"></i> Imprimer
-              </Button>
-              <PDFDownloadLink
-                document={<PDF_REPORT_BL {...locationBLDetail.state} />}
-                className="outline-secondary"
-                fileName={`bon_de_livraison_numero_${locationBLDetail.state.designationBL}`}
-              >
-                <Button variant="outline-info" type="submit">
-                  <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                  Télécharger
-                </Button>
-              </PDFDownloadLink>
-            </div>
           </Row>
         </Container>
       </div>

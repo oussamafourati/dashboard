@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { useGetQtyProduitQuery } from "features/arrivageProduit/arrivageProduitSlice";
 import SimpleBar from "simplebar-react";
 import CountUp from "react-countup";
@@ -8,7 +7,8 @@ import CountUp from "react-countup";
 const RiskRupture = () => {
   const { data: QtyProduct = [] } = useGetQtyProduitQuery();
   const result2 = QtyProduct.filter(
-    (QteProduct) => QteProduct.TotalQuantity! <= QteProduct.seuil_product!
+    (QteProduct) =>
+      parseInt(QteProduct.seuil_product!) >= parseInt(QteProduct.TotalQuantity!)
   );
 
   return (
@@ -32,45 +32,19 @@ const RiskRupture = () => {
                     <th scope="col">Nom Produit</th>
                     <th scope="col">Montant</th>
                     <th scope="col">Quantité</th>
+                    <th scope="col">Seuil</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(result2 || []).map((item, key) => (
                     <tr key={key}>
-                      <td>
-                        {/* <Link
-                          to="/product-overview"
-                          state={result2}
-                          className="fw-medium link-primary"
-                        > */}
-                        {item.nomProduit}
-                        {/* </Link> */}
-                      </td>
-                      {/* <td>
-                        <div className="d-flex align-items-center">
-                          <div className="flex-shrink-0 me-2">
-                            <img
-                              src={item.productImage}
-                              alt=""
-                              className="avatar-xs rounded-circle"
-                            />
-                          </div>
-                          <div className="flex-grow-1">
-                            <Link to="/product-overview" className="text-reset">
-                              {item.productName}
-                            </Link>
-                          </div>
-                        </div>
-                      </td> */}
-
+                      <td>{item.nomProduit}</td>
                       <td>
                         <CountUp start={0} end={item.SUMTOTAL!} separator="," />{" "}
                         DT
                       </td>
-                      {/* <td>
-                        <Status status={item.stockStatus} />
-                      </td> */}
                       <td>{item.TotalQuantity}</td>
+                      <td>{item.seuil_product}</td>
                     </tr>
                   ))}
                 </tbody>

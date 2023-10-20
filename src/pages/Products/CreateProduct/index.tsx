@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -21,20 +21,10 @@ import {
   useCreateSubCategoryMutation,
 } from "features/subCategory/subCategorySlice";
 import Swal from "sweetalert2";
-import Slider from "@mui/material/Slider";
-import { debounce } from "@mui/material/utils";
+import ModalCategory from "./ModalCategory";
 
 const CreateProduct = () => {
   document.title = "Créer produit | Radhouani";
-
-  const [value, setValue] = useState<number>(0);
-  const handleSliderChange = useCallback((event: Event, value: any) => {
-    debounceSliderChange(value);
-  }, []);
-
-  const debounceSliderChange = debounce((val: number) => {
-    setValue(val);
-  }, 200);
 
   const [category, setCategory] = useState<Category[]>([]);
   const [categoryid, setCategoryid] = useState("");
@@ -42,7 +32,9 @@ const CreateProduct = () => {
   const [sousCategoryid, setSousCategoryid] = useState("");
   useEffect(() => {
     const getCategory = async () => {
-      const reqdata = await fetch("http://localhost:8000/category/all");
+      const reqdata = await fetch(
+        "https://app.src.smartschools.tn/category/all"
+      );
       const resdata = await reqdata.json();
       setCategory(resdata);
     };
@@ -52,7 +44,7 @@ const CreateProduct = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/subCategory/onesubcategory?idcategory=${categoryId}`
+        `https://app.src.smartschools.tn/subCategory/onesubcategory?idcategory=${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSousCategory(resstatedata);
@@ -262,10 +254,6 @@ const CreateProduct = () => {
                         onChange={onChange}
                         value={formData.nomProduit}
                       />
-
-                      <div className="invalid-feedback">
-                        Veuillez saisir le titre du produit.
-                      </div>
                     </div>
                     <Row>
                       <Col lg={6} style={{ marginBottom: 15 }}>
@@ -282,17 +270,6 @@ const CreateProduct = () => {
                       <Col lg={6} style={{ marginBottom: 15 }}>
                         <div className="mb-3">
                           <Form.Label htmlFor="seuil">Seuil</Form.Label>
-                          {/* <Card.Body>
-                            <Slider
-                              disabled={false}
-                              marks={false}
-                              max={100}
-                              min={0}
-                              size="medium"
-                              valueLabelDisplay="auto"
-                              onChange={(e, v) => handleSliderChange(e, v)}
-                            />
-                          </Card.Body> */}
                           <Form.Control
                             type="number"
                             id="seuil"
@@ -357,9 +334,6 @@ const CreateProduct = () => {
                               </Button>
                             </div>
                           </div>
-                          <div className="error-msg mt-1">
-                            svp selectionner la categorie.
-                          </div>
                         </div>
                       </Col>
                       <Col>
@@ -399,9 +373,6 @@ const CreateProduct = () => {
                               </Button>
                             </div>
                           </div>
-                          <div className="error-msg mt-1">
-                            svp selectionner la categorie.
-                          </div>
                         </div>
                       </Col>
                     </Row>
@@ -425,7 +396,7 @@ const CreateProduct = () => {
                             className="mb-0"
                             data-bs-toggle="tooltip"
                             data-bs-placement="right"
-                            title="Select Fournisseur Logo"
+                            title="Select Product Picture"
                           >
                             <span className="avatar-xs d-inline-block">
                               <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
@@ -453,10 +424,6 @@ const CreateProduct = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="error-msg mt-1">
-                      Please add a product images.
                     </div>
                   </Card.Body>
                 </Card>
@@ -487,94 +454,7 @@ const CreateProduct = () => {
               </h5>
             </Modal.Header>
             <Modal.Body className="p-4">
-              <Form className="tablelist-form" onSubmit={onSubmitCategory}>
-                <Row>
-                  <Col lg={12}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="nom">
-                        Nom Catégorie <span className="text-danger">*</span>
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={categoryData.nom}
-                        onChange={onChangeCategory}
-                        id="nom"
-                        placeholder="..."
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={12} className="text-center">
-                    <div className="mb-3">
-                      <label htmlFor="image" className="form-label d-block">
-                        Image <span className="text-danger">*</span>
-                      </label>
-                      <div className="position-relative d-inline-block">
-                        <div className="position-absolute top-100 start-100 translate-middle">
-                          <label
-                            htmlFor="image"
-                            className="mb-0"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="Select Category's Image"
-                          >
-                            <span className="avatar-xs d-inline-block">
-                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                                <i className="ri-image-fill"></i>
-                              </span>
-                            </span>
-                          </label>
-                          <input
-                            className="form-control d-none"
-                            type="file"
-                            name="image"
-                            id="image"
-                            accept="image/*"
-                            onChange={(e) => handleFileCategoryUpload(e)}
-                          />
-                        </div>
-                        <div className="avatar-xl">
-                          <div className="avatar-title bg-light rounded-3">
-                            <img
-                              src={`data:image/jpeg;base64, ${categoryData.image}`}
-                              alt=""
-                              id="category-img"
-                              className="avatar-md h-auto rounded-3 object-fit-cover"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="error-msg mt-1">
-                        Please add a category images.
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={12} className="modal-footer">
-                    <div className="hstack gap-2 justify-content-end">
-                      <Button
-                        className="btn-ghost-danger"
-                        onClick={() => {
-                          tog_AddCategorysModals();
-                        }}
-                      >
-                        <i className="ri-close-line align-bottom me-1"></i>{" "}
-                        Fermer
-                      </Button>
-                      <Button
-                        type={"submit"}
-                        onClick={() => {
-                          tog_AddCategorysModals();
-                        }}
-                        variant="primary"
-                        id="add-btn"
-                      >
-                        Ajouter
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
+              <ModalCategory />
             </Modal.Body>
           </Modal>
 

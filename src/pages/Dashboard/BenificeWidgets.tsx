@@ -43,7 +43,7 @@ const BenificeWidgets = () => {
 
   const widgetsData: Array<WidgetsProps> = [
     {
-      id: 3,
+      id: 6,
       name: "TOTAL Bénifices ",
       amount: totalBenifice,
       icon: "bx bx-money",
@@ -52,38 +52,43 @@ const BenificeWidgets = () => {
   ];
   return (
     <Col lg={4}>
-      {(widgetsData || []).map((item: any, key: number) => (
-        <Card className="card-animate mb-3 bg-info bg-opacity-25 border-0">
-          <Card.Body key={key}>
-            <div className="d-flex justify-content-between">
-              <div
-                className={"vr rounded bg-" + item.iconColor + " opacity-50"}
-                style={{ width: "6px" }}
-              ></div>
-              <div className="flex-grow-1 ms-2">
-                <p className="text-uppercase fw-medium text-dark fs-15 text-truncate">
-                  {item.name}
-                </p>
-                <h4 className="fs-15 fw-semibold mb-3">
-                  <span className="counter-value" data-target="98851.35">
-                    <CountUp start={0} end={item.amount} separator="," /> DT
-                  </span>
-                </h4>
-                {/* </div> */}
-              </div>
-              <div className="avatar-sm flex-shrink-0">
-                <span
-                  className={
-                    "avatar-title bg-info bg-opacity-25 text-info rounded fs-1"
-                  }
-                >
-                  <i className={item.icon}></i>
+      <Card className="card-animate mb-3 bg-info bg-opacity-25 border-0">
+        <Card.Body>
+          <div className="d-flex justify-content-between">
+            <div
+              className={
+                "vr rounded bg-" + widgetsData[0].iconColor + " opacity-50"
+              }
+              style={{ width: "6px" }}
+            ></div>
+            <div className="flex-grow-1 ms-2">
+              <p className="text-uppercase fw-medium text-dark fs-15 text-truncate">
+                {widgetsData[0].name}
+              </p>
+              <h4 className="fs-15 fw-semibold mb-3">
+                <span className="counter-value" data-target="98851.35">
+                  <CountUp
+                    start={0}
+                    end={widgetsData[0].amount}
+                    separator=","
+                  />{" "}
+                  DT
                 </span>
-              </div>
+              </h4>
+              {/* </div> */}
             </div>
-          </Card.Body>
-        </Card>
-      ))}
+            <div className="avatar-sm flex-shrink-0">
+              <span
+                className={
+                  "avatar-title bg-info bg-opacity-25 text-info rounded fs-1"
+                }
+              >
+                <i className={widgetsData[0].icon}></i>
+              </span>
+            </div>
+          </div>
+        </Card.Body>
+      </Card>
     </Col>
   );
 };

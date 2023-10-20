@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 interface ChildProps {
-  amount: number;
+  amount: string;
 }
 const Amount: React.FC<ChildProps> = ({ amount }) => {
   const toWords = new ToWords({
@@ -43,7 +43,7 @@ const Amount: React.FC<ChildProps> = ({ amount }) => {
       },
     },
   });
-  let words = toWords.convert(amount);
+  let words = toWords.convert(parseInt(amount));
 
   return (
     <View style={styles.container}>

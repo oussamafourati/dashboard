@@ -8,6 +8,7 @@ import {
   Row,
   Modal,
 } from "react-bootstrap";
+import Swal from "sweetalert2";
 import CountUp from "react-countup";
 import Breadcrumb from "Common/BreadCrumb";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -19,7 +20,7 @@ import dayjs, { Dayjs } from "dayjs";
 import PaiementTotal from "./PaiementTotal";
 import PaiementEspece from "./PaiementEspece";
 import PaiementCheque from "./PaiementCheque";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
@@ -29,9 +30,14 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useFetchOneUserQuery } from "features/compte/compteSlice";
 import {
   ClientMorale,
-  useAddClientMoraleMutation,
   useFetchClientMoralesQuery,
 } from "features/clientMoral/clientMoralSlice";
+import ModalClientMoral from "pages/ClientMor/ModalClientMoral";
+import { useCreateNewLigneVenteMutation } from "features/ligneVente/ligneVenteSlice";
+import {
+  useAddFactureMutation,
+  useFetchAllFactureQuery,
+} from "features/facture/factureSlice";
 
 interface FormFields {
   PU: string;
@@ -39,14 +45,25 @@ interface FormFields {
   productName: string;
   montantTtl: string;
   numFacture: string;
+  factureID: string;
   benifice: string;
   [key: string]: string;
 }
 
 const ProInvoice: React.FC = () => {
   document.title = "Créer Facture | Radhouani";
+  const navigate = useNavigate();
+  let dateNow = dayjs();
+  const [nowDate, setNowDate] = React.useState<Dayjs | null>(dateNow);
 
-  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>();
+  let { data = [] } = useFetchAllFactureQuery();
+  let lastFacturePro = data.slice(-1);
+  let key = parseInt(lastFacturePro[0]?.designationFacture!.substr(0, 3)) + 1;
+  let idLastFacturePto = (lastFacturePro[0]?.idFacture! + 1).toString();
+
+  const newKeyPro = `${key}/${nowDate?.year()}`;
+
+  const [pourcentageBenifice, setPourcentageBenifice] = useState<number>(0);
   const onChangePourcentageBenifice = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -91,7 +108,7 @@ const ProInvoice: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "http://localhost:8000/clientMo/moraleclients"
+        "https://app.src.smartschools.tn/clientMo/moraleclients"
       );
       const resdata = await reqdata.json();
       setClientMorale(resdata);
@@ -103,7 +120,7 @@ const ProInvoice: React.FC = () => {
     const clientMoraleid = e.target.value;
     if (clientMoraleid !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/clientMo/oneClientMorale/${clientMoraleid}`
+        `https://app.src.smartschools.tn/clientMo/oneClientMorale/${clientMoraleid}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -118,78 +135,8 @@ const ProInvoice: React.FC = () => {
     useFetchClientMoralesQuery();
 
   // Mutation to create a new Client
-  const [createClientMorale] = useAddClientMoraleMutation();
-
-  const [clientMData, setClientMData] = useState({
-    idclient_m: 99,
-    raison_sociale: "",
-    adresse: "",
-    tel: "",
-    mail: "",
-    mat: "",
-    logo: "",
-    rib: "",
-    etat: 1,
-    remarque: "",
-    credit: 123,
-    piecejointes: "",
-  });
-  const {
-    raison_sociale,
-    adresse,
-    tel,
-    mail,
-    mat,
-    logo,
-    rib,
-    etat,
-    remarque,
-    credit,
-    piecejointes,
-  } = clientMData;
-
-  const onClientMoraleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setClientMData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  };
 
   const [state, setState] = useState({ loading: false });
-  const onClientMoraleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    createClientMorale(clientMData).then(() => setClientMData(clientMData));
-    setState({ ...state, loading: true });
-  };
-
-  const handleClientMoraleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const fileLogo = (
-      document.getElementById("logo") as HTMLInputElement
-    ).files?.item(0) as File;
-
-    const base64 = await convertToBase64(fileLogo);
-    setClientMData({
-      ...clientMData,
-      logo: base64 as string,
-    });
-  };
-
-  function convertToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        const base64String = fileReader.result as string;
-        const base64Data = base64String.split(",")[1];
-        resolve(base64Data);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  }
 
   // Modal to create a new client morale
   const [modal_AddClientMoraleModals, setmodal_AddClientMoraleModals] =
@@ -200,6 +147,25 @@ const ProInvoice: React.FC = () => {
 
   // The selected drink
   const [selectedReglement, setSelectedReglement] = useState<String>();
+  const [paymentMode, setPaymentMode] = useState<string>("");
+  useEffect(() => {
+    if (selectedReglement === "Paiement total en espèces") {
+      setPaymentMode("Espece");
+    } else if (selectedReglement === "Paiement partiel espèces") {
+      setPaymentMode("Par tranche");
+    } else {
+      setPaymentMode("Cheque");
+    }
+  });
+
+  const [paymmentStatus, setPaymentStatus] = useState<number>(0);
+  useEffect(() => {
+    if (selectedReglement === "Paiement total en espèces") {
+      setPaymentStatus(2);
+    } else {
+      setPaymentStatus(0);
+    }
+  });
 
   // This function will be triggered when a radio button is selected
   const radioHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,6 +194,8 @@ const ProInvoice: React.FC = () => {
     valueDate!.month() + 1
   }-${valueDate!.date()}`;
 
+  const [createNewLigneVente] = useCreateNewLigneVenteMutation();
+
   const [formFields, setFormFields] = useState<FormFields[]>([
     {
       PU: "",
@@ -236,6 +204,7 @@ const ProInvoice: React.FC = () => {
       productName: "",
       numFacture: "",
       benifice: "",
+      factureID: "",
     },
   ]);
 
@@ -246,14 +215,6 @@ const ProInvoice: React.FC = () => {
     let data = [...formFields];
     data[index][event.target.name] = event.target.value;
     setFormFields(data);
-    // setFactureData((prevState) => ({
-    //   ...prevState,
-    //   [event.target.id]: event.target.value,
-    // }));
-  };
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // console.log(formFields);
   };
 
   const montantTotal =
@@ -266,7 +227,8 @@ const ProInvoice: React.FC = () => {
       quantiteProduit: "",
       productName: "",
       numFacture: "",
-      benifice: "",
+      benifice: pourcentageBenifice!.toString(),
+      factureID: "",
     };
     setFormFields([...formFields, object]);
   };
@@ -276,6 +238,100 @@ const ProInvoice: React.FC = () => {
     data.splice(index, 1);
     setFormFields(data);
   };
+
+  const errorNotify = (err: any) => {
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: `Ooops, ${err}, Quelque chose n'a pas fonctionné !!`,
+      showConfirmButton: false,
+      timer: 2000,
+    });
+  };
+
+  useEffect(() => {
+    formFields[formFields.length - 1]["productName"] = acValue?.nomProduit!;
+    // formFields[formFields.length - 1]["benifice"] = pourcentageBenifice!;
+    localStorage.setItem("invoice", JSON.stringify(formFields));
+  }, [formFields]);
+
+  async function handleAddLigneVentePro() {
+    try {
+      var jsonData = JSON.parse(localStorage.getItem("invoice") || "[]");
+      for (var i = 0; i < jsonData.length; i++) {
+        var lignevente = jsonData[i];
+        lignevente["numFacture"] = newKeyPro;
+        lignevente["benifice"] = pourcentageBenifice;
+        lignevente["factureID"] = idLastFacturePto;
+        await createNewLigneVente(lignevente);
+      }
+    } catch (err) {
+      errorNotify(err);
+    }
+  }
+
+  // sweetalert Notification
+  const notify = () => {
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "La facture a été créer avec succès",
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  };
+
+  const [totalInvoice, setTotalInvoice] = useState<number>(0);
+
+  useEffect(() => {
+    setTotalInvoice(
+      formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl)), 0)
+    );
+  });
+
+  let result: number =
+    formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl!)), 0) || 0;
+
+  const [idFacture, setIdLigneVente] = useState(0);
+  const [designationFacture, setDesignationFacture] = useState("");
+  const [dateFacturation, setDateFacturation] = useState("");
+  const [datePaiement, setDatePaiement] = useState("");
+  const [modePaiement, setModePaiement] = useState("");
+  const [statusFacture, setStatusFacture] = useState(0);
+  const [MontantTotal, setMontantTotal] = useState(0);
+  const [nomClient, setNomClient] = useState("");
+  const [clientID, setClientID] = useState(23);
+  const [addFacture] = useAddFactureMutation();
+
+  async function handleAddFacture() {
+    try {
+      await addFacture({
+        idFacture,
+        designationFacture: newKeyPro,
+        dateFacturation: newDate,
+        datePaiement: newDate,
+        modePaiement: paymentMode,
+        statusFacture: paymmentStatus,
+        MontantTotal: totalInvoice,
+        nomClient: clientValue!.raison_sociale!,
+        clientID: clientValue?.idclient_m!,
+      })
+        .unwrap()
+        .then(handleAddLigneVentePro)
+        .then(() => notify())
+        .then(() => navigate("/liste-factures"));
+      setDesignationFacture("");
+      setIdLigneVente(1);
+      setDateFacturation("");
+      setDatePaiement("");
+      setModePaiement("");
+      setNomClient("");
+      setStatusFacture(0);
+      setClientID(23);
+    } catch (err) {
+      errorNotify(err);
+    }
+  }
 
   // Modal to create a new client physique
   const [modal_AddCodeUser, setmodal_AddCodeUser] = useState<boolean>(false);
@@ -291,8 +347,6 @@ const ProInvoice: React.FC = () => {
   const onChangeCodeClient = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCodeClient(e.target.value);
   };
-
-  const { data: OneUser } = useFetchOneUserQuery(codeClient);
 
   const handleSubmitCodeClient = (e: React.FormEvent) => {
     e.preventDefault();
@@ -370,8 +424,9 @@ const ProInvoice: React.FC = () => {
                           type="text"
                           id="invoicenoInput"
                           placeholder="25000355"
-                          sx={{ width: 320 }}
+                          sx={{ width: 220 }}
                           className="mb-2"
+                          value={newKeyPro}
                         />
                       </Col>
                       <Col lg={4} sm={6}>
@@ -388,11 +443,12 @@ const ProInvoice: React.FC = () => {
                             slotProps={{
                               textField: {
                                 size: "small",
-                                inputProps: { ["placeholder"]: "DD-MM-YYYY" },
                               },
                             }}
                             format="DD-MM-YYYY"
-                            sx={{ width: 320 }}
+                            value={valueDate}
+                            onChange={(newValue) => setValueDate(newValue)}
+                            sx={{ width: 220 }}
                           />
                         </LocalizationProvider>
                       </Col>
@@ -401,12 +457,12 @@ const ProInvoice: React.FC = () => {
                   <Card.Body className="p-3">
                     <div>
                       <Row>
-                        <Col lg={4}>
+                        <Col lg={4} className="text-center">
                           <Form.Label htmlFor="nomProduit">
                             Détail Produit
                           </Form.Label>
                         </Col>
-                        <Col lg={1}>
+                        <Col lg={1} className="text-center">
                           <Form.Label htmlFor="quantiteProduit">
                             Quantité
                           </Form.Label>
@@ -417,7 +473,7 @@ const ProInvoice: React.FC = () => {
                         <Col lg={1} className="text-center">
                           <Form.Label htmlFor="benifice">Benifice</Form.Label>
                         </Col>
-                        <Col lg={2} className="text-center">
+                        <Col lg={3} className="text-center">
                           <Form.Label htmlFor="montantTtl">Montant</Form.Label>
                         </Col>
                         <Col lg={1}></Col>
@@ -427,7 +483,7 @@ const ProInvoice: React.FC = () => {
                           <Col lg={4} sm={6} className="mb-2">
                             <Autocomplete
                               id="nomProduit"
-                              sx={{ width: 320 }}
+                              sx={{ width: 220 }}
                               options={allArrivageProduit}
                               autoHighlight
                               onChange={(event, value) => {
@@ -462,7 +518,7 @@ const ProInvoice: React.FC = () => {
                               )}
                             />
                           </Col>
-                          <Col lg={1} sm={6}>
+                          <Col lg={1} sm={6} className="text-center">
                             <TextField
                               className="mb-2"
                               sx={{ width: 80 }}
@@ -502,9 +558,9 @@ const ProInvoice: React.FC = () => {
                               value={pourcentageBenifice}
                               className="mb-2"
                             />{" "} */}
-                            <CountUp end={pourcentageBenifice!} separator="," />
+                            <CountUp end={pourcentageBenifice} separator="," />
                           </Col>
-                          <Col lg={2} sm={6} className="text-center mt-2">
+                          <Col lg={3} sm={6} className="text-center mt-2">
                             <CountUp
                               end={parseInt(
                                 (form.montantTtl = (
@@ -512,7 +568,7 @@ const ProInvoice: React.FC = () => {
                                     parseInt(form.quantiteProduit) +
                                   ((parseInt(form.PU) / 1.19) *
                                     parseInt(form.quantiteProduit) *
-                                    pourcentageBenifice!) /
+                                    pourcentageBenifice) /
                                     100
                                 ).toString())
                               )}
@@ -520,7 +576,7 @@ const ProInvoice: React.FC = () => {
                               separator=","
                             />
                           </Col>
-                          <Col lg={1} className="mt-2" sm={6}>
+                          <Col lg={1} className="text-center mt-2" sm={6}>
                             <Link
                               to="#"
                               className="link-danger"
@@ -553,13 +609,13 @@ const ProInvoice: React.FC = () => {
                       <Button
                         onClick={addFields}
                         variant="primary"
-                        className="p-1"
+                        className="p-1 mb-2"
                         id="btn-new-event"
                       >
                         <i className="mdi mdi-plus"></i>{" "}
                       </Button>
                       <Row className="mt-1">
-                        <Col lg={11}></Col>
+                        <Col lg={10}></Col>
                         <Col lg={1} className="mt-1">
                           <TextField
                             sx={{ width: 88 }}
@@ -594,7 +650,7 @@ const ProInvoice: React.FC = () => {
                                     parseInt(i.quantiteProduit) +
                                   ((parseInt(i.PU) / 1.19) *
                                     parseInt(i.quantiteProduit) *
-                                    pourcentageBenifice!) /
+                                    pourcentageBenifice) /
                                     100),
                               0
                             )}
@@ -752,22 +808,26 @@ const ProInvoice: React.FC = () => {
                       </Col> */}
                     </Row>
                     <div className="hstack gap-2 justify-content-end d-print-none mt-0">
-                      <Button
+                      {/* <Button
                         variant="success"
                         type="submit"
                         onClick={() => tog_AddCodeUser()}
                       >
                         <i className="ph ph-coin align-bottom me-1 fs-5"></i>{" "}
                         Paiement
-                      </Button>
-                      <Button variant="secondary" type="submit">
+                      </Button> */}
+                      <Button
+                        variant="secondary"
+                        type="submit"
+                        onClick={handleAddFacture}
+                      >
                         <i className="ri-save-3-fill align-bottom me-1"></i>{" "}
                         Enregister
                       </Button>
-                      <Link to="#" className="btn btn-primary">
+                      {/* <Link to="#" className="btn btn-primary">
                         <i className="ri-download-2-line align-bottom me-1"></i>{" "}
                         Telecharger
-                      </Link>
+                      </Link> */}
                     </div>
                   </Card.Body>
                 </Form>
@@ -791,196 +851,7 @@ const ProInvoice: React.FC = () => {
               </h5>
             </Modal.Header>
             <Modal.Body className="p-4">
-              <Form className="tablelist-form">
-                <Row>
-                  <div
-                    id="alert-error-msg"
-                    className="d-none alert alert-danger py-2"
-                  ></div>
-                  <input type="hidden" id="id-field" />
-                  <Col lg={12}>
-                    <div className="text-center mb-3">
-                      <div className="position-relative d-inline-block">
-                        <div className="position-absolute top-100 start-100 translate-middle">
-                          <label
-                            htmlFor="logo"
-                            className="mb-0"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="Select Client Physique Avatar"
-                          >
-                            <span className="avatar-xs d-inline-block">
-                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                                <i className="ri-image-fill"></i>
-                              </span>
-                            </span>
-                          </label>
-                          <input
-                            className="form-control d-none"
-                            type="file"
-                            name="logo"
-                            id="logo"
-                            accept="image/*"
-                            onChange={(e) => handleClientMoraleFileUpload(e)}
-                          />
-                        </div>
-                        <div className="avatar-lg">
-                          <div className="avatar-title bg-light rounded-3">
-                            <img
-                              src={`data:image/jpeg;base64, ${clientMData.logo}`}
-                              alt=""
-                              id="category-img"
-                              className="avatar-md h-auto rounded-3 object-fit-cover"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="error-msg mt-1">
-                        Please add a category images.
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={6} className="mt-2">
-                    <div className="mb-3">
-                      <Form.Label htmlFor="raison_sociale">
-                        Raison Sociale
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.raison_sociale}
-                        onChange={onClientMoraleChange}
-                        id="raison_sociale"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6} className="mt-2">
-                    <div className="mb-3">
-                      <Form.Label htmlFor="mat">Matricule Fiscale</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.mat}
-                        onChange={onClientMoraleChange}
-                        id="mat"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={4}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="rib">RIB</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.rib}
-                        onChange={onClientMoraleChange}
-                        id="rib"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="tel">Telephone</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.tel}
-                        onChange={onClientMoraleChange}
-                        id="tel"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={5}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="adresse">Adresse</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.adresse}
-                        onChange={onClientMoraleChange}
-                        id="adresse"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="mail">E-mail</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.mail}
-                        onChange={onClientMoraleChange}
-                        id="mail"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="etat">Etat</Form.Label>
-                      <select
-                        className="form-select"
-                        data-choices
-                        data-choices-search-false
-                        id="choices-payment-status"
-                        required
-                      >
-                        <option value=""></option>
-                        <option value="Actif">Actif</option>
-                        <option value="Inactif">Inactif</option>
-                      </select>
-                    </div>
-                  </Col>
-                  {/* <Col lg={4}>
-                <div className="mb-3">
-                  <Form.Label htmlFor="credit">Credit</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientMData.credit}
-                    onChange={onClientMoraleChange}
-                    id="credit"
-                    placeholder="Entrer crédit"
-                    required
-                  />
-                </div>
-              </Col> */}
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="remarque">Remarque</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={clientMData.remarque}
-                        onChange={onClientMoraleChange}
-                        id="remarque"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={12} className="modal-footer">
-                    <div className="hstack gap-2 justify-content-end">
-                      <Button
-                        className="btn-ghost-danger"
-                        onClick={() => {
-                          tog_AddClientMoraleModals();
-                        }}
-                      >
-                        <i className="ri-close-line align-bottom me-1"></i>{" "}
-                        Fermer
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          tog_AddClientMoraleModals();
-                        }}
-                        type={"submit"}
-                        variant="primary"
-                        id="add-btn"
-                      >
-                        Ajouter
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
+              <ModalClientMoral />
             </Modal.Body>
           </Modal>
           {/* ******Modal For User****** */}

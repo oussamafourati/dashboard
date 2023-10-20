@@ -19,15 +19,15 @@ export interface ArrivageProduit {
   montantTotal?: number;
   dateArrivage?: string;
   fournisseurID?: number;
-  TotalQuantity?: number;
+  TotalQuantity?: string;
   SUMTOTAL?: number;
-  seuil_product?: number;
+  seuil_product?: string;
 }
 
 export const arrivageProduitSlice = createApi({
   reducerPath: "arrivageProduit",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/arrivageProduit/",
+    baseUrl: "https://app.src.smartschools.tn/arrivageProduit/",
   }),
   tagTypes: ["ArrivageProduit"],
   endpoints(builder) {

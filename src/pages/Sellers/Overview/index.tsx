@@ -418,7 +418,7 @@ const SellersOverview = () => {
                                   end={montantTotalFactures}
                                   separator=","
                                 />
-                                Dt
+                                DT
                               </h4>
                             </div>
                             <div className="avatar-sm flex-shrink-0">

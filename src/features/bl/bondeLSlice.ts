@@ -5,21 +5,23 @@ export interface BondeLivraison {
   designationBL: string;
   dateBL: string;
   montant: number;
-  clientid: number;
-  raison_sociale: string;
-  PU: string;
-  montantTtl: string;
-  quantiteProduit: string;
-  productName: string;
-  adresse: string;
-  tel: string;
-  mat: string;
+  clientID: number;
+  raison_sociale?: string;
+  PU?: string;
+  montantTtl?: string;
+  quantiteProduit?: string;
+  productName?: string;
+  benifice?: string;
+  numBL?: string;
+  adresse?: string;
+  tel?: string;
+  mat?: string;
 }
 
 export const blSlice = createApi({
   reducerPath: "bl",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/bl/",
+    baseUrl: "https://app.src.smartschools.tn/bl/",
   }),
   tagTypes: ["BondeLivraison"],
   endpoints(builder) {

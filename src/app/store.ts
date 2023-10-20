@@ -1,11 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 import LayoutReducer from "../slices/layouts/reducer";
-import CalendarReducer from "../slices/calendar/reducer";
 // Authentication
 import LoginReducer from "../slices/auth/login/reducer";
-import AccountReducer from "../slices/auth/register/reducer";
 import ForgetPasswordReducer from "../slices/auth/forgetpwd/reducer";
 import ProfileReducer from "../slices/auth/profile/reducer";
 import DashboardReducer from "../slices/dashboard/reducer";
@@ -25,6 +24,7 @@ import { echanceSlice } from "features/Echance/echanceSlice";
 import { devisSlice } from "features/devis/devisSlice";
 import { notesSlice } from "features/notes/notesSlice";
 import { blSlice } from "features/bl/bondeLSlice";
+import authReducer from "../features/compte/authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -44,9 +44,8 @@ export const store = configureStore({
     [devisSlice.reducerPath]: devisSlice.reducer,
     [notesSlice.reducerPath]: notesSlice.reducer,
     [blSlice.reducerPath]: blSlice.reducer,
+    auth: authReducer,
     Layout: LayoutReducer,
-    Login: LoginReducer,
-    Account: AccountReducer,
     ForgetPassword: ForgetPasswordReducer,
     Profile: ProfileReducer,
     Dashboard: DashboardReducer,
@@ -72,6 +71,7 @@ export const store = configureStore({
     ]);
   },
 });
-
+// optional, but required for refetchOnFocus/refetchOnReconnect behaviors
+setupListeners(store.dispatch);
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

@@ -15,7 +15,7 @@ export interface Devis {
 export const devisSlice = createApi({
   reducerPath: "devis",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/devis/",
+    baseUrl: "https://app.src.smartschools.tn/devis/",
   }),
   tagTypes: ["Devis"],
   endpoints(builder) {

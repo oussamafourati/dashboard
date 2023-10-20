@@ -1,5 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { RootState } from "app/store";
 
+export interface UserResponse {
+  results: Compte;
+  token: string;
+  message: string;
+}
 export interface Compte {
   idCompte: number;
   fullname: string;
@@ -10,10 +16,23 @@ export interface Compte {
   avatar: string;
 }
 
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
 export const compteSlice = createApi({
   reducerPath: "compte",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/user/",
+    baseUrl: "https://app.src.smartschools.tn/user/",
+    prepareHeaders: (headers, { getState }) => {
+      // By default, if we have a token in the store, let's use that for authenticated requests
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   tagTypes: ["Compte"],
   endpoints(builder) {
@@ -38,15 +57,12 @@ export const compteSlice = createApi({
         },
         invalidatesTags: ["Compte"],
       }),
-      login: builder.mutation({
-        query(body: { username: string; password: string }) {
-          return {
-            url: `/login`,
-            method: "POST",
-            body,
-          };
-        },
-        invalidatesTags: ["Compte"],
+      login: builder.mutation<UserResponse, LoginRequest>({
+        query: (credentials) => ({
+          url: "/login",
+          method: "POST",
+          body: credentials,
+        }),
       }),
       deleteCompte: builder.mutation<void, number>({
         query: (idCompte) => ({

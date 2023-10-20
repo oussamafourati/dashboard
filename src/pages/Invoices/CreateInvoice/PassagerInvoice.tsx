@@ -16,7 +16,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/fr";
 import { frFR } from "@mui/x-date-pickers/locales";
 import dayjs, { Dayjs } from "dayjs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Swal from "sweetalert2";
@@ -25,7 +25,6 @@ import PaiementEspece from "./PaiementEspece";
 import PaiementCheque from "./PaiementCheque";
 import {
   ClientPhysique,
-  useAddClientPhysiqueMutation,
   useGetOneClientQuery,
 } from "features/clientPhysique/clientPhysiqueSlice";
 import {
@@ -35,23 +34,13 @@ import {
 import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
+  useUpdateStoreMutation,
 } from "features/arrivageProduit/arrivageProduitSlice";
-import { useCreateNewLigneVenteMutation } from "features/ligneVente/ligneVenteSlice";
-
-// PDF
 import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import HeaderInvoice from "../InvoiceDetails/HeaderInvoice";
-import ClientDevis from "pages/Devis/DevisDetails/ClientDevis";
-import Amount from "pages/Devis/DevisDetails/Amount";
-import ProposalSignature from "pages/Devis/DevisDetails/ProposalSignature";
+  LigneVente,
+  useCreateNewLigneVenteMutation,
+} from "features/ligneVente/ligneVenteSlice";
+import ModalClientPhy from "pages/ClientPhy/ModalClientPhy";
 
 interface FormFields {
   PU: string;
@@ -59,53 +48,23 @@ interface FormFields {
   productName: string;
   montantTtl: string;
   numFacture: string;
-  subTtl: string;
-  [key: string]: string;
+  factureID: string;
+  produitID: string | undefined;
+  arrivageID: string | undefined;
+  [key: string]: string | undefined;
 }
 
-const styles = StyleSheet.create({
-  body: {
-    backgroundColor: "#ffffff",
-    fontFamiy: "Source Sans",
-    fontSize: 12,
-    lineHeight: 1.4,
-    paddingTop: 32,
-    paddingBottom: 16,
-    paddingHorizontal: 32,
-    height: "100vh",
-  },
-  top: {
-    flex: 1,
-  },
-});
-// const PDF_REPORT_Document = (props: any) => {
-//   const { rowData } = props;
-//   return (
-//     <Document>
-//       <Page size="A4" style={styles.body}>
-//         <View style={styles.top}>
-//           <HeaderInvoice />
-//           <ClientDevis />
-//         </View>
-//         <View>
-//           <Amount />
-//           <ProposalSignature />
-//         </View>
-//       </Page>
-//     </Document>
-//   );
-// };
-
 const PassagerInvoice: React.FC = () => {
+  const navigate = useNavigate();
   let dateNow = dayjs();
   const [nowDate, setNowDate] = React.useState<Dayjs | null>(dateNow);
 
   let { data = [] } = useFetchAllFactureQuery();
   let lastFacture = data.slice(-1);
   let key = parseInt(lastFacture[0]?.designationFacture!.substr(0, 3)) + 1;
-  console.log(key);
+  let idLastFacture = (lastFacture[0]?.idFacture! + 1).toString();
+
   const newKey = `${key}/${nowDate?.year()}`;
-  console.log(newKey);
 
   const filterOptions = (
     options: ClientPhysique[],
@@ -132,6 +91,16 @@ const PassagerInvoice: React.FC = () => {
     });
   };
 
+  const errorNotify = (err: any) => {
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: `Ooops, ${err}, Quelque chose n'a pas fonctionné !!`,
+      showConfirmButton: false,
+      timer: 2000,
+    });
+  };
+
   {
     /********** Client Physique *********/
   }
@@ -141,7 +110,9 @@ const PassagerInvoice: React.FC = () => {
 
   useEffect(() => {
     const getClientPhysique = async () => {
-      const reqdata = await fetch("http://localhost:8000/clientPyh/clients");
+      const reqdata = await fetch(
+        "https://app.src.smartschools.tn/clientPyh/clients"
+      );
       const resdata = await reqdata.json();
       setClientPhysique(resdata);
     };
@@ -152,7 +123,7 @@ const PassagerInvoice: React.FC = () => {
     const clientPhysiqueId = e.target.value;
     if (clientPhysiqueId !== "") {
       const reqstatedata = await fetch(
-        `http://localhost:8000/clientPyh/one/18`
+        `https://app.src.smartschools.tn/clientPyh/one/18`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -161,88 +132,10 @@ const PassagerInvoice: React.FC = () => {
       setSelected([]);
     }
   };
-  // Mutation to create a new Client
-  const [createClientPhysique] = useAddClientPhysiqueMutation();
-  const [selectedEtat, setSelectedEtat] = useState<string>("");
-  // This function is triggered when the select changes
-  const selectChangeEtat = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-    setSelectedEtat(value);
-  };
 
   const [clientValue, setClientValue] = useState<ClientPhysique | null>(
     clientPhysique[0]
   );
-
-  const [formData, setFormData] = useState({
-    idclient_p: 99,
-    raison_sociale: "",
-    adresse: "",
-    tel: "",
-    mail: "",
-    cin: "",
-    avatar: "",
-    rib: "",
-    etat: 1,
-    remarque: "",
-    credit: 123,
-    piecejointes: "",
-  });
-
-  const {
-    raison_sociale,
-    adresse,
-    tel,
-    mail,
-    cin,
-    avatar,
-    rib,
-    etat,
-    remarque,
-    credit,
-    piecejointes,
-  } = formData;
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  };
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    formData["etat"] = parseInt(selectedEtat);
-    e.preventDefault();
-    createClientPhysique(formData).then(() => setFormData(formData));
-  };
-
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const fileLogo = (
-      document.getElementById("avatar") as HTMLInputElement
-    ).files?.item(0) as File;
-    const base64 = await convertToBase64(fileLogo);
-    setFormData({
-      ...formData,
-      avatar: base64 as string,
-    });
-  };
-
-  function convertToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        const base64String = fileReader.result as string;
-        const base64Data = base64String.split(",")[1];
-        resolve(base64Data);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  }
 
   {
     /******  Arrivage/Produit *******/
@@ -294,50 +187,6 @@ const PassagerInvoice: React.FC = () => {
   {
     /*****  Facture ******/
   }
-  let now = dayjs();
-  const [value, setValue] = React.useState<Dayjs | null>(now);
-  const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
-
-  const { data: oneClient } = useGetOneClientQuery(clientValue?.idclient_p!);
-
-  const [idFacture, setIdLigneVente] = useState(0);
-  const [designationFacture, setDesignationFacture] = useState("");
-  const [dateFacturation, setDateFacturation] = useState("");
-  const [datePaiement, setDatePaiement] = useState("");
-  const [modePaiement, setModePaiement] = useState("");
-  const [statusFacture, setStatusFacture] = useState(0);
-  const [MontantTotal, setMontantTotal] = useState(0);
-  const [nomClient, setNomClient] = useState("");
-  const [clientID, setClientID] = useState(18);
-  const [addFacture, { isLoading }] = useAddFactureMutation();
-
-  async function handleAddFacture() {
-    try {
-      await addFacture({
-        idFacture,
-        designationFacture: newKey,
-        dateFacturation: newDate,
-        datePaiement,
-        modePaiement,
-        statusFacture,
-        MontantTotal,
-        nomClient: clientValue?.raison_sociale!,
-        clientID: clientValue?.idclient_p!,
-      }).unwrap();
-      setDesignationFacture("");
-      setIdLigneVente(1);
-      setDateFacturation("");
-      setDatePaiement("");
-      setModePaiement("");
-      setNomClient("");
-      setStatusFacture(0);
-      setClientID(18);
-      notify();
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   const factureValue = {
     idFacture: 1,
     designationFacture: "",
@@ -357,7 +206,9 @@ const PassagerInvoice: React.FC = () => {
       quantiteProduit: "",
       productName: "",
       numFacture: "",
-      subTtl: "",
+      factureID: "",
+      produitID: "",
+      arrivageID: "",
     },
   ]);
   const [acValue, setACValue] = useState<ArrivageProduit | null>(
@@ -376,19 +227,27 @@ const PassagerInvoice: React.FC = () => {
       [event.target.id]: event.target.value,
     }));
   };
+  const [totalInvoice, setTotalInvoice] = useState<number>(0);
+
+  useEffect(() => {
+    setTotalInvoice(
+      formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl)), 0)
+    );
+  });
+  let total = formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl)), 0);
 
   const addFields = (e: React.FormEvent) => {
     let object: FormFields = {
       PU: "",
       montantTtl: "",
       quantiteProduit: "",
-      productName: acValue?.nomProduit!,
-      numFacture: designationFacture,
-      subTtl: "",
+      productName: "",
+      numFacture: "",
+      factureID: "",
+      produitID: "",
+      arrivageID: "",
     };
     setFormFields([...formFields, object]);
-    e.preventDefault();
-    createLigneVente(object);
   };
   const removeFields = (index: number) => {
     let data = [...formFields];
@@ -396,22 +255,118 @@ const PassagerInvoice: React.FC = () => {
     setFormFields(data);
   };
 
-  const total = formFields.reduce(
-    (sum, i) => (sum += parseInt(i.montantTtl)),
-    0
-  );
+  useEffect(() => {
+    formFields[formFields.length - 1]["productName"] = acValue?.nomProduit!;
+    formFields[formFields.length - 1]["factureID"] = idLastFacture;
+    formFields[formFields.length - 1]["produitID"] =
+      acValue?.produitID!.toString();
+    formFields[formFields.length - 1]["arrivageID"] =
+      acValue?.arrivageID!.toString();
+    localStorage.setItem("items", JSON.stringify(formFields));
+  }, [formFields]);
+
+  async function handleAddLigneVente() {
+    try {
+      var jsonData = JSON.parse(localStorage.getItem("items") || "[]");
+      for (var i = 0; i < jsonData.length; i++) {
+        var lignevente = jsonData[i];
+        lignevente["numFacture"] = newKey;
+        await createLigneVente(lignevente);
+      }
+    } catch (err) {
+      errorNotify(err);
+    }
+  }
+
+  const [updateStore] = useUpdateStoreMutation();
+
+  async function handleUpdateStore() {
+    try {
+      var jsonData = JSON.parse(localStorage.getItem("items") || "[]");
+      for (var i = 0; i < jsonData.length; i++) {
+        var lignevente = jsonData[i];
+        await updateStore({
+          idArrivageProduit: acValue?.idArrivageProduit!,
+          produitID: acValue?.produitID!,
+          arrivageID: acValue?.arrivageID!,
+          quantite: lignevente["quantiteProduit"],
+        }).unwrap();
+      }
+    } catch (err) {
+      errorNotify(err);
+    }
+  }
 
   const [count, setCount] = useState<number | undefined>();
   const [remise, setRemise] = useState<number | undefined>();
   useEffect(() => {
     setRemise(100 - (count! * 100) / total);
   });
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // addFacture(factureData).then(() => setFactureData(factureValue));
-    // console.log(formFields);
-  };
 
+  const [paymentMode, setPaymentMode] = useState<string>("");
+  useEffect(() => {
+    if (selectedReglement === "Paiement total en espèces") {
+      setPaymentMode("Espece");
+    } else if (selectedReglement === "Paiement partiel espèces") {
+      setPaymentMode("Par tranche");
+    } else {
+      setPaymentMode("Cheque");
+    }
+  });
+  const [paymmentStatus, setPaymentStatus] = useState<number>(0);
+  useEffect(() => {
+    if (selectedReglement === "Paiement total en espèces") {
+      setPaymentStatus(2);
+    } else {
+      setPaymentStatus(0);
+    }
+  });
+
+  let now = dayjs();
+  const [value, setValue] = React.useState<Dayjs | null>(now);
+  const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
+
+  const [idFacture, setIdLigneVente] = useState(0);
+  const [designationFacture, setDesignationFacture] = useState("");
+  const [dateFacturation, setDateFacturation] = useState("");
+  const [datePaiement, setDatePaiement] = useState("");
+  const [modePaiement, setModePaiement] = useState("");
+  const [statusFacture, setStatusFacture] = useState(0);
+  const [MontantTotal, setMontantTotal] = useState(0);
+  const [nomClient, setNomClient] = useState("");
+  const [clientID, setClientID] = useState(18);
+  const [addFacture, { isLoading }] = useAddFactureMutation();
+
+  async function handleAddFacture() {
+    try {
+      await addFacture({
+        idFacture,
+        designationFacture: newKey,
+        dateFacturation: newDate,
+        datePaiement: newDate,
+        modePaiement: paymentMode,
+        statusFacture: paymmentStatus,
+        MontantTotal: totalInvoice,
+        nomClient: clientValue!.raison_sociale!,
+        clientID: clientValue?.idclient_p!,
+      })
+        .unwrap()
+        .then(handleAddLigneVente)
+        .then(handleUpdateStore)
+        .then(() => notify())
+        .then(() => navigate("/liste-factures"));
+      setDesignationFacture("");
+      setIdLigneVente(1);
+      setDateFacturation("");
+      setDatePaiement("");
+      setModePaiement("");
+      setNomClient("");
+      setStatusFacture(0);
+      setClientID(18);
+    } catch (err) {
+      errorNotify(err);
+    }
+  }
   // Modal to create a new client physique
   const [modal_AddClientPhyModals, setmodal_AddClientPhyModals] =
     useState<boolean>(false);
@@ -466,8 +421,8 @@ const PassagerInvoice: React.FC = () => {
                         <div className="input-group d-flex gap-2 mb-2">
                           <Autocomplete
                             id="clientID"
-                            sx={{ width: 320 }}
                             options={clientPhysique!}
+                            sx={{ width: 220 }}
                             autoHighlight
                             defaultValue={{
                               idclient_p: 18,
@@ -526,7 +481,6 @@ const PassagerInvoice: React.FC = () => {
                         placeholder="25000355"
                         value={newKey}
                         onChange={(e) => setDesignationFacture(e.target.value)}
-                        sx={{ width: 320 }}
                         className="mb-2"
                       />
                     </Col>
@@ -550,7 +504,6 @@ const PassagerInvoice: React.FC = () => {
                           value={value}
                           onChange={(newValue) => setValue(newValue)}
                           format="DD-MM-YYYY"
-                          sx={{ width: 320 }}
                         />
                       </LocalizationProvider>
                     </Col>
@@ -559,12 +512,12 @@ const PassagerInvoice: React.FC = () => {
                 <Card.Body className="p-3">
                   <div>
                     <Row>
-                      <Col lg={4}>
+                      <Col lg={4} className="text-center">
                         <Form.Label htmlFor="nomProduit">
                           Détail Produit
                         </Form.Label>
                       </Col>
-                      <Col lg={1}>
+                      <Col lg={1} className="text-center">
                         <Form.Label htmlFor="quantiteProduit">
                           Quantité
                         </Form.Label>
@@ -584,11 +537,11 @@ const PassagerInvoice: React.FC = () => {
                     </Row>
                     {formFields.map((form, index) => (
                       <Row key={index}>
-                        <Col lg={4}>
+                        <Col lg={4} sm={6} className="text-center">
                           <Autocomplete
                             id="nomProduit"
                             className="mb-3"
-                            sx={{ width: 380 }}
+                            sx={{ width: 220 }}
                             options={allArrivageProduit!}
                             autoHighlight
                             onChange={(event, value) => {
@@ -621,10 +574,10 @@ const PassagerInvoice: React.FC = () => {
                             )}
                           />
                         </Col>
-                        <Col lg={1} sm={6}>
+                        <Col lg={1} sm={6} className="text-center">
                           <TextField
                             className="mb-2"
-                            sx={{ width: 80 }}
+                            sx={{ width: 75 }}
                             id="quantiteProduit"
                             type="text"
                             size="small"
@@ -634,7 +587,7 @@ const PassagerInvoice: React.FC = () => {
                             value={form.quantiteProduit}
                           />
                         </Col>
-                        <Col lg={2} className="text-center mt-2">
+                        <Col lg={2} sm={6} className="text-center mt-2">
                           {/* <TextField
                             className="mb-2"
                             id="PU"
@@ -645,9 +598,16 @@ const PassagerInvoice: React.FC = () => {
                             sx={{ width: 190 }}
                             value={form.PU}
                           /> */}
-                          <CountUp end={parseInt(form.PU)} separator="," />
+                          <div id="PU">
+                            <CountUp end={parseInt(form.PU)} separator="," />
+                          </div>
                         </Col>
-                        <Col lg={2} sm={6} className="text-center mt-2">
+                        <Col
+                          lg={2}
+                          sm={6}
+                          className="text-center mt-2"
+                          id="montantTtl"
+                        >
                           {/* <TextField
                             className="mb-2"
                             sx={{ width: 190 }}
@@ -667,6 +627,7 @@ const PassagerInvoice: React.FC = () => {
                               readOnly: true,
                             }}
                           /> */}
+
                           <CountUp
                             end={parseInt(
                               (form.montantTtl = (
@@ -708,7 +669,7 @@ const PassagerInvoice: React.FC = () => {
                         ) : (
                           ""
                         )}
-                        <Col lg={1} className="mt-2">
+                        <Col lg={1} className="mt-2 mb-2">
                           <Link
                             to="#"
                             className="link-danger"
@@ -945,32 +906,23 @@ const PassagerInvoice: React.FC = () => {
                     <Col className="col-md-auto ms-auto pb-2 mt-4"></Col>
                   </Row>
                   <div className="hstack gap-2 justify-content-end d-print-none mt-2">
-                    <Button
+                    {/* <Button
                       variant="success"
                       type="submit"
                       onClick={() => tog_AddCodeUser()}
+                      onClick={handleAddLigneVente}
                     >
                       <i className="ph ph-coin align-bottom me-1 fs-5"></i>{" "}
                       Paiement
-                    </Button>
-                    <Button variant="secondary" onClick={handleAddFacture}>
+                    </Button> */}
+                    <Button variant="info" onClick={handleAddFacture}>
                       <i className="ri-save-3-fill align-bottom me-1"></i>{" "}
                       Enregister
                     </Button>
-                    {/* <PDFDownloadLink
-                      document={
-                        <PDF_REPORT_Document rowData={designationFacture} />
-                      }
-                      className="btn btn-primary"
-                      fileName={`facture_numero_${designationFacture}`}
-                    >
-                      <i className="ri-download-2-line align-bottom me-1"></i>
-                      Télécharger
-                    </PDFDownloadLink> */}
-                    <Button variant="primary" onClick={handleAddFacture}>
+                    {/* <Button variant="primary" onClick={handleAddFacture}>
                       <i className="ri-download-2-line align-bottom me-1"></i>{" "}
                       Télécharger{" "}
-                    </Button>
+                    </Button> */}
                   </div>
                 </Card.Body>
                 {/* </Form> */}
@@ -994,170 +946,7 @@ const PassagerInvoice: React.FC = () => {
               </h5>
             </Modal.Header>
             <Modal.Body className="p-4">
-              <Form className="tablelist-form" onSubmit={onSubmit}>
-                <Row>
-                  <div
-                    id="alert-error-msg"
-                    className="d-none alert alert-danger py-2"
-                  ></div>
-                  <input type="hidden" id="id-field" />
-                  <Col lg={12}>
-                    <div className="text-center mb-4">
-                      <div className="position-relative d-inline-block">
-                        <div className="position-absolute top-100 start-100 translate-middle">
-                          <label
-                            htmlFor="avatar"
-                            className="mb-0"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="Select Client Physique Avatar"
-                          >
-                            <span className="avatar-xs d-inline-block">
-                              <span className="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                                <i className="ri-image-fill"></i>
-                              </span>
-                            </span>
-                          </label>
-                          <input
-                            className="form-control d-none"
-                            type="file"
-                            name="avatar"
-                            id="avatar"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(e)}
-                          />
-                        </div>
-                        <div className="avatar-xl">
-                          <div className="avatar-title bg-light rounded-3">
-                            <img
-                              src={`data:image/jpeg;base64, ${formData.avatar}`}
-                              alt=""
-                              id="category-img"
-                              className="avatar-md h-auto rounded-3 object-fit-cover"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="error-msg mt-1">
-                        Please add a category images.
-                      </div>
-                    </div>
-                  </Col>
-                  <Col lg={4}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="raison_sociale">
-                        Nom Client
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.raison_sociale}
-                        onChange={onChange}
-                        id="raison_sociale"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={3}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="cin">C.I.N</Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={formData.cin}
-                        onChange={onChange}
-                        id="cin"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={5}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="tel">Telephone</Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={formData.tel}
-                        onChange={onChange}
-                        id="tel"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="adresse">Adresse</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.adresse}
-                        onChange={onChange}
-                        id="adresse"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="rib">RIB</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.rib}
-                        onChange={onChange}
-                        id="rib"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="statusSelect">Etat</Form.Label>
-                      <select
-                        className="form-select"
-                        name="choices-single-default"
-                        id="status-Field"
-                        onChange={selectChangeEtat}
-                      >
-                        <option value="">Choisir</option>
-                        <option value="Active">Actif</option>
-                        <option value="Expired">Inactif</option>
-                      </select>
-                    </div>
-                  </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Form.Label htmlFor="remarque">Remarque</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.remarque}
-                        onChange={onChange}
-                        id="remarque"
-                        required
-                      />
-                    </div>
-                  </Col>
-                  <Col lg={12} className="modal-footer">
-                    <div className="hstack gap-2 justify-content-end">
-                      <Button
-                        className="btn-ghost-danger"
-                        onClick={() => {
-                          tog_AddClientPhyModals();
-                        }}
-                      >
-                        <i className="ri-close-line align-bottom me-1"></i>{" "}
-                        Fermer
-                      </Button>
-                      <Button
-                        type={"submit"}
-                        onClick={() => {
-                          tog_AddClientPhyModals();
-                        }}
-                        variant="primary"
-                        id="add-btn"
-                      >
-                        Ajouter
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
+              <ModalClientPhy />
             </Modal.Body>
           </Modal>
           {/* ******Modal For User****** */}

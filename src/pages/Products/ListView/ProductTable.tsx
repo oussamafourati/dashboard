@@ -8,11 +8,9 @@ import {
   Produit,
 } from "features/produit/productSlice";
 import Swal from "sweetalert2";
-import { ArrivageProduit } from "features/arrivageProduit/arrivageProduitSlice";
 
 const ProductTable = () => {
   const { data = [] } = useFetchProduitsQuery();
-  const [arrProd, setArrProd] = useState<ArrivageProduit>();
 
   const [deleteProduit] = useDeleteProduitMutation();
 
@@ -51,6 +49,13 @@ const ProductTable = () => {
           );
         }
       });
+  };
+
+  const [selectedOption, setSelectedOption] = useState<string>("25");
+  // This function is triggered when the select changes
+  const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedOption(value);
   };
 
   const columns = useMemo(
@@ -116,6 +121,13 @@ const ProductTable = () => {
                 <i className="ri-eye-line ri-xl" />
               </Link>
               <Link
+                className="link-info"
+                to="/modifier-produit"
+                state={produit}
+              >
+                <i className="ri-edit-line ri-xl" />
+              </Link>
+              <Link
                 to="#"
                 className="link-danger"
                 onClick={() => AlertDelete(produit.idproduit)}
@@ -146,22 +158,53 @@ const ProductTable = () => {
               </Link>
             </Col>
           </Row>
+          <Row className="mt-2 align-items-center">
+            <Col xxl={3} md={5}></Col>
+            <Col className="col-md-auto ms-auto">
+              Afficher{" "}
+              <select
+                onChange={selectChange}
+                data-choices
+                data-choices-search-false
+              >
+                <option value="25">25</option>
+                <option value="50">50</option>
+                {/* <option value="100">100</option> */}
+              </select>{" "}
+              produits
+            </Col>
+          </Row>
         </Col>
       </Row>
-      <div>
+      {selectedOption === "25" ? (
+        <div>
+          <TableContainer
+            columns={columns}
+            data={data || []}
+            isGlobalFilter={true}
+            isAddUserList={false}
+            customPageSize={25}
+            // divClassName="table-responsive mb-1"
+            tableClassName="gridjs-table"
+            theadClassName="gridjs-thead"
+            isProductsFilter={true}
+            SearchPlaceholder="Rechercher..."
+          />
+        </div>
+      ) : (
         <TableContainer
           columns={columns}
           data={data || []}
           isGlobalFilter={true}
           isAddUserList={false}
-          customPageSize={10}
+          customPageSize={50}
           // divClassName="table-responsive mb-1"
           tableClassName="gridjs-table"
           theadClassName="gridjs-thead"
           isProductsFilter={true}
           SearchPlaceholder="Rechercher..."
         />
-      </div>
+      )}
     </React.Fragment>
   );
 };

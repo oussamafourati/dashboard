@@ -12,7 +12,7 @@ export interface Charges {
 export const chargesSlice = createApi({
   reducerPath: "charges",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/charges/",
+    baseUrl: "https://app.src.smartschools.tn/charges/",
   }),
   tagTypes: ["Charges"],
   endpoints(builder) {

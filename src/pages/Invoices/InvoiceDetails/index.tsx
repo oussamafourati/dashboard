@@ -15,7 +15,7 @@ import {
   useFetchOneFactureQuery,
   useGetLigneVenteQuery,
 } from "features/facture/factureSlice";
-
+import FooterPDF from "Common/FooterPDF";
 // PDF
 import {
   Page,
@@ -26,12 +26,13 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import HeaderInvoice from "./HeaderInvoice";
+import CountUp from "react-countup";
 import ClientFacture from "./ClientFacture";
 import Amount from "./Amount";
 import ProposalSignature from "pages/Devis/DevisDetails/ProposalSignature";
 import TableFacture from "./TableFacture";
 import MontantTotalFacture from "./MontantTotalFacture";
+import HeaderPDF from "Common/HearderPDF";
 
 const styles = StyleSheet.create({
   body: {
@@ -56,24 +57,33 @@ const PDF_REPORT_Facture = (props: Facture) => {
     nomClient,
     adresse,
     tel,
+    mat,
+    modePaiement,
     MontantTotal,
     idFacture,
   } = props;
 
   return (
     <Document>
-      <Page size="A4" style={styles.body}>
-        <View style={styles.top}>
-          <HeaderInvoice date={dateFacturation!} numero={designationFacture!} />
-          <ClientFacture nom={nomClient!} adr={adresse!} tel={tel!} />
-        </View>
+      <Page size="A4" style={styles.body} wrap>
+        <HeaderPDF />
+        <ClientFacture
+          numero={designationFacture!}
+          date={dateFacturation!}
+          nom={nomClient!}
+          adr={adresse!}
+          mp={modePaiement!}
+          matricule={mat!}
+        />
         <View style={{ flex: 2 }}>
           <TableFacture id={idFacture} />
           <MontantTotalFacture mnt={MontantTotal!} />
         </View>
         <View>
           <Amount amount={MontantTotal!} />
-          <ProposalSignature />
+        </View>
+        <View fixed>
+          <FooterPDF />
         </View>
       </Page>
     </Document>
@@ -88,7 +98,6 @@ const InvoiceDetails = () => {
     locationDetail.state.idFacture
   );
 
-  console.log(allLigneVente);
   //Print the Invoice
   const printInvoice = () => {
     window.print();
@@ -221,9 +230,13 @@ const InvoiceDetails = () => {
                           </p>
                           <h5 className="fs-15 mb-0">
                             <span id="total-amount">
-                              {locationDetail.state.MontantTotal}
-                            </span>{" "}
-                            Dt
+                              <CountUp
+                                start={0}
+                                end={locationDetail.state.MontantTotal}
+                                separator=","
+                                suffix="DT"
+                              />
+                            </span>
                           </h5>
                         </Col>
                       </Row>
@@ -279,10 +292,22 @@ const InvoiceDetails = () => {
                                     {lignevente.productName}
                                   </span>
                                 </td>
-                                <td>{lignevente.PU}</td>
+                                <td>
+                                  <CountUp
+                                    start={0}
+                                    end={parseInt(lignevente?.PU!)}
+                                    separator=","
+                                    duration={0}
+                                  />
+                                </td>
                                 <td>{lignevente.quantiteProduit}</td>
                                 <td className="text-end">
-                                  {lignevente.montantTtl}
+                                  <CountUp
+                                    start={0}
+                                    end={parseInt(lignevente?.montantTtl!)}
+                                    separator=","
+                                    duration={0}
+                                  />
                                 </td>
                               </tr>
                             ))}
@@ -298,7 +323,12 @@ const InvoiceDetails = () => {
                             <tr className="border-top border-top-dashed fs-15">
                               <th scope="row">Montant Total</th>
                               <th className="text-end">
-                                {locationDetail.state.MontantTotal} Dt
+                                <CountUp
+                                  start={0}
+                                  end={locationDetail.state.MontantTotal}
+                                  separator=","
+                                  suffix="DT"
+                                />
                               </th>
                             </tr>
                           </tbody>

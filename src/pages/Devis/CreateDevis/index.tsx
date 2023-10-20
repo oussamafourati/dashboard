@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -6,7 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/de";
 import dayjs, { Dayjs } from "dayjs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "dayjs/locale/fr";
 import { frFR } from "@mui/x-date-pickers/locales";
 import TextField from "@mui/material/TextField";
@@ -16,10 +16,12 @@ import {
   ArrivageProduit,
   useGetAllArrivagesProduitQuery,
 } from "features/arrivageProduit/arrivageProduitSlice";
-import { useAddNewDevisMutation } from "features/devis/devisSlice";
-
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import {
+  useAddNewDevisMutation,
+  useGetDevisQuery,
+} from "features/devis/devisSlice";
 import CountUp from "react-countup";
+import { useCreateNewLigneVenteMutation } from "features/ligneVente/ligneVenteSlice";
 
 interface FormFields {
   PU: string;
@@ -27,23 +29,43 @@ interface FormFields {
   productName: string;
   montantTtl: string;
   numDevis: string;
-  subTtl: string;
+  devisID: string;
   [key: string]: string;
 }
 
 const CreateDevis = () => {
   document.title = "Créer Devis | Radhouani";
-
+  const navigate = useNavigate();
   // sweetalert Notification
   const notify = () => {
     Swal.fire({
       position: "center",
       icon: "success",
-      title: "La facture a été créer avec succès",
+      title: "La devis a été créer avec succès",
       showConfirmButton: false,
       timer: 2500,
     });
   };
+
+  const errorDevis = (err: any) => {
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: `Ooops, ${err}, Quelque chose n'a pas fonctionné !!`,
+      showConfirmButton: false,
+      timer: 2000,
+    });
+  };
+
+  let dateNow = dayjs();
+  const [nowDate, setNowDate] = React.useState<Dayjs | null>(dateNow);
+
+  let { data = [] } = useGetDevisQuery();
+  let lastDevis = data.slice(-1);
+  let key = parseInt(lastDevis[0]?.designationDevis!.substr(0, 3)) + 1;
+  let idLastDevis = (lastDevis[0]?.idDevis! + 1).toString();
+
+  const newDevisKey = `${key}/${nowDate?.year()}`;
 
   // Get All Arrivage/Produit
   const { data: allArrivageProduit = [] } = useGetAllArrivagesProduitQuery();
@@ -56,32 +78,6 @@ const CreateDevis = () => {
   const [value, setValue] = React.useState<Dayjs | null>(now);
   const newDate = `${value?.year()}-${value!.month() + 1}-${value!.date()}`;
 
-  const [idDevis, setIdDevis] = useState(1);
-  const [designationDevis, setDesignationDevis] = useState("");
-  const [montantDevis, setMontantDevis] = useState("");
-  const [dateDevis, setDateDevis] = useState("");
-  const [nomclient, setNomclient] = useState("");
-  const [addFacture, { isLoading }] = useAddNewDevisMutation();
-
-  async function handleAddDevis() {
-    try {
-      await addFacture({
-        idDevis,
-        designationDevis,
-        montantDevis,
-        dateDevis: newDate,
-        nomclient,
-      }).unwrap();
-      setDesignationDevis("");
-      setMontantDevis("");
-      setDateDevis("");
-      setNomclient("");
-      notify();
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   const [formFields, setFormFields] = useState<FormFields[]>([
     {
       PU: "",
@@ -89,7 +85,7 @@ const CreateDevis = () => {
       quantiteProduit: "",
       productName: "",
       numDevis: "",
-      subTtl: "",
+      devisID: "",
     },
   ]);
 
@@ -107,20 +103,73 @@ const CreateDevis = () => {
       PU: "",
       montantTtl: "",
       quantiteProduit: "",
-      productName: acValue?.nomProduit!,
-      numDevis: designationDevis,
-      subTtl: "",
+      productName: "",
+      numDevis: "",
+      devisID: "",
     };
     setFormFields([...formFields, object]);
-    // e.preventDefault();
-    // createLigneVente(object);
   };
   const removeFields = (index: number) => {
     let data = [...formFields];
     data.splice(index, 1);
     setFormFields(data);
   };
+  const [createLigneVenteDevis] = useCreateNewLigneVenteMutation();
+  useEffect(() => {
+    formFields[formFields.length - 1]["productName"] = acValue?.nomProduit!;
+    formFields[formFields.length - 1]["devisID"] = idLastDevis;
+    localStorage.setItem("devis", JSON.stringify(formFields));
+  }, [formFields]);
 
+  async function handleAddDevisLigneVente() {
+    try {
+      var jsonData = JSON.parse(localStorage.getItem("devis") || "[]");
+
+      for (var i = 0; i < jsonData.length; i++) {
+        var lignevente = jsonData[i];
+        lignevente["numDevis"] = newDevisKey;
+        await createLigneVenteDevis(lignevente);
+      }
+    } catch (err) {
+      errorDevis(err);
+    }
+  }
+  const [totalDevis, setTotalDevis] = useState<number>(0);
+
+  useEffect(() => {
+    setTotalDevis(
+      formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl)), 0)
+    );
+  });
+
+  const [idDevis, setIdDevis] = useState(1);
+  const [designationDevis, setDesignationDevis] = useState("");
+  const [montantDevis, setMontantDevis] = useState("");
+  const [dateDevis, setDateDevis] = useState("");
+  const [nomclient, setNomclient] = useState("");
+  const [addDevis, { isLoading }] = useAddNewDevisMutation();
+
+  async function handleAddDevis() {
+    try {
+      await addDevis({
+        idDevis,
+        designationDevis: newDevisKey,
+        montantDevis: totalDevis.toString(),
+        dateDevis: newDate,
+        nomclient,
+      })
+        .unwrap()
+        .then(handleAddDevisLigneVente)
+        .then(() => notify())
+        .then(() => navigate("/liste-devis"));
+      setDesignationDevis("");
+      setMontantDevis("");
+      setDateDevis("");
+      setNomclient("");
+    } catch (err) {
+      errorDevis(err);
+    }
+  }
   return (
     <div>
       <React.Fragment>
@@ -135,7 +184,7 @@ const CreateDevis = () => {
                       <Col lg={4} sm={6}>
                         <TextField
                           label="Nom Client"
-                          sx={{ width: 290 }}
+                          sx={{ width: 220 }}
                           InputLabelProps={{
                             shrink: true,
                           }}
@@ -161,6 +210,7 @@ const CreateDevis = () => {
                             readOnly: true,
                           }}
                           className="mb-2"
+                          value={newDevisKey}
                         />
                       </Col>
                       <Col lg={4} sm={6}>
@@ -180,7 +230,7 @@ const CreateDevis = () => {
                                 inputProps: { ["placeholder"]: "JJ.MM.AAAA" },
                               },
                             }}
-                            sx={{ width: 290 }}
+                            sx={{ width: 220 }}
                             className="mb-2"
                             value={value}
                             onChange={(newValue) => setValue(newValue)}
@@ -193,12 +243,12 @@ const CreateDevis = () => {
                   <Card.Body className="p-4">
                     <div>
                       <Row>
-                        <Col lg={6}>
+                        <Col lg={6} className="text-center">
                           <Form.Label htmlFor="nomProduit">
                             Détail Produit
                           </Form.Label>
                         </Col>
-                        <Col lg={1}>
+                        <Col lg={1} className="text-center">
                           <Form.Label htmlFor="quantiteProduit">
                             Quantité
                           </Form.Label>
@@ -208,7 +258,7 @@ const CreateDevis = () => {
                         </Col>
                         <Col lg={2} className="text-center">
                           <Form.Label
-                            htmlFor="MontantTotal"
+                            htmlFor="montantTtl"
                             className="text-center"
                           >
                             Montant{" "}
@@ -218,7 +268,7 @@ const CreateDevis = () => {
                       </Row>
                       {formFields.map((form, index) => (
                         <Row style={{ marginBottom: 20 }} key={index}>
-                          <Col lg={6}>
+                          <Col lg={6} className="text-center">
                             <Autocomplete
                               className="mb-2"
                               id="nomProduit"
@@ -254,18 +304,19 @@ const CreateDevis = () => {
                               )}
                             />
                           </Col>
-                          <Col lg={1} sm={6}>
+                          <Col lg={1} sm={6} className="text-center">
                             <TextField
                               id="quantiteProduit"
                               type="number"
                               size="small"
-                              name="qty"
+                              name="quantiteProduit"
                               placeholder="0.0"
                               onChange={(event) =>
                                 handleFormChange(event, index)
                               }
-                              value={form.qty}
+                              value={form.quantiteProduit}
                               className="mb-2"
+                              sx={{ width: 75 }}
                             />
                           </Col>
                           <Col lg={2} sm={6} className="text-center mt-2">
@@ -305,8 +356,9 @@ const CreateDevis = () => {
                             /> */}
                             <CountUp
                               end={parseInt(
-                                (form.montanttotal = (
-                                  parseInt(form.PU) * parseInt(form.qty)
+                                (form.montantTtl = (
+                                  parseInt(form.PU) *
+                                  parseInt(form.quantiteProduit)
                                 ).toString())
                               )}
                               separator=","
@@ -377,7 +429,7 @@ const CreateDevis = () => {
                           className="fs-18 fw-meduim"
                           end={
                             formFields.reduce(
-                              (sum, i) => (sum += parseInt(i.montanttotal!)),
+                              (sum, i) => (sum += parseInt(i.montantTtl!)),
                               0
                             ) || 0
                           }
@@ -387,14 +439,18 @@ const CreateDevis = () => {
                       </Col>
                     </Row>
                     <div className="hstack gap-2 justify-content-end d-print-none mt-3">
-                      <Button variant="success" type="submit">
+                      <Button
+                        variant="success"
+                        type="submit"
+                        onClick={handleAddDevis}
+                      >
                         <i className="ri-save-3-fill align-bottom me-1"></i>{" "}
                         Enregister
                       </Button>
-                      <Link to="#" className="btn btn-primary">
+                      {/* <Link to="#" className="btn btn-primary">
                         <i className="ri-download-2-line align-bottom me-1"></i>{" "}
                         Telecharger
-                      </Link>
+                      </Link> */}
                     </div>
                   </Card.Body>
                   {/* </Form> */}

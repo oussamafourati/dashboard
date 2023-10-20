@@ -16,7 +16,8 @@ export interface Produit {
 export const produitSlice = createApi({
   reducerPath: "produit",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/product/",
+    baseUrl: "https://app.src.smartschools.tn/product/",
+    // baseUrl: "http://localhost:8000/product/",
   }),
   tagTypes: ["Produit"],
   endpoints(builder) {
@@ -46,37 +47,13 @@ export const produitSlice = createApi({
         },
         invalidatesTags: ["Produit"],
       }),
-      updateProduit: builder.mutation<
-        void,
-        Pick<Produit, "idproduit"> & Partial<Produit>
-      >({
-        query: ({ idproduit, ...patch }) => ({
-          url: `posts/${idproduit}`,
-          method: "PUT",
-          body: patch,
+      updateProduct: builder.mutation<void, Produit>({
+        query: ({ idproduit, ...rest }) => ({
+          url: `updateproduct/${idproduit}`,
+          method: "PATCH",
+          body: rest,
         }),
-        async onQueryStarted(
-          { idproduit, ...patch },
-          { dispatch, queryFulfilled }
-        ) {
-          const patchResult = dispatch(
-            produitSlice.util.updateQueryData(
-              "getProduit",
-              idproduit,
-              (draft) => {
-                Object.assign(draft, patch);
-              }
-            )
-          );
-          try {
-            await queryFulfilled;
-          } catch {
-            patchResult.undo();
-          }
-        },
-        invalidatesTags: (result, error, { idproduit }) => [
-          { type: "Produit", idproduit },
-        ],
+        invalidatesTags: ["Produit"],
       }),
       deleteProduit: builder.mutation<void, number>({
         query: (idproduit) => ({
@@ -95,5 +72,5 @@ export const {
   useGetProductByNameQuery,
   useAddProduitMutation,
   useDeleteProduitMutation,
-  useUpdateProduitMutation,
+  useUpdateProductMutation,
 } = produitSlice;

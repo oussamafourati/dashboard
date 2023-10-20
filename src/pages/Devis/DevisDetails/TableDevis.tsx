@@ -34,7 +34,7 @@ const TableDevis: React.FC<ChildProps> = ({ id }) => {
   useEffect(() => {
     const getClientPhysique = async () => {
       const reqdata = await fetch(
-        `http://localhost:8000/devis/ligneventedevis/${id}`
+        `https://app.src.smartschools.tn/devis/ligneventedevis/${id}`
       );
       const resdata = await reqdata.json();
       setClientPhysique(resdata);

@@ -8,14 +8,13 @@ import { ArrivageProduit } from "features/arrivageProduit/arrivageProduitSlice";
 const Overview = () => {
   document.title = "Détails Produit| Radhouani";
   const LocationProduct = useLocation();
-  console.log(LocationProduct);
 
   const [produitState, setProduitState] = useState<ArrivageProduit[]>([]);
 
   useEffect(() => {
     const getProduitState = async () => {
       const reqdata = await fetch(
-        `http://localhost:8000/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
+        `https://app.src.smartschools.tn/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
       );
       const resdata = await reqdata.json();
       setProduitState(resdata);

@@ -24,13 +24,13 @@ interface ChildProps {
   id: number;
 }
 
-const TableFacture: React.FC<ChildProps> = ({ id }) => {
+const TableBL: React.FC<ChildProps> = ({ id }) => {
   const [clientPhysique, setClientPhysique] = useState<Facture[]>([]);
 
   useEffect(() => {
     const getClientPhysique = async () => {
       const reqdata = await fetch(
-        `http://localhost:8000/bl/tousLignesVente/${id}`
+        `https://app.src.smartschools.tn/bl/tousLignesVente/${id}`
       );
       const resdata = await reqdata.json();
       setClientPhysique(resdata);
@@ -125,7 +125,7 @@ const TableFacture: React.FC<ChildProps> = ({ id }) => {
           <View style={{ width: "15%" }}>
             <Text style={[styles.tableCell, { textAlign: "right" }]}>
               {" "}
-              {lignevente.montantTtl}
+              {parseFloat(lignevente?.montantTtl!).toFixed(3)}
             </Text>
           </View>
         </View>
@@ -134,4 +134,4 @@ const TableFacture: React.FC<ChildProps> = ({ id }) => {
   );
 };
 
-export default TableFacture;
+export default TableBL;

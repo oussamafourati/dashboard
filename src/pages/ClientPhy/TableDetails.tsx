@@ -32,7 +32,6 @@ const TableDetails = () => {
                       <th scope="col">RIB</th>
                       <th scope="col">Adresse</th>
                       <th scope="col">Telephone</th>
-                      <th scope="col">E-mail</th>
                       <th scope="col">Etat</th>
                       <th scope="col">Remarque</th>
                     </tr>
@@ -57,9 +56,6 @@ const TableDetails = () => {
                       <td>{locationClientPhy.state.rib}</td>
                       <td>{locationClientPhy.state.adresse}</td>
                       <td>{locationClientPhy.state.tel}</td>
-                      <td>
-                        <span>{locationClientPhy.state.mail}</span>
-                      </td>
                       <td>
                         <Status status={locationClientPhy.state.etat} />
                       </td>

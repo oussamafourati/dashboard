@@ -37,21 +37,14 @@ import Brands from "pages/Charges";
 // Accounts
 import MyAccount from "pages/Accounts/MyAccount";
 import Settings from "pages/Accounts/Settings";
-import SignUp from "pages/Accounts/AuthenticationInner/SignUp";
-import SignIn from "pages/Accounts/AuthenticationInner/SignIn";
 import PasswordReset from "pages/Accounts/AuthenticationInner/PasswordReset";
 import PasswordCreate from "pages/Accounts/AuthenticationInner/PasswordCreate";
 import SuccessMessage from "pages/Accounts/AuthenticationInner/SuccessMessage";
-import TwoStepVerify from "pages/Accounts/AuthenticationInner/TwoStepVerify";
 import BasicLogout from "pages/Accounts/AuthenticationInner/Logout";
-import Error404 from "pages/Accounts/AuthenticationInner/Error404";
-import Error500 from "pages/Accounts/AuthenticationInner/Error500";
-import ComingSoon from "pages/Accounts/AuthenticationInner/ComingSoon";
 
 // Authentication
-import Login from "pages/Authentication/Login";
+import Login from "../pages/Authentication/Login";
 import Logout from "pages/Authentication/Logout";
-import Register from "pages/Authentication/Register";
 import ForgotPassword from "pages/Authentication/ForgotPassword";
 import UserProfile from "pages/Authentication/user-profile";
 import ShippingDetails from "pages/Shipping/CreateArrivage/ArrivageDetails";
@@ -63,12 +56,9 @@ import DevisDetails from "pages/Devis/DevisDetails";
 import ListeBL from "pages/BL/ListeBL";
 import DetailsBL from "pages/BL/DetailsBL";
 import CreateBL from "pages/BL/CreateBL";
+import UpdateProduct from "pages/Products/UpdateProduct";
 
-// const authProtectedRoutes = [
-
-// ];
-
-const publicRoutes = [
+const authProtectedRoutes = [
   // Authentication
   { path: "/tableau_de_bord", component: <Dashboard /> },
 
@@ -76,6 +66,7 @@ const publicRoutes = [
   { path: "/products-list", component: <ListView /> },
   { path: "/product-overview", component: <Overview /> },
   { path: "/product-create", component: <CreateProduct /> },
+  { path: "/modifier-produit", component: <UpdateProduct /> },
   { path: "/categories", component: <Categories /> },
   { path: "/sub-categories", component: <SubCategories /> },
 
@@ -93,7 +84,6 @@ const publicRoutes = [
   { path: "/liste-devis", component: <DevisList /> },
   { path: "/details-devis", component: <DevisDetails /> },
   { path: "/nouveau-devis", component: <CreateDevis /> },
-
   // BL
   { path: "/liste-bl", component: <ListeBL /> },
   { path: "/details-bl", component: <DetailsBL /> },
@@ -119,6 +109,7 @@ const publicRoutes = [
 
   // Accounts
   { path: "/liste-comptes", component: <MyAccount /> },
+
   { path: "/creer-compte", component: <Settings /> },
 
   // this route should be at the end of all other routes
@@ -126,22 +117,18 @@ const publicRoutes = [
   { path: "/", exact: true, component: <Navigate to="/tableau_de_bord" /> },
   { path: "*", component: <Navigate to="/tableau_de_bord" /> },
   { path: "/profil", component: <UserProfile /> },
+];
+
+const publicRoutes = [
   { path: "/login", component: <Login /> },
   { path: "/logout", component: <Logout /> },
-  { path: "/register", component: <Register /> },
   { path: "/forgot-password", component: <ForgotPassword /> },
 
   // AuthenticationInner
-  { path: "/auth-signup-basic", component: <SignUp /> },
-  { path: "/connexion", component: <SignIn /> },
   { path: "/auth-pass-reset-basic", component: <PasswordReset /> },
   { path: "/auth-pass-change-basic", component: <PasswordCreate /> },
   { path: "/auth-success-msg-basic", component: <SuccessMessage /> },
-  { path: "/auth-twostep-basic", component: <TwoStepVerify /> },
   { path: "/auth-logout-basic", component: <BasicLogout /> },
-  { path: "/auth-404", component: <Error404 /> },
-  { path: "/auth-500", component: <Error500 /> },
-  { path: "/coming-soon", component: <ComingSoon /> },
 ];
 
-export { publicRoutes };
+export { authProtectedRoutes, publicRoutes };

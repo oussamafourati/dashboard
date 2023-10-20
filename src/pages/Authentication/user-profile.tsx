@@ -35,6 +35,11 @@ const UserProfile = () => {
   const [name, setname] = useState("");
   const [idx, setidx] = useState(1);
 
+  const [user, setUser] = useState<string>("");
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("profile") || ""));
+  }, []);
+
   const { error, success } = useSelector((state: any) => ({
     error: state.Profile.error,
     success: state.Profile.success,
@@ -101,7 +106,7 @@ const UserProfile = () => {
                     </div>
                     <div className="flex-grow-1 align-self-center">
                       <div className="text-muted">
-                        <h5>Makrem</h5>
+                        <h5>{user}</h5>
                         <p className="mb-1">makrem09</p>
                         <p className="mb-1">785</p>
                       </div>

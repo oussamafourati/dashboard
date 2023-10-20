@@ -6,6 +6,12 @@ export interface LigneVente {
   quantiteProduit: string;
   productName: string;
   numFacture: string;
+  benifice: string;
+  numDevis?: string;
+  numBL?: string;
+  blID?: string;
+  factureID?: string;
+  devisID?: string;
   TotalQuantity?: number;
   TotalVente?: number;
   nom?: string;
@@ -15,7 +21,7 @@ export interface LigneVente {
 export const LigneVenteSlice = createApi({
   reducerPath: "lignevente",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/lignevente/",
+    baseUrl: "https://app.src.smartschools.tn/lignevente/",
     headers: {
       "Content-type": "application/json",
     },

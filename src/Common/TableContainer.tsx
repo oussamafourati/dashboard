@@ -80,7 +80,7 @@ interface TableContainerProps {
   handleUserClick?: any;
   handleCustomerClick?: any;
   isAddCustList?: any;
-  customPageSize?: any;
+  customPageSize: number;
   className?: any;
   customPageSizeOptions?: any;
   iscustomPageSize?: boolean;
@@ -284,7 +284,7 @@ const TableContainer = ({
           <div className="text-muted">
             Affichage de <span className="fw-semibold">{pageIndex + 1}</span>{" "}
             sur <span className="fw-semibold">{pageOptions.length}</span>{" "}
-            Résultats
+            Résultats <span>({data.length})</span>
           </div>
         </div>
         <div className="col-sm-auto">

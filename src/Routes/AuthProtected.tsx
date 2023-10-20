@@ -1,15 +1,19 @@
 import React, { useEffect } from "react";
 import { Navigate, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
-import { logoutUser } from "slices/thunk";
+import { setCredentials } from "../features/compte/authSlice";
+import type { LoginRequest, UserResponse } from "features/compte/compteSlice";
 
 const AuthProtected = (props: any) => {
-  const dispatch = useDispatch<any>();
+  var token = localStorage.getItem("auth");
 
   /*
     Navigate is un-auth access protected routes via url
     */
+
+  if (!token) {
+    return <Navigate to={{ pathname: "/login" }} />;
+  }
 
   return <>{props.children}</>;
 };

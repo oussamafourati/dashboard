@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
-import Flatpickr from "react-flatpickr";
-import { useState } from "react";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import "dayjs/locale/de";
+import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/fr";
+import { frFR } from "@mui/x-date-pickers/locales";
 import { Link } from "react-router-dom";
 
 const PaiementEspece = () => {
   const [inputFields, setInputFields] = useState<string[]>([""]);
-
+  let now = dayjs();
+  const [valueDate, setValueDate] = React.useState<Dayjs | null>(now);
+  const newDate = `${valueDate?.year()}-${
+    valueDate!.month() + 1
+  }-${valueDate!.date()}`;
   const handleAddFields = () => {
     const newInputFields = [...inputFields];
+    newInputFields[inputFields.length - 1] = newDate;
     newInputFields.push("");
     setInputFields(newInputFields);
   };
@@ -25,6 +35,7 @@ const PaiementEspece = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newInputFields = [...inputFields];
+
     newInputFields[index] = event.target.value;
     setInputFields(newInputFields);
     setValue(event.target.value);
@@ -52,14 +63,28 @@ const PaiementEspece = () => {
             </Col>
             <Col lg={4} sm={9}>
               <div>
-                <Flatpickr
-                  className="form-control flatpickr-input"
-                  options={{
-                    dateFormat: "d M, Y",
-                  }}
-                  id="date"
-                  name="date"
-                />
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="fr"
+                  localeText={
+                    frFR.components.MuiLocalizationProvider.defaultProps
+                      .localeText
+                  }
+                >
+                  <DatePicker
+                    defaultValue={now}
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        id: "dateCharges",
+                        name: "dateCharges",
+                      },
+                    }}
+                    value={valueDate}
+                    onChange={(newValue) => setValueDate(newValue)}
+                    format="YYYY-MM-DD"
+                  />
+                </LocalizationProvider>
               </div>
             </Col>
             <Col lg={1} sm={6} className="mt-4">

@@ -17,7 +17,7 @@ export interface Fournisseur {
 export const fournisseurSlice = createApi({
   reducerPath: "fournisseur",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/fournisseur/",
+    baseUrl: "https://app.src.smartschools.tn/fournisseur/",
   }),
   tagTypes: ["Fournisseur"],
   endpoints(builder) {

@@ -13,7 +13,7 @@ export interface Echance {
 export const echanceSlice = createApi({
   reducerPath: "echance",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/echance/",
+    baseUrl: "https://app.src.smartschools.tn/echance/",
   }),
   tagTypes: ["Echance"],
   endpoints(builder) {

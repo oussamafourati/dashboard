@@ -10,7 +10,7 @@ export interface Notes {
 export const notesSlice = createApi({
   reducerPath: "notes",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/notes/",
+    baseUrl: "https://app.src.smartschools.tn/notes/",
   }),
   tagTypes: ["Notes"],
   endpoints(builder) {
@@ -24,6 +24,24 @@ export const notesSlice = createApi({
       fetchNotesDay: builder.query<Notes[], number | void>({
         query() {
           return "/notesToDay";
+        },
+        providesTags: ["Notes"],
+      }),
+      fetchNotesWeek: builder.query<Notes[], number | void>({
+        query() {
+          return "/notesThisWeek";
+        },
+        providesTags: ["Notes"],
+      }),
+      fetchNotesMonth: builder.query<Notes[], number | void>({
+        query() {
+          return "/notesThisMonth";
+        },
+        providesTags: ["Notes"],
+      }),
+      fetchNotesNextMonth: builder.query<Notes[], number | void>({
+        query() {
+          return "/notesNextMonth";
         },
         providesTags: ["Notes"],
       }),
@@ -49,6 +67,9 @@ export const notesSlice = createApi({
 });
 
 export const {
+  useFetchNotesMonthQuery,
+  useFetchNotesNextMonthQuery,
+  useFetchNotesWeekQuery,
   useFetchNotesDayQuery,
   useAddNewNoteMutation,
   useGetAllNotesQuery,

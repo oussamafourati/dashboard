@@ -1,13 +1,13 @@
 import React from "react";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import Revenue from "./Revenue";
 import Widgets from "./Widgets";
-import NewCustomers from "./NewCustomers";
-import ProductDelivery from "./ProductDelivery";
+import EcheanceToDay from "./EcheanceToDay";
+import MeilleuresVentes from "./MeilleuresVentes";
 import TopCategories from "./TopCategories";
 import TransitionAlerts from "./AlertMessage";
 import { useGetDayEchancesQuery } from "features/Echance/echanceSlice";
-import TopProducts from "./TopProducts";
+import AlertStock from "./AlertStock";
 import AlertCharge from "./AlertCharge";
 import Notes from "./Notes";
 import { useFetchNotesDayQuery } from "features/notes/notesSlice";
@@ -42,7 +42,7 @@ const Dashboard = () => {
           <Row>
             <Col lg={3}>
               <Row>
-                <TopProducts />
+                <AlertStock />
               </Row>
               <Row>
                 <AlertCharge />
@@ -52,16 +52,11 @@ const Dashboard = () => {
               <Revenue />
             </Col>
             <Col lg={4}>
-              <NewCustomers />
+              <EcheanceToDay />
             </Col>
-            {/* <CustomerSatisfaction />
-            <ProductDelivery />
-            <StockReport /> */}
-            {/*<TopCategories />
-            <NewCustomers />*/}
           </Row>
           <Row>
-            <ProductDelivery />
+            <MeilleuresVentes />
             <TopCategories />
             <Notes />
           </Row>

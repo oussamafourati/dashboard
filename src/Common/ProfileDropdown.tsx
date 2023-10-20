@@ -1,30 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Dropdown } from "react-bootstrap";
-import { useSelector } from "react-redux";
 //import images
 import avatar from "assets/images/users/avatar.png";
 
 const ProfileDropdown = () => {
-  const [userName, setUserName] = useState<any>("Admin");
-
-  const { success } = useSelector((state: any) => ({
-    success: state.Profile.success,
-  }));
-
+  const [user, setUser] = useState<string>("");
   useEffect(() => {
-    if (localStorage.getItem("authUser")) {
-      if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
-        const obj = JSON.parse(localStorage.getItem("authUser") || "{}");
-        setUserName(obj.displayName);
-      } else if (
-        process.env.REACT_APP_DEFAULTAUTH === "fake" ||
-        process.env.REACT_APP_DEFAULTAUTH === "jwt"
-      ) {
-        const obj = JSON.parse(localStorage.getItem("authUser") || "{}");
-        setUserName(obj.username);
-      }
-    }
-  }, [success]);
+    setUser(JSON.parse(localStorage.getItem("profile") || ""));
+  }, []);
 
   return (
     <React.Fragment>
@@ -42,13 +25,13 @@ const ProfileDropdown = () => {
             />
             <span className="text-start ms-xl-2">
               <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-                Makrem
+                {user}
               </span>
             </span>
           </span>
         </Dropdown.Toggle>
         <Dropdown.Menu className="dropdown-menu-end">
-          <h6 className="dropdown-header">Bienvenue Makrem!</h6>
+          <h6 className="dropdown-header">Bienvenue, {user} !</h6>
           <Dropdown.Item href="/profil">
             <i className="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">Profil</span>
@@ -83,7 +66,7 @@ const ProfileDropdown = () => {
             <i className="mdi mdi-lock text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle">Lock screen</span>
           </Dropdown.Item> */}
-          <Dropdown.Item href="/logout">
+          <Dropdown.Item href="/logout" onClick={() => localStorage.clear()}>
             <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
             <span className="align-middle" data-key="t-logout">
               Déconnexion

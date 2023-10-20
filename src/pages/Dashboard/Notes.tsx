@@ -1,19 +1,20 @@
 import React, { useMemo, useState } from "react";
-import { Button, Card, Dropdown, Modal } from "react-bootstrap";
+import { Button, Card, Modal } from "react-bootstrap";
 import Swal from "sweetalert2";
-
+import SimpleBar from "simplebar-react";
 //TableContainer
 import TableContainer from "../../Common/TableContainer";
 import { Link } from "react-router-dom";
 import AddNote from "./AddNote";
 import {
   Notes,
-  useGetAllNotesQuery,
+  useFetchNotesDayQuery,
   useRemoveNoteMutation,
 } from "features/notes/notesSlice";
+import DetailsNote from "./DetailsNote";
 
 const Note = () => {
-  const { data: AllNotes = [] } = useGetAllNotesQuery();
+  const { data: AllDayNotes = [] } = useFetchNotesDayQuery();
 
   const [deleteNote] = useRemoveNoteMutation();
 
@@ -75,7 +76,7 @@ const Note = () => {
         filterable: true,
       },
       {
-        Header: "Action",
+        Header: " ",
         disableFilters: true,
         filterable: true,
         accessor: (notes: Notes) => {
@@ -104,6 +105,11 @@ const Note = () => {
   function tog_AddNotesModals() {
     setmodal_AddNotesModals(!modal_AddNotesModals);
   }
+
+  const [modal_NotesModals, setmodal_NotesModals] = useState<boolean>(false);
+  function tog_NotesModals() {
+    setmodal_NotesModals(!modal_NotesModals);
+  }
   return (
     <React.Fragment>
       <div className="col-xxl-5 col-lg-6">
@@ -120,44 +126,42 @@ const Note = () => {
                   <i className="bi bi-plus-square align-middle"></i>
                 </Link>
               </div>
-              <Dropdown className="text-center">
-                <Dropdown.Toggle
-                  href="#!"
-                  className="btn btn-soft-secondary btn-sm btn-icon dropdown arrow-none"
+              <div className="flex-shrink-0">
+                <Link
+                  to="#"
+                  className="btn btn-soft-secondary btn-sm"
+                  onClick={() => tog_NotesModals()}
                 >
-                  <i className="mdi mdi-dots-horizontal" />
-                </Dropdown.Toggle>
-                <Dropdown.Menu as="ul" className="dropdown-menu-end">
-                  <li>
-                    <Dropdown.Item href="/orders-overview">
-                      <i className="ri-eye-fill align-bottom me-2 text-muted" />{" "}
-                      View
-                    </Dropdown.Item>
-                  </li>
-                  <li>
-                    <Dropdown.Item href="#" className="remove-list">
-                      <i className="ri-delete-bin-fill align-bottom me-2 text-muted" />
-                      Delete
-                    </Dropdown.Item>
-                  </li>
-                </Dropdown.Menu>
-              </Dropdown>
+                  <i className="ri-eye-fill align-middle"></i>
+                </Link>
+              </div>
             </div>
           </Card.Header>
-          <TableContainer
-            columns={columns || []}
-            data={AllNotes || []}
-            isGlobalFilter={false}
-            iscustomPageSize={false}
-            isBordered={false}
-            customPageSize={6}
-            className="custom-header-css"
-            tableClass="table-centered align-middle table-nowrap mb-0"
-            theadClass="text-muted table-light"
-            SearchPlaceholder="Search Products..."
-          />
+          {AllDayNotes.length === 0 ? (
+            <SimpleBar className="mt-5 text-center p-4">
+              <div>
+                <p className="fs-18 text-muted fw-medium">
+                  Vous n'avez pas des notes aujourd'hui!
+                </p>
+              </div>
+            </SimpleBar>
+          ) : (
+            <TableContainer
+              columns={columns || []}
+              data={AllDayNotes || []}
+              isGlobalFilter={false}
+              iscustomPageSize={false}
+              isBordered={false}
+              customPageSize={6}
+              className="custom-header-css"
+              tableClass="table-centered align-middle table-nowrap mb-0"
+              theadClass="text-muted table-light"
+              SearchPlaceholder="Search Products..."
+            />
+          )}
         </Card>
       </div>
+      {/* Ajouter Note */}
       <Modal
         id="showModal"
         className="fade zoomIn"
@@ -175,6 +179,26 @@ const Note = () => {
         </Modal.Header>
         <Modal.Body className="p-4">
           <AddNote />
+        </Modal.Body>
+      </Modal>
+      {/* Détails Note */}
+      <Modal
+        id="showModal"
+        className="fade zoomIn"
+        size="lg"
+        show={modal_NotesModals}
+        onHide={() => {
+          tog_NotesModals();
+        }}
+        centered
+      >
+        <Modal.Header className="px-4 pt-4" closeButton>
+          <h5 className="modal-title fs-18" id="exampleModalLabel">
+            Notes
+          </h5>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <DetailsNote />
         </Modal.Body>
       </Modal>
     </React.Fragment>
