@@ -64,6 +64,14 @@ export const compteSlice = createApi({
           body: credentials,
         }),
       }),
+      updateAccount: builder.mutation<void, Compte>({
+        query: ({ idCompte, ...rest }) => ({
+          url: `editUser/${idCompte}`,
+          method: "PATCH",
+          body: rest,
+        }),
+        invalidatesTags: ["Compte"],
+      }),
       deleteCompte: builder.mutation<void, number>({
         query: (idCompte) => ({
           url: `removeUser/${idCompte}`,
@@ -76,6 +84,7 @@ export const compteSlice = createApi({
 });
 
 export const {
+  useUpdateAccountMutation,
   useLoginMutation,
   useFetchAllUsersQuery,
   useFetchOneUserQuery,

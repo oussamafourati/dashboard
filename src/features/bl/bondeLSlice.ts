@@ -22,6 +22,7 @@ export const blSlice = createApi({
   reducerPath: "bl",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://app.src.smartschools.tn/bl/",
+    // baseUrl: "http://localhost:8000/bl/",
   }),
   tagTypes: ["BondeLivraison"],
   endpoints(builder) {

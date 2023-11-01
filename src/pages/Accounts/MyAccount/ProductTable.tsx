@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import TableContainer from "Common/TableContainer";
-import { Button, Col, Offcanvas, Row } from "react-bootstrap";
+import { Button, Col, Form, Offcanvas, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   Compte,
@@ -56,33 +56,6 @@ const ProductTable = () => {
 
   const columns = useMemo(
     () => [
-      {
-        Header: (
-          <div className="form-check">
-            {" "}
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="checkAll"
-              value="option"
-            />{" "}
-          </div>
-        ),
-        Cell: (cellProps: any) => {
-          return (
-            <div className="form-check">
-              {" "}
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="chk_child"
-                defaultValue="option1"
-              />{" "}
-            </div>
-          );
-        },
-        id: "#",
-      },
       {
         Header: "Nom",
         accessor: "fullname",
@@ -153,6 +126,15 @@ const ProductTable = () => {
                 </li>
                 <li>
                   <Link
+                    to="/modifier-compte"
+                    className="link-info"
+                    state={account}
+                  >
+                    <i className="ri-edit-line ri-xl" />
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="#"
                     className="link-danger"
                     onClick={() => AlertDelete(account.idCompte)}
@@ -185,56 +167,73 @@ const ProductTable = () => {
       />
       <Offcanvas show={show} onHide={() => setShow(false)} placement="end">
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>#{info.idCompte}</Offcanvas.Title>
+          <Offcanvas.Title>{info.fullname}</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <div className="text-center mt-3">
-            <h5 className="overview-title">{info.fullname}</h5>
-            <h5 className="overview-title">{info.username}</h5>
-            <h5 className="overview-title">{info.code}</h5>
-            {/* <p className="text-muted">
-              by{" "}
-              <Link to="#" className="text-reset">
-                Admin
-              </Link>
-            </p> */}
-          </div>
-
-          {/* <h6 className="fs-14">Description</h6>
-          <p className="text-muted overview-desc">{info.description}</p> */}
+          <Col lg={12} className="text-center">
+            <Form.Label htmlFor="fullname" className="fs-24 fw-bold">
+              {info.fullname}
+            </Form.Label>
+            <div className="text-muted mb-2 gap-2">
+              {info.role === 0 ? (
+                <span className="badge badge-soft-info text-uppercase fs-18">
+                  Caissier
+                </span>
+              ) : (
+                <span className="badge badge-soft-secondary text-uppercase fs-18">
+                  Admin
+                </span>
+              )}
+            </div>
+            <div className="mb-2">
+              <Form.Label htmlFor="username" className="fs-22 fw-bold">
+                Nom Utilisateur :
+              </Form.Label>
+              <span id="username" className="fs-20">
+                {" "}
+                {info.username}
+              </span>
+            </div>
+            <div className="mb-2">
+              <Form.Label htmlFor="rib" className="fs-22 fw-bold">
+                Code :
+              </Form.Label>
+              <span id="rib" className="fs-20">
+                {" "}
+                {info.code}
+              </span>
+            </div>
+          </Col>
         </Offcanvas.Body>
         <div className="p-3 border-top">
-          <Row>
-            <Col lg={3}></Col>
-            <Col lg={5} sm={6}>
-              <div data-bs-dismiss="offcanvas">
-                <Button
-                  variant="danger"
-                  type="button"
-                  className="btn btn-danger w-100 remove-list"
-                  data-bs-toggle="modal"
-                  data-bs-target="#delteModal"
-                  data-remove-id="12"
-                  onClick={() => AlertDelete(info.idcategory)}
-                >
-                  <i className="ri-delete-bin-line me-1 align-bottom"></i>{" "}
-                  Supprimer
-                </Button>
-              </div>
-            </Col>
-            <Col lg={3}></Col>
-            {/* <Col sm={6}>
-              <Button
-                variant="secondary"
+          <ul className="hstack gap-5 list-unstyled mb-0">
+            <li className="m-5">
+              <Link
+                to="/modifier-compte"
+                state={info}
                 type="button"
-                className="w-100 edit-list"
+                className="w-100 edit-list link-success"
                 data-bs-dismiss="offcanvas"
                 data-edit-id="12"
               >
                 <i className="ri-pencil-line me-1 align-bottom"></i> Modifier
+              </Link>
+            </li>
+            <li>
+              <Button
+                variant="link"
+                type="button"
+                className="btn link-danger w-100 remove-list"
+                data-bs-toggle="modal"
+                data-bs-target="#delteModal"
+                data-remove-id="12"
+                onClick={() => AlertDelete(info.idcategory)}
+              >
+                <i className="ri-delete-bin-line me-1 align-bottom"></i>{" "}
+                Supprimer
               </Button>
-            </Col> */}
-          </Row>
+            </li>
+          </ul>
         </div>
       </Offcanvas>
     </React.Fragment>

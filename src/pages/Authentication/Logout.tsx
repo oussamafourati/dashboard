@@ -12,7 +12,7 @@ const Logout = () => {
   return (
     <React.Fragment>
       <section className="auth-page-wrapper position-relative bg-light min-vh-100 d-flex align-items-center justify-content-between">
-        <div className="auth-header position-fixed top-0 start-0 end-0">
+        <div className="auth-header position-absolute top-0 start-0 end-0">
           <Container fluid>
             <Row className="justify-content-center align-items-center">
               <Col xs={2}>

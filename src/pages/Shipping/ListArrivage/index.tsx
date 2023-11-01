@@ -129,7 +129,7 @@ const ListArrivage = () => {
           return (
             <ul className="hstack gap-2 list-unstyled mb-0">
               <li>
-                <Link to="/nouveau-arrivage-produit" state={arrivageProd}>
+                <Link to="/arrivage-produit" state={arrivageProd}>
                   <i className="ri-folder-add-line ri-xl" />
                 </Link>
               </li>

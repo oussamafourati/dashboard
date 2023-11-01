@@ -57,6 +57,8 @@ import ListeBL from "pages/BL/ListeBL";
 import DetailsBL from "pages/BL/DetailsBL";
 import CreateBL from "pages/BL/CreateBL";
 import UpdateProduct from "pages/Products/UpdateProduct";
+import UpdateAccount from "pages/Accounts/Settings/UpdateCompte";
+import CreeArrProduitFromList from "pages/Shipping/ListArrivage/CreeArrProduitFromList";
 
 const authProtectedRoutes = [
   // Authentication
@@ -97,6 +99,7 @@ const authProtectedRoutes = [
   { path: "/liste-arrivage", component: <Shipments /> },
   { path: "/detail", component: <ShippingDetails /> },
   { path: "/nouveau-arrivage-produit", component: <CreateArrivageProduit /> },
+  { path: "/arrivage-produit", component: <CreeArrProduitFromList /> },
 
   // ClientPhy
   { path: "/client-physique", component: <ClientPhy /> },
@@ -109,8 +112,8 @@ const authProtectedRoutes = [
 
   // Accounts
   { path: "/liste-comptes", component: <MyAccount /> },
-
   { path: "/creer-compte", component: <Settings /> },
+  { path: "/modifier-compte", component: <UpdateAccount /> },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name

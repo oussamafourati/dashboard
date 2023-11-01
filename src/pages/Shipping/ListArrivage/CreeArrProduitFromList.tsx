@@ -28,7 +28,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
-const CreateArrivageProduit = () => {
+const CreeArrProduitFromList = () => {
   document.title = "Arrivage | Radhouani";
   const location = useLocation();
 
@@ -129,7 +129,7 @@ const CreateArrivageProduit = () => {
   const initialArrivageProduitData = {
     idArrivageProduit: 1,
     produitID: 34,
-    arrivageID: 201741,
+    arrivageID: location.state.idArrivage,
     quantite: 1,
     prixAchatHt: 1,
     prixAchatTtc: 1,
@@ -193,10 +193,9 @@ const CreateArrivageProduit = () => {
   };
 
   const [arrProductID, setArrProductID] = useState<string>("");
-
   useEffect(() => {
-    setArrProductID(localStorage.getItem("arrprodid") || "");
-  }, []);
+    setArrProductID(location.state.idArrivage);
+  });
 
   const onSubmitArrivageProduit = (e: React.FormEvent<HTMLFormElement>) => {
     arrivageProduitData["produitID"] = acValue?.idproduit!;
@@ -638,7 +637,7 @@ const CreateArrivageProduit = () => {
                                 {allArrivageProduit.map((produitArr) => {
                                   if (
                                     produitArr.arrivageID ===
-                                    parseInt(arrProductID)
+                                    location.state.idArrivage
                                   ) {
                                     return (
                                       <tr key={produitArr.idArrivageProduit}>
@@ -908,4 +907,4 @@ const CreateArrivageProduit = () => {
   );
 };
 
-export default CreateArrivageProduit;
+export default CreeArrProduitFromList;

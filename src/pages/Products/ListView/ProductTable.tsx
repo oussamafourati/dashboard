@@ -167,7 +167,7 @@ const ProductTable = () => {
                 data-choices
                 data-choices-search-false
               >
-                <option value="25">25</option>
+                <option value="30">30</option>
                 <option value="50">50</option>
                 {/* <option value="100">100</option> */}
               </select>{" "}
@@ -176,14 +176,14 @@ const ProductTable = () => {
           </Row>
         </Col>
       </Row>
-      {selectedOption === "25" ? (
+      {selectedOption === "30" ? (
         <div>
           <TableContainer
             columns={columns}
             data={data || []}
             isGlobalFilter={true}
             isAddUserList={false}
-            customPageSize={25}
+            customPageSize={30}
             // divClassName="table-responsive mb-1"
             tableClassName="gridjs-table"
             theadClassName="gridjs-thead"

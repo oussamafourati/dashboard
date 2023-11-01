@@ -105,7 +105,7 @@ const CreateBL: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/clientMo/moraleclients"
+        "https://app.src.smartschools.tn/moraleclients"
       );
       const resdata = await reqdata.json();
       setClientMorale(resdata);

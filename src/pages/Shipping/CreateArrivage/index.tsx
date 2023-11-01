@@ -116,6 +116,13 @@ const CreateArrivage = () => {
     });
   };
 
+  useEffect(() => {
+    localStorage.setItem(
+      "arrprodid",
+      JSON.stringify(arrivageData["idArrivage"])
+    );
+  }, []);
+
   // All Fournisseur
   const { data: allfournisseur = [] } = useFetchFournisseurQuery();
 
