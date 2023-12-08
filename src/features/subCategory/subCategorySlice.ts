@@ -11,7 +11,7 @@ export interface SubCategory {
 export const subCategorySlice = createApi({
   reducerPath: "subCategory",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/subCategory/",
+    baseUrl: "https://app.src.com.tn/subCategory/",
   }),
   tagTypes: ["SubCategory"],
   endpoints(builder) {

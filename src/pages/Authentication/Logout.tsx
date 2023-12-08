@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Col, Container, Row, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
 //img
-import logolight from "assets/images/logo-light.png";
+import logolight from "assets/images/SRC.png";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import authAnimation from "../../assets/images/logout.json";
 import { useRef } from "react";
@@ -12,25 +12,16 @@ const Logout = () => {
   return (
     <React.Fragment>
       <section className="auth-page-wrapper position-relative bg-light min-vh-100 d-flex align-items-center justify-content-between">
-        <div className="auth-header position-absolute top-0 start-0 end-0">
-          <Container fluid>
-            <Row className="justify-content-center align-items-center">
-              <Col xs={2}>
-                <Image src={logolight} alt="logo light" height={58} />
-              </Col>
-              {/*-end col*/}
-            </Row>
-            {/*end row*/}
-          </Container>
-          {/*end container-fluid*/}
-        </div>
         <div className="w-100">
           <Container>
             <Row className="justify-content-center">
               <Col lg={6}>
                 <div className="auth-card mx-lg-3">
                   <Card className="border-0 mb-0">
-                    <Card.Header className="bg-primary border-0">
+                    <Card.Header className="bg-light border-0">
+                    <Row className="justify-content-center">
+                    <Image src={logolight} alt="logo light" style={{imageResolution:"inherit", shapeImageThreshold: "inherit"}}  height={120} />
+                      </Row>
                       <Row className="justify-content-center">
                         <Lottie
                           lottieRef={lottieRef}
@@ -43,8 +34,8 @@ const Logout = () => {
                         />
                       </Row>
                     </Card.Header>
-                    <Card.Body className="text-center">
-                      <p className="text-muted fs-24">
+                    <Card.Body className="text-center bg-light">
+                      <p className="text-dark fs-24">
                         Vous êtes déconnecté !!
                       </p>
                       <div>

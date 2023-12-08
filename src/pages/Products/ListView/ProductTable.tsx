@@ -51,7 +51,7 @@ const ProductTable = () => {
       });
   };
 
-  const [selectedOption, setSelectedOption] = useState<string>("25");
+  const [selectedOption, setSelectedOption] = useState<string>("50");
   // This function is triggered when the select changes
   const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
@@ -158,7 +158,7 @@ const ProductTable = () => {
               </Link>
             </Col>
           </Row>
-          <Row className="mt-2 align-items-center">
+          <Row className="mt-2 align-items-center mb-2">
             <Col xxl={3} md={5}></Col>
             <Col className="col-md-auto ms-auto">
               Afficher{" "}
@@ -167,8 +167,8 @@ const ProductTable = () => {
                 data-choices
                 data-choices-search-false
               >
-                <option value="30">30</option>
                 <option value="50">50</option>
+                <option value="100">100</option>
                 {/* <option value="100">100</option> */}
               </select>{" "}
               produits
@@ -176,14 +176,14 @@ const ProductTable = () => {
           </Row>
         </Col>
       </Row>
-      {selectedOption === "30" ? (
+      {selectedOption === "50" ? (
         <div>
           <TableContainer
             columns={columns}
             data={data || []}
             isGlobalFilter={true}
             isAddUserList={false}
-            customPageSize={30}
+            customPageSize={50}
             // divClassName="table-responsive mb-1"
             tableClassName="gridjs-table"
             theadClassName="gridjs-thead"
@@ -197,7 +197,7 @@ const ProductTable = () => {
           data={data || []}
           isGlobalFilter={true}
           isAddUserList={false}
-          customPageSize={50}
+          customPageSize={100}
           // divClassName="table-responsive mb-1"
           tableClassName="gridjs-table"
           theadClassName="gridjs-thead"

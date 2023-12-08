@@ -55,7 +55,7 @@ const SubCategories = () => {
   useEffect(() => {
     const getCategory = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/category/all"
+        "hhttps://app.src.com.tn/category/all"
       );
       const resdata = await reqdata.json();
       setCategoryState(resdata);
@@ -67,7 +67,7 @@ const SubCategories = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `https://app.src.smartschools.tn/category/one/${categoryId}`
+        `https://app.src.com.tn/category/one/${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);

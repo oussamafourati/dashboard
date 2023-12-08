@@ -21,8 +21,8 @@ export interface BondeLivraison {
 export const blSlice = createApi({
   reducerPath: "bl",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/bl/",
-    // baseUrl: "http://localhost:8000/bl/",
+    // baseUrl: "https://app.src.smartschools.tn/bl/",
+    baseUrl: "https://app.src.com.tn/bl/",
   }),
   tagTypes: ["BondeLivraison"],
   endpoints(builder) {

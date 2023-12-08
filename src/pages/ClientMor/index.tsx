@@ -82,7 +82,7 @@ const ClientMor = () => {
                     src={`data:image/jpeg;base64, ${clientmorale.logo}`}
                     alt=""
                     className="rounded-2 user-profile-img"
-                    width="100"
+                    width="80"
                   />
                 </div>
               </div>
@@ -223,12 +223,12 @@ const ClientMor = () => {
             }}
             centered
           >
-            <Modal.Header className="px-4 pt-4" closeButton>
-              <h5 className="modal-title fs-18" id="exampleModalLabel">
+            <Modal.Header className="px-2 pt-4" closeButton>
+              <h4 className="modal-title fs-18" id="exampleModalLabel">
                 Détails
-              </h5>
+              </h4>
             </Modal.Header>
-            <Modal.Body className="p-4">
+            <Modal.Body className="p-2">
               {" "}
               <DetailsClientMoral />{" "}
             </Modal.Body>

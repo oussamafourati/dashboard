@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row, Table } from "react-bootstrap";
 import Breadcrumb from "Common/BreadCrumb";
 // Import Images
-import logoDark from "assets/images/logo-dark.png";
-import logoLight from "assets/images/logo-light.png";
+import logoDark from "assets/images/SRC.png";
+import logoLight from "assets/images/SRC.png";
 import { Link, useLocation } from "react-router-dom";
 import { useFetchAllLigneVenteQuery } from "features/ligneVente/ligneVenteSlice";
 import {

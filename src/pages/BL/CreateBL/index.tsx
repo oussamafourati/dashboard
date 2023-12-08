@@ -105,7 +105,7 @@ const CreateBL: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/moraleclients"
+        "https://app.src.com.tn/clientMo/moraleclients"
       );
       const resdata = await reqdata.json();
       setClientMorale(resdata);
@@ -117,7 +117,7 @@ const CreateBL: React.FC = () => {
     const clientMoraleid = e.target.value;
     if (clientMoraleid !== "") {
       const reqstatedata = await fetch(
-        `https://app.src.smartschools.tn/clientMo/oneClientMorale/${clientMoraleid}`
+        `https://app.src.com.tn/clientMo/oneClientMorale/${clientMoraleid}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -348,9 +348,11 @@ const CreateBL: React.FC = () => {
     }
   }
 
-  let result: number =
-    formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl!)), 0) || 0;
-
+  const [result, setResult] = useState<number>(0)
+  useEffect(()=>{
+    setResult( formFields.reduce((sum, i) => (sum += parseInt(i?.montantTtl!)), 0) || 0);
+  }, [formFields])
+ 
   const [idbl, setIdbl] = useState(1);
   const [designationBL, setDesignationBL] = useState("");
   const [montant, setMontant] = useState("");

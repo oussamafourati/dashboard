@@ -13,8 +13,8 @@ import {
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import CountUp from "react-countup";
 // Import Images
-import logoDark from "assets/images/logo-dark.png";
-import logoLight from "assets/images/logo-light.png";
+import logoDark from "assets/images/SRC.png";
+import logoLight from "assets/images/SRC.png";
 import { Link, useLocation } from "react-router-dom";
 import {
   BondeLivraison,

@@ -60,7 +60,7 @@ const UpdateProduct = () => {
   useEffect(() => {
     const getCategory = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/category/all"
+        "https://app.src.com.tn/category/all"
       );
       const resdata = await reqdata.json();
       setCategory(resdata);
@@ -71,7 +71,7 @@ const UpdateProduct = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `https://app.src.smartschools.tn/subCategory/onesubcategory?idcategory=${categoryId}`
+        `https://app.src.com.tn/subCategory/onesubcategory?idcategory=${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSousCategory(resstatedata);

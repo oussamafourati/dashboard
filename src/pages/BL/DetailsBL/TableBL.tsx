@@ -30,7 +30,7 @@ const TableBL: React.FC<ChildProps> = ({ id }) => {
   useEffect(() => {
     const getClientPhysique = async () => {
       const reqdata = await fetch(
-        `https://app.src.smartschools.tn/bl/tousLignesVente/${id}`
+        `https://app.src.com.tn/bl/tousLignesVente/${id}`
       );
       const resdata = await reqdata.json();
       setClientPhysique(resdata);

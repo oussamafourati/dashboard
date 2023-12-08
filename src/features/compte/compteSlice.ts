@@ -24,7 +24,7 @@ export interface LoginRequest {
 export const compteSlice = createApi({
   reducerPath: "compte",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/user/",
+    baseUrl: "https://app.src.com.tn/user/",
     prepareHeaders: (headers, { getState }) => {
       // By default, if we have a token in the store, let's use that for authenticated requests
       const token = (getState() as RootState).auth.token;
@@ -45,6 +45,10 @@ export const compteSlice = createApi({
       }),
       fetchOneUser: builder.query<Compte, string | void>({
         query: (code) => `/oneUser/${code}`,
+        providesTags: ["Compte"],
+      }),
+      fetchUserInfo: builder.query<Compte[], string | void>({
+        query: (fullname) => `/allInfo?fullname=${fullname}`,
         providesTags: ["Compte"],
       }),
       createUser: builder.mutation<void, Compte>({
@@ -90,4 +94,5 @@ export const {
   useFetchOneUserQuery,
   useCreateUserMutation,
   useDeleteCompteMutation,
+  useFetchUserInfoQuery,
 } = compteSlice;

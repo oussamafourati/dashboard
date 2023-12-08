@@ -10,12 +10,13 @@ export interface Devis {
   montantTtl?: string;
   quantiteProduit?: string;
   productName?: string;
+  employee?: string;
 }
 
 export const devisSlice = createApi({
   reducerPath: "devis",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/devis/",
+    baseUrl: "https://app.src.com.tn/devis/",
   }),
   tagTypes: ["Devis"],
   endpoints(builder) {

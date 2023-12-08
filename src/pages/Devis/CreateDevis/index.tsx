@@ -141,12 +141,14 @@ const CreateDevis = () => {
       formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl)), 0)
     );
   });
-
+  const nomemployee = JSON.parse(localStorage.getItem("profile") || "");
+console.log(nomemployee)
   const [idDevis, setIdDevis] = useState(1);
   const [designationDevis, setDesignationDevis] = useState("");
   const [montantDevis, setMontantDevis] = useState("");
   const [dateDevis, setDateDevis] = useState("");
   const [nomclient, setNomclient] = useState("");
+  const [employee, setEmployee] = useState("");
   const [addDevis, { isLoading }] = useAddNewDevisMutation();
 
   async function handleAddDevis() {
@@ -157,15 +159,16 @@ const CreateDevis = () => {
         montantDevis: totalDevis.toString(),
         dateDevis: newDate,
         nomclient,
+        employee: nomemployee!
       })
         .unwrap()
         .then(handleAddDevisLigneVente)
         .then(() => notify())
-        .then(() => navigate("/liste-devis"));
       setDesignationDevis("");
       setMontantDevis("");
       setDateDevis("");
       setNomclient("");
+      setEmployee("")
     } catch (err) {
       errorDevis(err);
     }
@@ -439,18 +442,18 @@ const CreateDevis = () => {
                       </Col>
                     </Row>
                     <div className="hstack gap-2 justify-content-end d-print-none mt-3">
-                      <Button
+                      {/* <Button
                         variant="success"
                         type="submit"
                         onClick={handleAddDevis}
                       >
                         <i className="ri-save-3-fill align-bottom me-1"></i>{" "}
                         Enregister
-                      </Button>
-                      {/* <Link to="#" className="btn btn-primary">
+                      </Button> */}
+                      <Link to="/liste-devis" className="btn btn-primary" onClick={handleAddDevis}>
                         <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                        Telecharger
-                      </Link> */}
+                        Payer
+                      </Link>
                     </div>
                   </Card.Body>
                   {/* </Form> */}

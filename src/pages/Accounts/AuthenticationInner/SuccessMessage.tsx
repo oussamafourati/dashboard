@@ -2,8 +2,8 @@ import React from 'react';
 import { Card, Col, Container, Row } from 'react-bootstrap';
 
 // Import Images
-import logoDark from 'assets/images/logo-dark.png'
-import logoLight from 'assets/images/logo-light.png'
+import logoDark from 'assets/images/SRC.png'
+import logoLight from 'assets/images/SRC.png'
 import img1 from 'assets/images/auth/img-1.png'
 import { Link } from 'react-router-dom';
 

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image } from "@react-pdf/renderer";
-import logoLight from "assets/images/logo-light.png";
+import logoLight from "assets/images/SRC.png";
 import anis from "assets/images/anis.png";
 
 const styles = StyleSheet.create({

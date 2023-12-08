@@ -9,6 +9,18 @@ const StockReport = () => {
   const result = QtyProduct.filter(
     (QteProduct) => parseInt(QteProduct.TotalQuantity!) == 0
   );
+
+  const stockTotal = QtyProduct.reduce(
+    (sum, i) => (sum += parseInt(i.TotalQuantity!)),
+    0
+  );
+
+  const priceTotal = QtyProduct.reduce(
+    (sum, i) => (sum += i.SUMTOTAL!),
+    0
+  );
+
+  console.log(priceTotal)
   return (
     <React.Fragment>
       <Col>

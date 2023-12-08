@@ -42,7 +42,7 @@ const PayeWidgets = () => {
               <p className="text-uppercase fw-medium text-dark fs-15 text-truncate">
                 {widgetsData[0].name}
               </p>
-              <h4 className="fs-15 fw-semibold mb-3">
+              <h4 className="fs-15 fw-semibold mb-4">
                 <span className="counter-value" data-target="98851.35">
                   <CountUp
                     start={0}

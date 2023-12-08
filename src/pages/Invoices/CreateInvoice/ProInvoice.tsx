@@ -108,7 +108,7 @@ const ProInvoice: React.FC = () => {
   useEffect(() => {
     const getClientMorale = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/clientMo/moraleclients"
+        "https://app.src.com.tn/clientMo/moraleclients"
       );
       const resdata = await reqdata.json();
       setClientMorale(resdata);
@@ -120,7 +120,7 @@ const ProInvoice: React.FC = () => {
     const clientMoraleid = e.target.value;
     if (clientMoraleid !== "") {
       const reqstatedata = await fetch(
-        `https://app.src.smartschools.tn/clientMo/oneClientMorale/${clientMoraleid}`
+        `https://app.src.com.tn/clientMo/oneClientMorale/${clientMoraleid}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -292,6 +292,8 @@ const ProInvoice: React.FC = () => {
   let result: number =
     formFields.reduce((sum, i) => (sum += parseInt(i.montantTtl!)), 0) || 0;
 
+    const nomemployee = JSON.parse(localStorage.getItem("profile") || "");
+
   const [idFacture, setIdLigneVente] = useState(0);
   const [designationFacture, setDesignationFacture] = useState("");
   const [dateFacturation, setDateFacturation] = useState("");
@@ -300,6 +302,7 @@ const ProInvoice: React.FC = () => {
   const [statusFacture, setStatusFacture] = useState(0);
   const [MontantTotal, setMontantTotal] = useState(0);
   const [nomClient, setNomClient] = useState("");
+  const [nomEmployee, setNomEmployee] = useState("");
   const [clientID, setClientID] = useState(23);
   const [addFacture] = useAddFactureMutation();
 
@@ -314,6 +317,7 @@ const ProInvoice: React.FC = () => {
         statusFacture: paymmentStatus,
         MontantTotal: totalInvoice,
         nomClient: clientValue!.raison_sociale!,
+        nomEmployee:nomemployee!,
         clientID: clientValue?.idclient_m!,
       })
         .unwrap()
@@ -327,6 +331,7 @@ const ProInvoice: React.FC = () => {
       setModePaiement("");
       setNomClient("");
       setStatusFacture(0);
+      setNomEmployee("");
       setClientID(23);
     } catch (err) {
       errorNotify(err);
@@ -565,9 +570,9 @@ const ProInvoice: React.FC = () => {
                               end={parseInt(
                                 (form.montantTtl = (
                                   parseInt(form.PU) *
-                                    parseInt(form.quantiteProduit) +
+                                    parseFloat(form.quantiteProduit) +
                                   ((parseInt(form.PU) / 1.19) *
-                                    parseInt(form.quantiteProduit) *
+                                    parseFloat(form.quantiteProduit) *
                                     pourcentageBenifice) /
                                     100
                                 ).toString())

@@ -4,17 +4,8 @@ import {
   Row,
   Col,
   Card,
-  Alert,
-  Button,
   Form,
 } from "react-bootstrap";
-
-// Formik Validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
 
 import withRouter from "Common/withRouter";
 
@@ -22,65 +13,18 @@ import withRouter from "Common/withRouter";
 import Breadcrumb from "Common/BreadCrumb";
 
 import avatar from "../../assets/images/users/avatar.png";
+import { useFetchUserInfoQuery } from "features/compte/compteSlice";
 
-// actions
-import { editProfile, resetProfileFlag } from "slices/thunk";
 
 const UserProfile = () => {
   document.title = "Profil | Radhouani";
-
-  const dispatch = useDispatch<any>();
-
-  const [email, setemail] = useState("");
-  const [name, setname] = useState("");
-  const [idx, setidx] = useState(1);
 
   const [user, setUser] = useState<string>("");
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("profile") || ""));
   }, []);
 
-  const { error, success } = useSelector((state: any) => ({
-    error: state.Profile.error,
-    success: state.Profile.success,
-  }));
-
-  useEffect(() => {
-    if (localStorage.getItem("authUser")) {
-      const obj = JSON.parse(localStorage.getItem("authUser") || "{}");
-      if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
-        setname(obj.displayName);
-        setemail(obj.email);
-        setidx(obj.uid);
-      } else if (
-        process.env.REACT_APP_DEFAULTAUTH === "fake" ||
-        process.env.REACT_APP_DEFAULTAUTH === "jwt"
-      ) {
-        setname(obj.username);
-        setemail(obj.email);
-        setidx(obj.uid);
-      }
-      setTimeout(() => {
-        dispatch(resetProfileFlag());
-      }, 3000);
-    }
-  }, [dispatch, success]);
-
-  const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
-    enableReinitialize: true,
-
-    initialValues: {
-      username: name || "",
-      idx: idx || "",
-    },
-    validationSchema: Yup.object({
-      username: Yup.string().required("Please Enter Your UserName"),
-    }),
-    onSubmit: (values) => {
-      dispatch(editProfile(values));
-    },
-  });
+ const {data: allInfo = []} = useFetchUserInfoQuery(user);
 
   return (
     <React.Fragment>
@@ -91,9 +35,6 @@ const UserProfile = () => {
 
           <Row>
             <Col lg="12">
-              {error && error ? <Alert variant="danger">{error}</Alert> : null}
-              {success ? <Alert variant="success">{success}</Alert> : null}
-
               <Card>
                 <Card.Body>
                   <div className="d-flex">
@@ -106,9 +47,46 @@ const UserProfile = () => {
                     </div>
                     <div className="flex-grow-1 align-self-center">
                       <div className="text-muted">
-                        <h5>{user}</h5>
-                        <p className="mb-1">makrem09</p>
-                        <p className="mb-1">785</p>
+                          {allInfo.map((compte)=>(
+                            <div key={compte.idCompte}>
+                            <Form.Label htmlFor="fullname" className="fs-24 fw-bold">
+              Nom: 
+            </Form.Label>
+            <span id="username" className="fs-20">
+                {" "}
+                {compte.fullname}
+              </span>
+            <div className="text-muted mb-2 gap-2">
+              {compte.role === 0 ? (
+                <span className="badge badge-soft-info text-uppercase fs-18">
+                  Caissier
+                </span>
+              ) : (
+                <span className="badge badge-soft-secondary text-uppercase fs-18">
+                  Admin
+                </span>
+              )}
+            </div>
+            <div className="mb-2">
+              <Form.Label htmlFor="username" className="fs-22 fw-bold">
+                Nom Utilisateur :
+              </Form.Label>
+              <span id="username" className="fs-20">
+                {" "}
+                {compte.username}
+              </span>
+            </div>
+            <div className="mb-2">
+              <Form.Label htmlFor="rib" className="fs-22 fw-bold">
+                Code :
+              </Form.Label>
+              <span id="rib" className="fs-20">
+                {" "}
+                {compte.code}
+              </span>
+            </div>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   </div>
@@ -116,49 +94,6 @@ const UserProfile = () => {
               </Card>
             </Col>
           </Row>
-
-          <h4 className="card-title mb-4">Changer Nom Utilisateur</h4>
-
-          <Card>
-            <Card.Body>
-              <Form
-                className="form-horizontal"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <div className="form-group">
-                  <Form.Label>Nom Utilisateur</Form.Label>
-                  <Form.Control
-                    name="username"
-                    className="form-control"
-                    type="text"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.username || ""}
-                    isInvalid={
-                      validation.touched.username && validation.errors.username
-                        ? true
-                        : false
-                    }
-                  />
-                  {validation.touched.username && validation.errors.username ? (
-                    <Form.Control.Feedback type="invalid">
-                      {validation.errors.username}
-                    </Form.Control.Feedback>
-                  ) : null}
-                  <Form.Control name="idx" value={idx} type="hidden" />
-                </div>
-                <div className="text-center mt-4">
-                  <Button type="submit" variant="danger">
-                    Modifier
-                  </Button>
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
         </Container>
       </div>
     </React.Fragment>

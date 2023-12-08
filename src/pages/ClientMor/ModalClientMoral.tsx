@@ -7,6 +7,7 @@ import {
   useAddClientMoraleMutation,
   useDeleteClientMoraleMutation,
 } from "features/clientMoral/clientMoralSlice";
+import { convertToBase64 } from "helpers/convertToBase64";
 
 const ModalClientMoral = () => {
   const notify = () => {
@@ -95,22 +96,6 @@ const ModalClientMoral = () => {
     });
   };
 
-  function convertToBase64(file: File | Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-
-      fileReader.onload = () => {
-        const base64String = fileReader.result as string;
-        const base64Data = base64String.split(",")[1];
-
-        resolve(base64Data);
-      };
-      fileReader.readAsDataURL(file);
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  }
 
   return (
     <React.Fragment>
@@ -177,42 +162,42 @@ const ModalClientMoral = () => {
           <Col lg={6} className="mt-3">
             <div className="mb-3">
               <Form.Label htmlFor="mat">
-                Matricule Fiscale <span className="text-danger">*</span>
+                Matricule Fiscale
               </Form.Label>
               <Form.Control
                 type="text"
                 value={formData.mat}
                 onChange={onChange}
                 id="mat"
-                required
+               
               />
             </div>
           </Col>
           <Col lg={4}>
             <div className="mb-3">
               <Form.Label htmlFor="rib">
-                RIB <span className="text-danger">*</span>
+                RIB 
               </Form.Label>
               <Form.Control
                 type="number"
                 value={formData.rib}
                 onChange={onChange}
                 id="rib"
-                required
+             
               />
             </div>
           </Col>
           <Col lg={4}>
             <div className="mb-3">
               <Form.Label htmlFor="tel">
-                Telephone <span className="text-danger">*</span>
+                Telephone 
               </Form.Label>
               <Form.Control
                 type="number"
                 value={formData.tel}
                 onChange={onChange}
                 id="tel"
-                required
+                
                 minLength={8}
                 maxLength={8}
               />
@@ -221,14 +206,14 @@ const ModalClientMoral = () => {
           <Col lg={4}>
             <div className="mb-3">
               <Form.Label htmlFor="adresse">
-                Adresse <span className="text-danger">*</span>
+                Adresse 
               </Form.Label>
               <Form.Control
                 type="text"
                 value={formData.adresse}
                 onChange={onChange}
                 id="adresse"
-                required
+                
               />
             </div>
           </Col>
@@ -240,7 +225,7 @@ const ModalClientMoral = () => {
                 value={formData.mail}
                 onChange={onChange}
                 id="mail"
-                required
+               
               />
             </div>
           </Col>
@@ -253,7 +238,7 @@ const ModalClientMoral = () => {
                 data-choices-search-false
                 id="etat"
                 onChange={selectChangeEtatClient}
-                required
+               
               >
                 <option value="">Choisir</option>
                 <option value={1}>Actif</option>
@@ -269,7 +254,7 @@ const ModalClientMoral = () => {
                 value={formData.remarque}
                 onChange={onChange}
                 id="remarque"
-                required
+              
               />
             </div>
           </Col>

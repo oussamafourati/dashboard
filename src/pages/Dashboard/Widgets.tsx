@@ -6,6 +6,7 @@ import ImpayeWidgets from "./ImpayeWidgets";
 import PayeWidgets from "./PayeWidgets";
 import BenificeWidgets from "./BenificeWidgets";
 import { Col, Row } from "react-bootstrap";
+import CapitalWidgets from "./CapitalWidgets";
 
 const Widgets = () => {
   return (
@@ -19,6 +20,7 @@ const Widgets = () => {
       <Row className="justify-content-center">
         <PayeWidgets />
         <BenificeWidgets />
+        <CapitalWidgets />
       </Row>
     </React.Fragment>
   );

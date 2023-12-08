@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 
 // Import Images
-import logoDark from 'assets/images/logo-dark.png'
-import logoLight from 'assets/images/logo-light.png'
+import logoDark from 'assets/images/SRC.png'
+import logoLight from 'assets/images/SRC.png'
 import img1 from 'assets/images/auth/img-1.png'
 
 import withRouter from 'Common/withRouter';

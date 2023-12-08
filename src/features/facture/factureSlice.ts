@@ -17,13 +17,14 @@ export interface Facture {
   montantTtl?: string;
   quantiteProduit?: string;
   productName?: string;
+  nomEmployee?:string;
   mat?: string;
 }
 
 export const facturetSlice = createApi({
   reducerPath: "facture",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/factures/",
+    baseUrl: "https://app.src.com.tn/factures/",
     headers: {
       "Content-type": "application/json",
     },

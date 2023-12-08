@@ -153,10 +153,6 @@ const ModalClientPhy = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="error-msg mt-1">
-                Please add a category images.
-              </div>
             </div>
           </Col>
           <Col lg={6} className="mt-3">
@@ -177,7 +173,7 @@ const ModalClientPhy = () => {
           <Col lg={6} className="mt-3">
             <div className="mb-3">
               <Form.Label htmlFor="cin">
-                C.I.N <span className="text-danger">*</span>
+                C.I.N
               </Form.Label>
               <input
                 className="form-control"
@@ -187,28 +183,28 @@ const ModalClientPhy = () => {
                 id="cin"
                 minLength={8}
                 maxLength={8}
-                required
+              
               />
             </div>
           </Col>
           <Col lg={4}>
             <div className="mb-3">
               <Form.Label htmlFor="rib">
-                RIB<span className="text-danger">*</span>
+                RIB
               </Form.Label>
               <Form.Control
                 type="number"
                 value={formData.rib}
                 onChange={onChange}
                 id="rib"
-                required
+              
               />
             </div>
           </Col>
           <Col lg={5}>
             <div className="mb-3">
               <Form.Label htmlFor="adresse">
-                Adresse <span className="text-danger">*</span>
+                Adresse
               </Form.Label>
               <input
                 className="form-control"
@@ -216,14 +212,14 @@ const ModalClientPhy = () => {
                 value={formData.adresse}
                 onChange={onChange}
                 id="adresse"
-                required
+                
               />
             </div>
           </Col>
           <Col lg={3}>
             <div className="mb-3">
               <Form.Label htmlFor="tel">
-                Telephone <span className="text-danger">*</span>
+                Telephone
               </Form.Label>
               <input
                 className="form-control"
@@ -233,7 +229,7 @@ const ModalClientPhy = () => {
                 id="tel"
                 maxLength={8}
                 minLength={8}
-                required
+                
               />
             </div>
           </Col>
@@ -246,7 +242,7 @@ const ModalClientPhy = () => {
                 value={formData.mail}
                 onChange={onChange}
                 id="mail"
-                required
+              
               />
             </div>
           </Col>
@@ -273,7 +269,7 @@ const ModalClientPhy = () => {
                 value={formData.remarque}
                 onChange={onChange}
                 id="remarque"
-                required
+             
               />
             </div>
           </Col>

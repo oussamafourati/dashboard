@@ -75,7 +75,7 @@ const PassagerInvoice: React.FC = () => {
       .filter((option) =>
         option.raison_sociale.toLowerCase().includes(inputValue)
       )
-      .slice(0, 2); // Limit the number of suggestions
+      .slice(0, 4); // Limit the number of suggestions
   };
 
   document.title = "Créer Facture | Radhouani";
@@ -111,7 +111,7 @@ const PassagerInvoice: React.FC = () => {
   useEffect(() => {
     const getClientPhysique = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/clientPyh/clients"
+        "https://app.src.com.tn/clientPyh/clients"
       );
       const resdata = await reqdata.json();
       setClientPhysique(resdata);
@@ -123,7 +123,7 @@ const PassagerInvoice: React.FC = () => {
     const clientPhysiqueId = e.target.value;
     if (clientPhysiqueId !== "") {
       const reqstatedata = await fetch(
-        `https://app.src.smartschools.tn/clientPyh/one/18`
+        `https://app.src.com.tn/clientPyh/one/18`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -297,6 +297,7 @@ const PassagerInvoice: React.FC = () => {
     }
   }
 
+  const nomemployee = JSON.parse(localStorage.getItem("profile") || "");
   const [count, setCount] = useState<number | undefined>();
   const [remise, setRemise] = useState<number | undefined>();
   useEffect(() => {
@@ -334,7 +335,17 @@ const PassagerInvoice: React.FC = () => {
   const [statusFacture, setStatusFacture] = useState(0);
   const [MontantTotal, setMontantTotal] = useState(0);
   const [nomClient, setNomClient] = useState("");
+  const [nomEmployee, setNomEmployee] = useState("");
   const [clientID, setClientID] = useState(18);
+
+  useEffect(() => {
+    if (clientValue?.raison_sociale! === undefined) {
+    setNomClient("Client Passager")
+    } else {
+      setNomClient(clientValue?.raison_sociale!)
+  }
+}, [clientValue])
+
   const [addFacture, { isLoading }] = useAddFactureMutation();
 
   async function handleAddFacture() {
@@ -347,7 +358,8 @@ const PassagerInvoice: React.FC = () => {
         modePaiement: paymentMode,
         statusFacture: paymmentStatus,
         MontantTotal: totalInvoice,
-        nomClient: clientValue!.raison_sociale!,
+        nomClient: nomClient,
+        nomEmployee:nomemployee!,
         clientID: clientValue?.idclient_p!,
       })
         .unwrap()
@@ -362,6 +374,7 @@ const PassagerInvoice: React.FC = () => {
       setModePaiement("");
       setNomClient("");
       setStatusFacture(0);
+      setNomEmployee("");
       setClientID(18);
     } catch (err) {
       errorNotify(err);
@@ -632,7 +645,7 @@ const PassagerInvoice: React.FC = () => {
                             end={parseInt(
                               (form.montantTtl = (
                                 parseInt(form.PU) *
-                                parseInt(form.quantiteProduit)
+                                parseFloat(form.quantiteProduit)
                               ).toString())
                             )}
                             separator=","

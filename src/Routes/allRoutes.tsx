@@ -48,7 +48,6 @@ import Logout from "pages/Authentication/Logout";
 import ForgotPassword from "pages/Authentication/ForgotPassword";
 import UserProfile from "pages/Authentication/user-profile";
 import ShippingDetails from "pages/Shipping/CreateArrivage/ArrivageDetails";
-import CreateDevis from "pages/Devis/CreateDevis";
 import DevisList from "pages/Devis/DevisList";
 import PassagerInvoice from "pages/Invoices/CreateInvoice/PassagerInvoice";
 import ProInvoice from "pages/Invoices/CreateInvoice/ProInvoice";
@@ -59,6 +58,8 @@ import CreateBL from "pages/BL/CreateBL";
 import UpdateProduct from "pages/Products/UpdateProduct";
 import UpdateAccount from "pages/Accounts/Settings/UpdateCompte";
 import CreeArrProduitFromList from "pages/Shipping/ListArrivage/CreeArrProduitFromList";
+import InvoiceListTable from "pages/Devis/DevisList/InvoiceListTable";
+import CreateDevis from "pages/Devis/CreateDevis";
 
 const authProtectedRoutes = [
   // Authentication
@@ -85,7 +86,7 @@ const authProtectedRoutes = [
   // Devis
   { path: "/liste-devis", component: <DevisList /> },
   { path: "/details-devis", component: <DevisDetails /> },
-  { path: "/nouveau-devis", component: <CreateDevis /> },
+  { path: "/nouveau-devis", component: < CreateDevis/> },
   // BL
   { path: "/liste-bl", component: <ListeBL /> },
   { path: "/details-bl", component: <DetailsBL /> },

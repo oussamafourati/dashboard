@@ -6,11 +6,11 @@ import { useLocation } from "react-router-dom";
 const Status = ({ status }: any) => {
   switch (status) {
     case 0:
-      return <span className="badge badge-soft-danger"> Inactif</span>;
+      return <span className="badge badge-soft-danger fs-14"> Inactif</span>;
     case 1:
-      return <span className="badge badge-soft-success"> Actif</span>;
+      return <span className="badge badge-soft-success fs-20"> Actif</span>;
     default:
-      return <span className="badge badge-soft-danger">Inactif</span>;
+      return <span className="badge badge-soft-danger fs-14">Inactif</span>;
   }
 };
 
@@ -23,52 +23,65 @@ const DetailsClientMoral = () => {
         <Container fluid={true}>
           <Card>
             <Card.Body>
-              <div className="table-responsive table-card">
-                <table className="table table-borderless table-centered align-middle table-nowrap mb-0">
-                  <thead className="text-muted table-light">
-                    <tr>
-                      <th scope="col">Raison sociale</th>
-                      <th scope="col">Matricule</th>
-                      <th scope="col">RIB</th>
-                      <th scope="col">Adresse</th>
-                      <th scope="col">Telephone</th>
-                      <th scope="col">E-mail</th>
-                      <th scope="col">Etat</th>
-                      <th scope="col">Remarque</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <div className="flex-shrink-0 me-2">
-                            <img
-                              src={`data:image/jpeg;base64, ${locationClientPhy.state.logo}`}
-                              alt=""
-                              className="rounded-2"
-                              width="140"
-                            />
-                          </div>
-                          <div className="flex-grow-1">
-                            {locationClientPhy.state.raison_sociale}
-                          </div>
-                        </div>
-                      </td>
-                      <td>{locationClientPhy.state.mat}</td>
-                      <td>{locationClientPhy.state.rib}</td>
-                      <td>{locationClientPhy.state.adresse}</td>
-                      <td>{locationClientPhy.state.tel}</td>
-                      <td>
-                        <span>{locationClientPhy.state.mail}</span>
-                      </td>
-                      <td>
-                        <Status status={locationClientPhy.state.etat} />
-                      </td>
-                      <td>{locationClientPhy.state.remarque}</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="d-flex justify-content-center">
+                <div className="flex-shrink-0 me-2">
+                  <img
+                      src={`data:image/jpeg;base64, ${locationClientPhy.state.logo}`}
+                      alt=""
+                      className="rounded-2"
+                      width="120"
+                   />
+                </div> 
               </div>
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">Raison sociale: </p>
+              <p className="fs-23 fw-bold">
+                  {locationClientPhy.state.raison_sociale}
+              </p>
+              </div>
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">Matricule: </p>
+              <p className="fs-23 fw-bold">
+                  {locationClientPhy.state.mat}
+              </p>
+              </div>      
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">RIB: </p>
+              <p className="fs-23 fw-bold">
+                  {locationClientPhy.state.rib}
+              </p>
+              </div>  
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">Adresse: </p>
+              <p className="fs-23 fw-bold">
+                  {locationClientPhy.state.adresse}
+              </p>
+              </div>  
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">Telephone: </p>
+              <p className="fs-23 fw-bold">
+                  {locationClientPhy.state.tel}
+              </p>
+              </div>  
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">E-mail: </p>
+              <p className="fs-23 fw-bold">
+                  {locationClientPhy.state.mail}
+              </p>
+              </div> 
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">Etat: </p>
+              <p className="fs-23 fw-bold">
+              <Status status={locationClientPhy.state.etat} />
+              </p>
+              </div>
+              <div className="d-flex align-items-center">
+              <p className="fs-17 fw-bold">Remarque: </p>
+              <p className="fs-23 fw-bold">
+                  {locationClientPhy.state.remarque}
+              </p>
+              </div> 
+             
             </Card.Body>
           </Card>
         </Container>

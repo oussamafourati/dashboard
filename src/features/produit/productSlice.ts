@@ -16,8 +16,8 @@ export interface Produit {
 export const produitSlice = createApi({
   reducerPath: "produit",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/product/",
-    // baseUrl: "http://localhost:8000/product/",
+    // baseUrl: "https://app.src.smartschools.tn/product/",
+    baseUrl: "https://app.src.com.tn/product/",
   }),
   tagTypes: ["Produit"],
   endpoints(builder) {

@@ -39,7 +39,7 @@ const CreeArrProduitFromList = () => {
   useEffect(() => {
     const getProduit = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/product/getAllProducts"
+        "https://app.src.com.tn/product/getAllProducts"
       );
       const resdata = await reqdata.json();
       setProduit(resdata);
@@ -50,7 +50,7 @@ const CreeArrProduitFromList = () => {
     const produitId = e.target.value;
     if (produitId !== "") {
       const reqstatedata = await fetch(
-        `https://app.src.smartschools.tn/product/getOneProduct/${produitId}`
+        `https://app.src.com.tngetOneProduct/${produitId}`
       );
       const resstatedata = await reqstatedata.json();
       setSelected(await resstatedata);
@@ -60,6 +60,7 @@ const CreeArrProduitFromList = () => {
     }
   };
 
+  const [qty, setQty] = useState<number>();
   const [prixAchatHT, setPrixAchatHT] = useState<number>();
   const [prixAchatTTC, setPrixAchatTTc] = useState<number>();
   const [prixvente, setPrixVente] = useState<number>();
@@ -124,6 +125,12 @@ const CreeArrProduitFromList = () => {
     setPrixRemise((prixvente! * (100 - parseInt(event.target.value))) / 100);
   };
 
+  const onChangeQuantite = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setQty(parseInt(event.target.value));
+  };
+
   const [CreateArrivageProduit] = useAddArrivageProduitMutation();
 
   const initialArrivageProduitData = {
@@ -158,7 +165,7 @@ const CreeArrProduitFromList = () => {
   useEffect(() => {
     const loadProduct = async () => {
       const response = await fetch(
-        "https://app.src.smartschools.tn/product/getAllProducts"
+        "https://app.src.com.tn/product/getAllProducts"
       );
       const resData = await response.json();
       setProducts(resData);
@@ -200,6 +207,7 @@ const CreeArrProduitFromList = () => {
   const onSubmitArrivageProduit = (e: React.FormEvent<HTMLFormElement>) => {
     arrivageProduitData["produitID"] = acValue?.idproduit!;
     arrivageProduitData["arrivageID"] = parseInt(arrProductID);
+    arrivageProduitData["quantite"] = qty!;
     arrivageProduitData["prixAchatHt"] = prixAchatHT!;
     arrivageProduitData["prixAchatTtc"] = prixAchatTTC!;
     arrivageProduitData["prixVente"] = prixvente!;
@@ -220,6 +228,7 @@ const CreeArrProduitFromList = () => {
       .then(() => setPourcentageBenifice(0))
       .then(() => setPrixRemise(0))
       .then(() => setPourcentageRemise(0))
+      .then(() => setQty(0))
       .then(() => localStorage.removeItem("arrprodid"));
   };
 
@@ -278,7 +287,7 @@ const CreeArrProduitFromList = () => {
   useEffect(() => {
     const getCategory = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/category/all"
+        "https://app.src.com.tn/category/all"
       );
       const resdata = await reqdata.json();
       setCategory(resdata);
@@ -289,7 +298,7 @@ const CreeArrProduitFromList = () => {
     const categoryId = e.target.value;
     if (categoryId !== "") {
       const reqstatedata = await fetch(
-        `https://app.src.smartschools.tn/subCategory/onesubcategory?idcategory=${categoryId}`
+        `https://app.src.com.tn/subCategory/onesubcategory?idcategory=${categoryId}`
       );
       const resstatedata = await reqstatedata.json();
       setSousCategory(resstatedata);
@@ -439,8 +448,8 @@ const CreeArrProduitFromList = () => {
                           <div className="input-group has-validation mb-3">
                             <Form.Control
                               type="number"
-                              value={arrivageProduitData.quantite}
-                              onChange={onChangeArrivageProduit}
+                              value={qty}
+                              onChange={onChangeQuantite}
                               id="quantite"
                               aria-label="Price"
                               aria-describedby="product-price-addon"

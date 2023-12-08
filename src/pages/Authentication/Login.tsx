@@ -13,7 +13,7 @@ import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import authAnimation from "../../assets/images/animation_lnbffzwt.json";
 import { useRef } from "react";
 //img
-import logolight from "assets/images/logo-light.png";
+import logolight from "assets/images/SRC.png";
 import { useLoginMutation } from "features/compte/compteSlice";
 import Swal from "sweetalert2";
 import { setCredentials } from "../../features/compte/authSlice";
@@ -77,25 +77,16 @@ const Signin = () => {
   return (
     <React.Fragment>
       <section className="auth-page-wrapper position-relative bg-light min-vh-100 d-flex align-items-center justify-content-between">
-        <div className="auth-header position-absolute top-0 start-0 end-0">
-          <Container fluid>
-            <Row className="justify-content-center align-items-center">
-              <Col xs={2}>
-                <Image src={logolight} alt="logo light" height={60} />
-              </Col>
-              {/*-end col*/}
-            </Row>
-            {/*end row*/}
-          </Container>
-          {/*end container-fluid*/}
-        </div>
         <div className="w-100">
           <Container>
             <Row className="justify-content-center">
               <Col lg={6}>
                 <div className="auth-card mx-lg-3">
                   <Card className="border-0 mb-0">
-                    <Card.Header className="bg-primary border-0">
+                    <Card.Header className="bg-light border-0">
+                    <Row className="justify-content-center">
+                    <Image src={logolight} alt="logo light" style={{imageResolution:"inherit", shapeImageThreshold: "inherit"}}  height={120} />
+                      </Row>
                       <Row className="justify-content-center">
                         <Lottie
                           lottieRef={lottieRef}
@@ -108,7 +99,7 @@ const Signin = () => {
                         />
                       </Row>
                     </Card.Header>
-                    <Card.Body>
+                    <Card.Body className="bg-light">
                       <div className="p-1">
                         <div className="mb-2">
                           <Form.Label htmlFor="username">
@@ -144,7 +135,7 @@ const Signin = () => {
                             </Button>
                           </div>
                         </div>
-                        <div className="mt-2">
+                        <div>
                           <Button
                             variant="primary"
                             className="w-100"
@@ -188,17 +179,11 @@ const Signin = () => {
           </Container>
           {/*end container*/}
           <footer className="footer">
-            <Container>
-              <Row>
-                <Col lg={12}>
                   <div className="text-center">
                     <p className="mb-0 text-muted">
                       {new Date().getFullYear()} Radhouani. © Réaliser par 3S
                     </p>
                   </div>
-                </Col>
-              </Row>
-            </Container>
           </footer>
         </div>
       </section>

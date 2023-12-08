@@ -145,7 +145,7 @@ const SellersListView = () => {
   useEffect(() => {
     const getArrivage = async () => {
       const reqdata = await fetch(
-        "https://app.src.smartschools.tn/arrivage/topfournisseur"
+        "https://app.src.com.tn/arrivage/topfournisseur"
       );
       const resdata = await reqdata.json();
       setArrivage(resdata);
@@ -737,7 +737,6 @@ const SellersListView = () => {
                     <Form.Control
                       type="text"
                       id="matricule_fiscale"
-                      required
                       onChange={onChange}
                       value={formData.matricule_fiscale}
                     />
@@ -773,8 +772,6 @@ const SellersListView = () => {
                     <Form.Label htmlFor="mail">E-mail</Form.Label>
                     <Form.Control
                       type="email"
-                      id="mail"
-                      required
                       onChange={onChange}
                       value={formData.mail}
                     />
@@ -806,7 +803,6 @@ const SellersListView = () => {
                     <Form.Control
                       type="number"
                       id="rib"
-                      required
                       onChange={onChange}
                       value={formData.rib}
                     />

@@ -138,6 +138,12 @@ const InvoiceListTablePaye = () => {
         },
       },
       {
+        Header: "Employee",
+        accessor: "nomEmployee",
+        disableFilters: true,
+        filterable: true,
+      },
+      {
         Header: "Action",
         disableFilters: true,
         filterable: true,

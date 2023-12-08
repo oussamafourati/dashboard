@@ -25,7 +25,7 @@ const CreateArrivage = () => {
   useEffect(() => {
     const getFournisseur = async () => {
       const reqFournisseur = await fetch(
-        "https://app.src.smartschools.tn/fournisseur/allFournisseur"
+        "https://app.src.com.tn/fournisseur/allFournisseur"
       );
       const resFournisseur = await reqFournisseur.json();
       setFournisseurState(resFournisseur);
@@ -37,7 +37,7 @@ const CreateArrivage = () => {
     const fournisseurId = e.target.value;
     if (fournisseurId !== "") {
       const reqFournisseurData = await fetch(
-        `https://app.src.smartschools.tn/fournisseur/oneFournisseur/${fournisseurId}`
+        `https://app.src.com.tn/fournisseur/oneFournisseur/${fournisseurId}`
       );
       const resfournisseurdata = await reqFournisseurData.json();
       setSelected(await resfournisseurdata);

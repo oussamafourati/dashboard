@@ -21,6 +21,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 // import RightSidebar from './RightSidebar';
 import Footer from './Footer';
+import RightSidebar from './RightSidebar';
 
 interface LayoutProps {
     children: ReactNode;
@@ -94,7 +95,6 @@ const Layout = ({ children }: LayoutProps) => {
     return (
         <React.Fragment>
             <div id="layout-wrapper">
-                
                 <Header />
                 <Sidebar layoutType={layoutType} />
                 <div className="main-content">
@@ -102,7 +102,7 @@ const Layout = ({ children }: LayoutProps) => {
                     <Footer />
                 </div>
             </div>
-            
+            <RightSidebar />
         </React.Fragment>
     );
 }

@@ -14,7 +14,7 @@ const Overview = () => {
   useEffect(() => {
     const getProduitState = async () => {
       const reqdata = await fetch(
-        `https://app.src.smartschools.tn/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
+        `https://app.src.com.tn/arrivageProduit/ArrProduit/${LocationProduct.state.idproduit}`
       );
       const resdata = await reqdata.json();
       setProduitState(resdata);

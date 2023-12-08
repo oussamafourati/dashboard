@@ -21,7 +21,7 @@ export interface LigneVente {
 export const LigneVenteSlice = createApi({
   reducerPath: "lignevente",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/lignevente/",
+    baseUrl: "https://app.src.com.tn/lignevente/",
     headers: {
       "Content-type": "application/json",
     },

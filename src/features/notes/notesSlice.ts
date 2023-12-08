@@ -10,7 +10,7 @@ export interface Notes {
 export const notesSlice = createApi({
   reducerPath: "notes",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/notes/",
+    baseUrl: "https://app.src.com.tn/notes/",
   }),
   tagTypes: ["Notes"],
   endpoints(builder) {

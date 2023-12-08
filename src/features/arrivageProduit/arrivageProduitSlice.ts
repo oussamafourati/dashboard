@@ -27,8 +27,8 @@ export interface ArrivageProduit {
 export const arrivageProduitSlice = createApi({
   reducerPath: "arrivageProduit",
   baseQuery: fetchBaseQuery({
-    // baseUrl: "http://localhost:8000/arrivageProduit/",
-    baseUrl: "https://app.src.smartschools.tn/arrivageProduit/",
+    baseUrl: "https://app.src.com.tn/arrivageProduit/",
+    // baseUrl: "https://app.src.smartschools.tn/arrivageProduit/",
   }),
   tagTypes: ["ArrivageProduit"],
   endpoints(builder) {

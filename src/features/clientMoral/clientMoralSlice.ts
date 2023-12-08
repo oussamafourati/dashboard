@@ -18,7 +18,7 @@ export interface ClientMorale {
 export const clientMoraleSlice = createApi({
   reducerPath: "clientMorale",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://app.src.smartschools.tn/clientMo/",
+    baseUrl: "https://app.src.com.tn/clientMo/",
   }),
   tagTypes: ["ClientMorale"],
   endpoints(builder) {

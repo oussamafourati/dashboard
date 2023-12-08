@@ -30,7 +30,7 @@ const TableFacture: React.FC<ChildProps> = ({ id }) => {
   useEffect(() => {
     const getClientPhysique = async () => {
       const reqdata = await fetch(
-        `https://app.src.smartschools.tn/factures/ligneventedufacture/${id}`
+        `https://app.src.com.tn/factures/ligneventedufacture/${id}`
       );
       const resdata = await reqdata.json();
       setClientPhysique(resdata);
